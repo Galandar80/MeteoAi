@@ -1,0 +1,29 @@
+{
+  "id": "/",
+  "name": "Meteo AI — Il meteo reale",
+  "short_name": "Meteo AI",
+  "description": "Meteo mondiale, mare, vento, previsioni a 14 giorni ed eventi naturali con Mondo Live.",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "it-IT",
+  "dir": "ltr",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f7f4",
+  "theme_color": "#0d7b57",
+  "categories": ["weather", "utilities", "lifestyle"],
+  "icons": [
+    {"src":"/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"/icon-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"},
+    {"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
+  ],
+  "screenshots": [
+    {"src":"/screenshots/app-desktop.png","sizes":"1280x720","type":"image/png","form_factor":"wide","label":"Previsioni, temperatura e analisi Meteo AI su desktop"},
+    {"src":"/screenshots/app-mobile.png","sizes":"750x1334","type":"image/png","form_factor":"narrow","label":"Meteo AI installata su smartphone"}
+  ],
+  "shortcuts": [
+    {"name":"Mondo Live","short_name":"Mondo Live","description":"Apri la mappa mondiale degli eventi naturali","url":"/world-live.html","icons":[{"src":"/icon-192.png","sizes":"192x192","type":"image/png"}]},
+    {"name":"Installa Meteo AI","short_name":"Installa","description":"Istruzioni per installare Meteo AI","url":"/installa.html","icons":[{"src":"/icon-192.png","sizes":"192x192","type":"image/png"}]}
+  ]
+}

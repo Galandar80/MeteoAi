@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Meteo oggi e previsioni fino a 14 giorni per località di tutto il mondo. Consulta temperatura, pioggia, vento, mare, qualità dell'aria e mappe su Meteo AI." />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="theme-color" content="#0d7b57" />
+  <meta property="og:title" content="Meteo oggi e previsioni 14 giorni | Meteo AI" />
+  <meta property="og:description" content="Previsioni meteo mondiali con temperatura, pioggia, vento, mare, qualità dell'aria, confronto storico e mappe." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://meteo-ai.vercel.app/" />
+  <meta property="og:site_name" content="Meteo AI" />
+  <meta property="og:locale" content="it_IT" />
+  <meta property="og:image" content="https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b" />
+  <meta property="og:image:url" content="https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b" />
+  <meta property="og:image:secure_url" content="https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Meteo AI — Il meteo reale, reso semplice" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Meteo oggi e previsioni 14 giorni | Meteo AI" />
+  <meta name="twitter:description" content="Previsioni mondiali, vento, mare, qualità dell'aria, confronto storico e mappe in un'unica applicazione gratuita." />
+  <meta name="twitter:image" content="https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b" />
+  <meta name="twitter:image:alt" content="Meteo AI — Il meteo reale, reso semplice" />
+  <link rel="canonical" href="https://meteo-ai.vercel.app/" />
+  <link rel="alternate" hreflang="it" href="https://meteo-ai.vercel.app/" />
+  <link rel="alternate" hreflang="x-default" href="https://meteo-ai.vercel.app/" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Meteo AI" />
+  <title>Meteo oggi e previsioni 14 giorni nel mondo | Meteo AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://meteo-ai.vercel.app/#organization",
+        "name": "Meteo AI",
+        "url": "https://meteo-ai.vercel.app/",
+        "logo": "https://meteo-ai.vercel.app/icon.svg",
+        "image": "https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://meteo-ai.vercel.app/#website",
+        "url": "https://meteo-ai.vercel.app/",
+        "name": "Meteo AI",
+        "inLanguage": "it-IT",
+        "publisher": {"@id": "https://meteo-ai.vercel.app/#organization"}
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://meteo-ai.vercel.app/#app",
+        "name": "Meteo AI",
+        "url": "https://meteo-ai.vercel.app/",
+        "applicationCategory": "WeatherApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript",
+        "inLanguage": "it-IT",
+        "isAccessibleForFree": true,
+        "description": "Previsioni meteo mondiali fino a 14 giorni con temperatura, pioggia, vento, mare, qualità dell'aria, confronto storico e mappe.",
+        "publisher": {"@id": "https://meteo-ai.vercel.app/#organization"},
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR"
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">M</span><span>Meteo <b>AI</b></span></a>
+    <nav><button class="nav-location" id="locationMenuBtn" data-i18n="locationBtn">⌖ Località</button><a href="#forecast" data-i18n="today">Oggi</a><a href="#fourteenDays" data-i18n="fourteenDays">Previsioni</a><a href="#marineSection" data-i18n="sea">Mare</a><a href="world-live.html" data-i18n="worldLive">Mondo Live</a><a href="installa.html">Installa</a><button class="nav-sections" id="sectionsMenuBtn" data-i18n="sectionsBtn" aria-expanded="false" aria-controls="sectionsMenu">☰ Tutte le sezioni</button></nav>
+    <div class="header-actions">
+      <span class="language-status" title="Interfaccia attualmente disponibile in italiano">🇮🇹 Italiano</span>
+      <button class="icon-btn pwa-install-btn hidden" id="pwaInstallBtn" aria-label="Installa PWA" title="Installa App">📲 <span data-i18n="installApp">Installa App</span></button>
+      <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Apri menu">☰</button>
+      <button class="icon-btn" id="savedBtn" aria-label="Località salvate">☆ <span data-i18n="favorites">Preferiti</span></button>
+      <button class="icon-btn" id="themeBtn" aria-label="Cambia tema">☾</button>
+    </div>
+  </header>
+
+  <aside class="sections-menu" id="sectionsMenu" aria-label="Menu delle sezioni">
+    <div><span>METEO</span><a href="#forecast">Condizioni attuali</a><a href="#fourteenDays">Previsioni 14 giorni</a><a href="#historySection">Confronto storico</a><a href="#alertsSection">Avvisi previsionali</a></div>
+    <div><span>VENTO E MARE</span><a href="#windSection">Situazione dei venti</a><a href="#marineSection">Situazione del mare</a><a href="#italySeaOverview">Atlante dei mari</a><a href="#portPlanner">Confronto fra porti</a></div>
+    <div><span>MAPPE E FENOMENI</span><a href="world-live.html">Mondo Live</a><a href="#mapSection">Mappa della località</a><a href="#airSection">Aria e astronomia</a></div>
+    <div><span>STRUMENTI PERSONALI</span><a href="#weatherWindow">Finestra Meteo</a><a href="#profilesSection">Profili specializzati</a><a href="#aiSection">Assistenti Meteo AI</a></div>
+    <div><span>APP METEO AI</span><a href="installa.html">Installa su telefono o computer</a><a href="#forecast">Condividi una località</a></div>
+  </aside>
+  <div class="context-bar">
+    <button class="active-location" id="currentLocationBtn"><span>LOCALITÀ SELEZIONATA</span><b id="activeLocationName">Messina, Italia</b><i>Cambia</i></button>
+    <nav class="quick-sections" aria-label="Accesso rapido"><a href="#forecast">Oggi</a><a href="#fourteenDays">Previsioni</a><a href="#windSection">Vento</a><a href="#marineSection">Mare</a><a href="#aiSection">Strumenti</a></nav>
+  </div>
+  <nav class="mobile-bottom-nav" aria-label="Navigazione principale mobile">
+    <a href="#forecast"><span>☀</span>Oggi</a>
+    <a href="#fourteenDays"><span>▤</span>Previsioni</a>
+    <a href="#marineSection"><span>≈</span>Mare</a>
+    <button type="button" id="mobileSectionsBtn" aria-controls="sectionsMenu" aria-expanded="false"><span>☰</span>Sezioni</button>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="hero-weather" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="eyebrow"><span></span> DATI REALI • PREVISIONI GLOBALI • ANALISI AI</div>
+      <h1>Non guardare soltanto<br>che tempo farà. <em>Capiscilo.</em></h1>
+      <p>Meteo, qualità dell’aria, mappe e consigli personali in un’unica esperienza semplice. Cerca qualsiasi luogo nel mondo.</p>
+      <form class="search" id="searchForm">
+        <span>⌕</span><input id="placeInput" autocomplete="off" placeholder="Cerca città, località o CAP..." aria-label="Cerca una località" />
+        <button type="button" id="geoBtn" title="Usa la mia posizione">◎</button>
+        <button type="submit">Cerca</button>
+        <div class="suggestions" id="suggestions"></div>
+      </form>
+      <div class="quick"><span>Popolari:</span><a href="/meteo/it/lazio/rome-3169070" data-place="Roma">Roma</a><a href="/meteo/gb/england/london-2643743" data-place="Londra">Londra</a><a href="/meteo/us/new-york/new-york-city-5128581" data-place="New York">New York</a><a href="/meteo/jp/tokyo/tokyo-1850147" data-place="Tokyo">Tokyo</a></div>
+      <div class="trust-row"><span>✓ Nessuna registrazione</span><span>✓ Previsioni fino a 14 giorni</span><span>✓ Analisi locale senza API AI a pagamento</span></div>
+    </section>
+
+    <section class="install-promo hidden" data-pwa-promo aria-labelledby="installPromoTitle">
+      <img src="/icon-192.png" alt="" width="64" height="64" />
+      <div><span>METEO AI SUL TUO DISPOSITIVO</span><h2 id="installPromoTitle">Apri il meteo con un solo tocco</h2><p>Installa gratuitamente Meteo AI sulla schermata Home. Nessun account e nessuno store.</p></div>
+      <button data-pwa-install>Installa gratis</button>
+      <a href="/installa.html">Come funziona</a>
+    </section>
+
+    <section class="dashboard" id="forecast" aria-live="polite">
+      <div class="location-row">
+        <div><div class="eyebrow"><span></span> ORA</div><h2 id="locationName">Messina, Italia</h2><p id="updatedAt">Caricamento dati reali...</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="save-btn share-card-btn" id="shareCardBtn">✦ <span data-i18n="shareCard">Condividi Card</span></button>
+          <button class="save-btn" id="saveBtn">☆ Salva località</button>
+        </div>
+      </div>
+      <div class="weather-grid">
+        <article class="current-card">
+          <div class="current-main"><div><div class="big-icon" id="weatherIcon">☀</div><div><div class="temperature"><span id="currentTemp">--</span>°</div><strong id="weatherLabel">Caricamento...</strong><p id="feelsLike">Percepita --°</p></div></div><div class="range"><b id="todayMax">--°</b><span>max</span><b id="todayMin">--°</b><span>min</span></div></div>
+          <div class="metrics">
+            <div><span><i class="metric-icon drop"></i> Umidità</span><b id="humidity">--%</b></div><div><span><i class="metric-icon wind"></i> Vento</span><b id="wind">-- km/h</b></div><div><span><i class="metric-icon pressure"></i> Pressione</span><b id="pressure">-- hPa</b></div><div><span><i class="metric-icon sun"></i> Indice UV</span><b id="uv">--</b></div><div><span><i class="metric-icon eye"></i> Visibilità</span><b id="visibility">-- km</b></div><div><span><i class="metric-icon rain"></i> Pioggia</span><b id="precip">-- mm</b></div>
+          </div>
+          <div class="next-days-summary">
+            <div class="next-days-summary-head"><span>PROSSIMI DUE GIORNI</span><a href="#fourteenDays">Vedi 14 giorni ↓</a></div>
+            <div class="next-days-summary-grid" id="nextTwoDays" aria-label="Previsioni per i prossimi due giorni">
+              <div class="next-day-mini loading"><span>Domani</span><b>Caricamento…</b></div>
+              <div class="next-day-mini loading"><span>Dopodomani</span><b>Caricamento…</b></div>
+            </div>
+          </div>
+        </article>
+        <article class="ai-card" id="insights">
+          <div class="ai-head"><span>✦</span><div><small>METEO AI INSIGHT</small><b>La giornata in breve</b></div></div>
+          <p id="aiSummary">Sto analizzando temperatura, vento, precipitazioni e indice UV...</p>
+          <div class="advice" id="advice"><span>✓</span><p>Analisi in corso</p></div>
+          <small class="disclaimer">Analisi automatica basata su dati previsionali reali.</small>
+        </article>
+      </div>
+
+      <div class="section-title forecast-priority" id="fourteenDays"><div><span>ORIZZONTE ESTESO</span><h3>Previsioni 14 giorni</h3></div><div class="tabs"><button class="active" data-unit="c">°C</button><button data-unit="f">°F</button></div></div>
+      <div class="daily" id="daily"></div>
+      <section class="confidence-panel" aria-labelledby="confidenceTitle">
+        <div class="confidence-copy"><span>TRASPARENZA PREVISIONALE</span><h3 id="confidenceTitle">Quanto è affidabile la previsione?</h3><p>Meteo AI distingue la qualità indicativa in base alla distanza temporale: più ci si allontana da oggi, maggiore è l’incertezza.</p></div>
+        <div class="confidence-steps"><div><b id="confidenceNow">Alta</b><span>Oggi–2 giorni</span><i class="high"></i></div><div><b id="confidenceWeek">Buona</b><span>3–7 giorni</span><i class="medium"></i></div><div><b id="confidenceLong">Indicativa</b><span>8–14 giorni</span><i class="low"></i></div></div>
+        <small>È una stima orientativa dell’orizzonte temporale, non una probabilità certificata del singolo evento.</small>
+      </section>
+
+      <section class="alerts-panel" id="alertsSection">
+        <div class="alerts-head"><div><span>AVVISI PREVISIONALI</span><h3>Situazioni da tenere sotto controllo</h3></div><a id="officialAlertsLink" href="https://www.meteoalarm.org/" target="_blank" rel="noopener">Consulta avvisi ufficiali ↗</a></div>
+        <div class="alerts-list" id="alertsList"><div class="alert-item neutral"><b>Analisi in corso</b><p>Controllo pioggia, temporali, vento, temperature e UV.</p></div></div>
+        <small>Gli avvisi Meteo AI sono calcolati dai dati previsionali e non sono allerte ufficiali.</small>
+      </section>
+
+      <div class="section-title"><div><span>PROSSIME ORE</span><h3>Oggi, ora per ora</h3></div></div>
+      <div class="hourly" id="hourly"></div>
+
+      <section class="weather-window" id="weatherWindow">
+        <div class="window-intro"><span>✦ FUNZIONE ESCLUSIVA METEO AI</span><h3>Trova la tua Finestra Meteo</h3><p>Non cercare giorno per giorno. Dicci cosa vuoi fare e analizzeremo le prossime 168 ore per trovare i momenti migliori.</p></div>
+        <div class="activity-picker" role="group" aria-label="Scegli attività"><button class="active" data-ai-activity="walk">Passeggiata</button><button data-ai-activity="run">Corsa</button><button data-ai-activity="bike">Bicicletta</button><button data-ai-activity="beach">Mare</button><button data-ai-activity="laundry">Bucato</button><button data-ai-activity="event">Evento all’aperto</button></div>
+        <div class="window-result" id="windowResult"><div class="window-loading">Analisi delle condizioni in corso...</div></div>
+      </section>
+      <section class="special-profiles" id="profilesSection">
+        <div class="profiles-intro"><span>PROFILI SPECIALIZZATI</span><h3>Un meteo diverso per ogni attività e professione</h3><p>Meteo AI applica criteri specifici per sicurezza, comfort e decisioni operative. I dati professionali aggiuntivi vengono caricati soltanto quando servono.</p></div>
+        <div class="profile-groups"><div><span>ATTIVITÀ E FAMIGLIA</span><div class="profile-picker"><button data-special-profile="fishing">Pesca</button><button data-special-profile="sailing">Vela</button><button data-special-profile="surf">Surf</button><button class="active" data-special-profile="children">Bambini</button><button data-special-profile="pets">Animali</button><button data-special-profile="drones">Droni</button></div></div><div><span>MODALITÀ PROFESSIONALI</span><div class="profile-picker professional"><button data-special-profile="agriculture">Agricoltura</button><button data-special-profile="construction">Edilizia</button><button data-special-profile="hiking">Escursionismo</button><button data-special-profile="photography">Fotografia</button></div></div></div>
+        <div class="profile-result" id="profileResult"><div class="profile-score"><strong id="profileScore">--</strong><span>/100</span></div><div><span id="profileName">PESCA</span><h4 id="profileStatus">Analisi in corso</h4><p id="profileAdvice">Confronto le condizioni disponibili.</p><div class="profile-factors" id="profileFactors"></div></div></div>
+      </section>
+
+      <section class="history-section" id="historySection">
+        <div class="history-head">
+          <div>
+            <span>CONFRONTO STORICO CLIMATICO</span>
+            <h3>Oggi rispetto alla stessa data del passato</h3>
+            <p>Il confronto viene aggiornato automaticamente usando la massima prevista oggi e le massime registrate nello stesso giorno di calendario nei 10 anni precedenti.</p>
+          </div>
+          <button class="history-btn" id="historyLoadBtn">Aggiorna confronto</button>
+        </div>
+        <div class="history-grid" id="historyGrid">
+          <div class="history-card history-today"><small>OGGI</small><b id="histTodayTemp">--°C</b><span id="histTodayNow">Temperatura attuale --°C</span></div>
+          <div class="history-card"><small>MEDIA DELLA STESSA DATA • 10 ANNI</small><b id="hist10Temp">--°C</b><span class="anomaly-normal" id="histSampleCount">Analisi in attesa</span></div>
+          <div class="history-card"><small>SCOSTAMENTO DI OGGI</small><b id="histDifference">--°C</b><span class="anomaly-normal" id="hist10Diff">Analisi in attesa</span></div>
+        </div>
+      </section>
+
+
+      <div class="section-title" id="airSection"><div><span>DATI AVANZATI</span><h3>Salute e astronomia</h3></div></div>
+      <div class="extras-grid">
+        <article class="extra-card"><span>QUALITÀ DELL'ARIA</span><b id="aqi">--</b><p id="aqiLabel">Caricamento...</p><div class="meter"><i id="aqiMeter"></i></div><small>Indice europeo CAQI</small></article>
+        <article class="extra-card"><span>SOLE</span><div class="sun-row"><div><small>Alba</small><b id="sunrise">--:--</b></div><div>☀</div><div><small>Tramonto</small><b id="sunset">--:--</b></div></div><p id="daylight">-- ore di luce</p></article>
+        <article class="extra-card"><span>ATTIVITÀ CONSIGLIATE</span><div class="activity-list" id="activities"></div></article>
+      </div>
+
+      <div class="section-title" id="windSection"><div><span>VENTO AI</span><h3>Situazione dei venti</h3><p>Direzione, intensità, raffiche e momenti più favorevoli.</p></div></div>
+      <section class="wind-dashboard">
+        <article class="wind-primary">
+          <div class="wind-compass"><div class="compass-ring"><span>N</span><span>E</span><span>S</span><span>O</span><i id="windArrow">↑</i></div><div><small>PROVENIENZA</small><b id="windDirectionLabel">--</b><span id="windDirectionDegrees">--°</span></div></div>
+          <div class="wind-numbers"><div><small>VELOCITÀ</small><b id="windSpeedDetail">--</b><span>km/h</span></div><div><small>RAFFICHE</small><b id="windGust">--</b><span>km/h</span></div><div><small>SCALA BEAUFORT</small><b id="windBeaufort">--</b><span id="windBeaufortLabel">In analisi</span></div></div>
+        </article>
+        <article class="wind-ai"><span>✦ LETTURA METEO AI</span><h4 id="windStatus">Analisi del vento in corso</h4><p id="windAdvice">Confronto velocità, raffiche e andamento delle prossime ore.</p><div class="wind-best"><small>FINESTRA PIÙ TRANQUILLA</small><b id="windBestWindow">--</b></div></article>
+        <div class="wind-hours" id="windHours"></div>
+        <div class="wind-days" id="windDays"></div>
+      </section>
+
+      <div class="section-title"><div><span>CONFRONTO</span><h3>Confronta due località</h3><p>Scopri subito dove troverai le condizioni migliori.</p></div></div>
+      <div class="compare-box"><input id="compareInput" placeholder="Cerca una seconda città..."><button id="compareBtn">Confronta</button><div id="compareResult" class="compare-result"><span>Scegli una località da confrontare con Messina.</span></div></div>
+    </section>
+
+    <section class="map-section" id="mapSection">
+
+      <div class="section-title"><div><span>MAPPA INTERATTIVA</span><h3>Esplora il territorio</h3><p>Muovi e ingrandisci la mappa per conoscere il luogo selezionato.</p></div></div>
+      <div id="map"></div>
+      <div class="map-note">Mappa © OpenStreetMap contributors</div>
+    </section>
+
+    <section class="marine-section" id="marineSection">
+      <div class="section-title"><div><span>MARE AI</span><h3>Situazione del mare</h3><p>Onde, temperatura dell’acqua, correnti e momento migliore nelle vicinanze della località selezionata. L’analisi parte automaticamente.</p></div><button class="marine-load" id="marineLoadBtn">Aggiorna analisi</button></div>
+      <div class="marine-empty" id="marineEmpty"><div class="marine-symbol loading-wave">≈</div><h4>Analisi automatica del mare</h4><p>Sto selezionando il punto marino modellistico più vicino alla località.</p></div>
+      <div class="marine-dashboard hidden" id="marineDashboard">
+        <article class="sea-score-card"><span>INDICE MARE AI</span><div class="sea-score"><strong id="seaScore">--</strong><small>/100</small></div><h4 id="seaStatus">Analisi in corso</h4><p id="seaAdvice">Sto confrontando onde, corrente e temperatura.</p></article>
+        <div class="marine-metrics"><article><span>TEMPERATURA ACQUA</span><b id="seaTemp">--°</b><small id="seaTempNote">Superficie</small></article><article><span>ALTEZZA ONDE</span><b id="waveHeight">-- m</b><small id="waveDirection">Direzione --</small></article><article><span>PERIODO ONDE</span><b id="wavePeriod">-- s</b><small>Energia del moto ondoso</small></article><article><span>CORRENTE</span><b id="currentSpeed">-- km/h</b><small id="currentDirection">Direzione --</small></article></div>
+        <article class="marine-ai"><span>✦ SPIEGAZIONE</span><p id="marineExplanation">I consigli vengono elaborati localmente e non sostituiscono bollettini o autorità marittime.</p><small id="marinePoint">Punto marino in selezione…</small></article>
+        <div class="marine-future"><div><span>PROSSIMI GIORNI</span><h4>Come cambierà il mare</h4></div><div class="marine-days" id="marineDays"></div></div>
+        <div class="marine-hours" id="marineHours"></div>
+      </div>
+      <section class="italy-sea-overview" id="italySeaOverview">
+        <div class="italy-sea-head"><div><span>ATLANTE DEI MARI • COPERTURA MONDIALE</span><h4>Mari della nazione selezionata</h4><p>La mappa riconosce automaticamente lo Stato della località meteo e analizza i principali tratti costieri, senza richiedere una seconda scelta.</p></div><div class="sea-country-controls"><div class="detected-country"><span>NAZIONE RILEVATA</span><b id="seaCountryName">Italia</b><small>segue la località meteo</small></div><button id="italySeaLoadBtn">Aggiorna dati</button></div></div>
+        <div class="italy-sea-days hidden" id="italySeaDays"></div>
+        <div class="italy-sea-placeholder" id="italySeaPlaceholder"><b>Rilevamento della nazione…</b><span>Il Paese segue automaticamente la località meteo selezionata.</span></div>
+        <div class="italy-sea-map" id="italySeaMap"></div>
+        <div class="sea-legend hidden" id="italySeaLegend"><span><i class="calm"></i> Poco mosso</span><span><i class="moderate"></i> Mosso</span><span><i class="rough"></i> Molto mosso</span></div>
+        <p class="italy-map-note hidden" id="italyMapNote">Il confine nazionale semplificato proviene da Natural Earth, con fallback OpenStreetMap; i punti costieri sono campioni modellistici automatici, non porti o rotte ufficiali. Verifica sempre compagnia di navigazione, autorità marittime e bollettini locali.</p>
+      </section>
+      <section class="port-planner" id="portPlanner">
+        <div class="port-planner-head"><span>CONFRONTO METEO FRA PORTI</span><h4>Esplora le condizioni in un corridoio geografico</h4><p>Seleziona due porti e una data: Meteo AI confronta il moto ondoso lungo una linea geometrica. Non calcola una rotta nautica.</p></div>
+        <form class="port-form" id="portPlannerForm"><label>Porto di partenza<select id="portFrom" required></select></label><span class="port-arrow">→</span><label>Porto di arrivo<select id="portTo" required></select></label><label>Giorno<input id="portDate" type="date" required></label><label class="route-ack"><input type="checkbox" id="routeSafetyAck" required><span>Ho capito che non è una rotta né uno strumento di navigazione.</span></label><button type="submit">Confronta il corridoio</button></form>
+        <div class="navigation-safety" role="note"><b>Non usare per navigare</b><p>La linea può attraversare terra, aree interdette o zone non navigabili. Non considera fondali, coste, ostacoli, traffico, ordinanze, dotazioni, capacità dell’imbarcazione o decisioni delle autorità.</p></div>
+        <div class="port-result" id="portResult"><div class="port-result-empty"><b>Confronto esplorativo, non navigazione</b><p>Per pianificare una traversata usa carte nautiche aggiornate, bollettini ufficiali e indicazioni delle autorità marittime.</p></div></div>
+        <div class="port-route-map hidden" id="portRouteMap"></div>
+      </section>
+      <p class="marine-warning">Dati modellistici indicativi: non utilizzare Meteo AI come strumento di navigazione o sicurezza in mare.</p>
+    </section>
+
+    <section class="ai-explainer" id="aiSection">
+      <div class="ai-explainer-copy"><span class="pro-badge">PERCHÉ METEO AI</span><h2>I dati dicono cosa accadrà.<br>L’AI ti aiuta a decidere.</h2><p>Incrociamo temperatura, pioggia, vento, UV e qualità dell’aria per trasformarli in indicazioni semplici e legate alle tue attività.</p></div>
+      <div class="ai-examples"><div><span>07:30</span><p><b>Vai al lavoro in bici?</b> Partenza consigliata entro le 8:10: dopo aumenta il rischio di pioggia.</p></div><div><span>12:00</span><p><b>Pausa pranzo all’aperto?</b> Sì, ma cerca ombra: indice UV elevato.</p></div><div><span>18:30</span><p><b>Passeggiata serale?</b> Condizioni favorevoli e vento debole.</p></div></div>
+    </section>
+
+    <section class="ai-tools">
+      <article class="ask-ai-card">
+        <div class="tool-heading"><span>✦ MOTORE INTELLIGENTE LOCALE</span><h2>Chiedi a Meteo AI</h2><p>Fai una domanda normale: la risposta viene calcolata nel browser usando soltanto i dati meteorologici della località selezionata.</p></div>
+        <div class="question-chips"><button data-question="Domani mi serve l’ombrello?">Mi serve l’ombrello?</button><button data-question="Qual è il momento migliore per andare al mare?">Quando andare al mare?</button><button data-question="Posso fare sport all’aperto?">Posso fare sport?</button></div>
+        <form class="ask-form" id="askForm"><input id="askInput" maxlength="300" placeholder="Es. Sabato posso organizzare una cena all’aperto?" required><button type="submit">Chiedi</button></form>
+        <div class="ai-answer" id="aiAnswer"><div class="ai-avatar">AI</div><p>Sono pronto. Seleziona una domanda oppure scrivine una tua.</p></div>
+        <small class="ai-source">Nessuna domanda viene inviata a servizi AI esterni. Per emergenze consulta sempre le autorità locali.</small>
+      </article>
+
+      <article class="travel-card">
+        <div class="tool-heading"><span>ASSISTENTE VIAGGIO</span><h2>Prepara il viaggio con il meteo</h2><p>Analizziamo destinazione e periodo per suggerire abbigliamento, accessori e criticità previste.</p></div>
+        <form class="travel-form" id="travelForm"><label>Destinazione<input id="travelPlace" placeholder="Es. Budapest" required></label><label>Partenza<input id="travelDate" type="date" required></label><label>Giorni<select id="travelDays"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>7</option><option>10</option><option>14</option></select></label><button type="submit">Crea il piano</button></form>
+        <div class="travel-result" id="travelResult"><p>Inserisci il tuo prossimo viaggio per ricevere il piano Meteo AI.</p></div>
+      </article>
+    </section>
+
+    <section class="account-value zero-cost-section">
+      <div class="account-copy"><span class="pro-badge">PRIVACY E COSTI SOTTO CONTROLLO</span><h2>Intelligente sul tuo dispositivo.</h2><p>Meteo AI non richiede account, non mostra pubblicità e non usa modelli AI a consumo. Preferiti e tema restano nella memoria locale del browser.</p></div>
+      <div class="benefit-grid"><div><i>✦</i><b>Analisi locale</b><p>Domande, finestre meteo e consigli vengono elaborati direttamente nel browser.</p></div><div><i>0</i><b>Nessun abbonamento</b><p>Tutte le funzioni incluse sono accessibili senza piano a pagamento.</p></div><div><i>☆</i><b>Preferiti privati</b><p>Le località salvate non lasciano il dispositivo.</p></div><div><i>↗</i><b>Architettura leggera</b><p>Sito statico, installabile e senza database obbligatorio.</p></div></div>
+    </section>
+
+    <section class="seo-content" aria-labelledby="seoContentTitle">
+      <span>PREVISIONI METEO MONDIALI</span>
+      <h2 id="seoContentTitle">Tutto ciò che serve per capire il meteo di oggi e dei prossimi giorni</h2>
+      <p class="seo-intro">Cerca una città, un comune o una località in qualsiasi parte del mondo. Meteo AI riunisce previsioni fino a 14 giorni, condizioni attuali e strumenti di confronto in una pagina semplice da consultare.</p>
+      <div class="seo-grid">
+        <article><h3>Meteo oggi e previsioni a 14 giorni</h3><p>Controlla temperatura minima e massima, probabilità e quantità di pioggia, umidità, pressione, visibilità, indice UV, alba e tramonto.</p></article>
+        <article><h3>Vento e situazione del mare</h3><p>Consulta velocità, direzione e raffiche del vento. Per le località costiere sono disponibili anche onde, periodo, direzione e temperatura del mare come dati modellistici indicativi.</p></article>
+        <article><h3>Confronto con il clima passato</h3><p>La temperatura di oggi viene confrontata con i dati storici della stessa località per mostrare in modo immediato se la giornata è più calda, più fresca o vicina alla media.</p></article>
+        <article><h3>Mappe ed eventi naturali nel mondo</h3><p>La sezione <a href="world-live.html">Mondo Live</a> raccoglie terremoti, cicloni, vulcani, incendi, alluvioni e avvisi tsunami provenienti da fonti pubbliche internazionali.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer><a class="brand" href="/"><span class="brand-mark">M</span><span>Meteo <b>AI</b></span></a><p>Il meteo reale, reso semplice dall'intelligenza artificiale.</p><div class="footer-links"><a href="/installa.html">Installa l’app</a><button data-legal="privacy">Privacy</button><button data-legal="cookies">Cookie</button><button data-legal="terms">Termini</button></div><small>Dati: Open-Meteo • Mappe: OpenStreetMap • Confini: Natural Earth • Località: GeoNames CC BY 4.0. Le previsioni possono variare.</small></footer>
+  <aside class="drawer" id="savedDrawer"><button class="drawer-close" data-close="savedDrawer">×</button><h3>Le tue località</h3><p>Accesso rapido ai luoghi che segui.</p><div id="savedList"></div></aside><div class="overlay" id="overlay"></div>
+  <dialog id="locationModal"><button class="modal-close" data-dialog-close>×</button><div class="modal-icon">⌖</div><h2>Cambia località</h2><p>Scegli il luogo di cui vuoi consultare tutti i dati meteo, vento e mare.</p><form id="locationForm"><label>Località<input id="locationInput" autocomplete="off" placeholder="Es. Messina, Roma, New York" required></label><div class="modal-suggestions" id="locationSuggestions"></div><button type="submit">Mostra questa località</button></form></dialog>
+  <dialog id="shareModal">
+    <button class="modal-close" data-dialog-close>×</button>
+    <div class="modal-icon">✦</div>
+    <h2>Condividi Card Meteo</h2>
+    <p>La tua scheda meteo personalizzata generata al volo.</p>
+    <div class="share-canvas-container">
+      <canvas id="shareCanvas" width="800" height="500"></canvas>
+    </div>
+    <div class="share-actions">
+      <button class="btn-share-native" id="btnShareNative">📱 Condividi sui Social</button>
+      <button class="btn-download-png" id="btnDownloadPng">⬇ Scarica Immagine (PNG)</button>
+    </div>
+  </dialog>
+
+  <dialog id="legalModal"><button class="modal-close" data-dialog-close>×</button><div id="legalContent"></div></dialog>
+  <div class="cookie-banner" id="cookieBanner"><div><b>Privacy essenziale</b><p>Nessuna pubblicità, profilazione o analytics. Preferenze e cache restano nel browser; i dati meteo arrivano dai provider descritti nell’informativa.</p></div><div><button data-legal="privacy">Leggi l’informativa</button><button id="dismissPrivacy">Ho capito</button></div></div>
+  <div class="toast" id="toast"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app-core.js"></script>
+  <script src="app.js"></script>
+  <script src="app-marine.js"></script>
+  <script src="app-assistants.js"></script>
+  <script src="pwa-install.js"></script>
+  <script src="app-features.js"></script>
+  <script src="app-legal.js"></script>
+  <script src="app-bootstrap.js"></script>
+</body>
+</html>

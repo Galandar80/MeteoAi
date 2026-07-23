@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Mondo Live di Meteo AI: terremoti, cicloni, vulcani, incendi, alluvioni e avvisi tsunami su una mappa mondiale aggiornata." />
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+  <meta name="theme-color" content="#082f28" />
+  <meta property="og:title" content="Mondo Live — Meteo AI" />
+  <meta property="og:description" content="Eventi naturali mondiali, fonti pubbliche e impatto sulla località selezionata." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://meteo-ai.vercel.app/world-live.html" />
+  <meta property="og:site_name" content="Meteo AI" />
+  <meta property="og:locale" content="it_IT" />
+  <meta property="og:image" content="https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b" />
+  <meta property="og:image:url" content="https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b" />
+  <meta property="og:image:secure_url" content="https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Meteo AI — Il meteo reale, reso semplice" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Mondo Live — Eventi naturali nel mondo | Meteo AI" />
+  <meta name="twitter:description" content="Terremoti, cicloni, vulcani, incendi, alluvioni e avvisi tsunami raccolti da fonti pubbliche internazionali." />
+  <meta name="twitter:image" content="https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b" />
+  <meta name="twitter:image:alt" content="Meteo AI — Il meteo reale, reso semplice" />
+  <link rel="canonical" href="https://meteo-ai.vercel.app/world-live.html" />
+  <link rel="alternate" hreflang="it" href="https://meteo-ai.vercel.app/world-live.html" />
+  <link rel="alternate" hreflang="x-default" href="https://meteo-ai.vercel.app/world-live.html" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Meteo AI" />
+  <title>Mondo Live — Eventi e rischi naturali | Meteo AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="world-live.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": "https://meteo-ai.vercel.app/world-live.html#page",
+    "url": "https://meteo-ai.vercel.app/world-live.html",
+    "name": "Mondo Live — Eventi naturali nel mondo",
+    "description": "Mappa mondiale di terremoti, cicloni, vulcani, incendi, alluvioni e avvisi tsunami provenienti da fonti pubbliche internazionali.",
+    "image": "https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b",
+    "inLanguage": "it-IT",
+    "isPartOf": {"@id": "https://meteo-ai.vercel.app/#website"},
+    "about": ["Terremoti", "Cicloni", "Vulcani", "Incendi", "Alluvioni", "Tsunami"]
+  }
+  </script>
+</head>
+<body class="world-page">
+  <header class="topbar world-topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">M</span><span>Meteo <b>AI</b></span></a>
+    <nav><a href="index.html">Meteo</a><a href="index.html#fourteenDays">14 giorni</a><a href="index.html#windSection">Vento</a><a href="index.html#marineSection">Mare</a><a class="active" href="world-live.html">Mondo Live</a><a href="installa.html">Installa</a></nav>
+    <div class="header-actions"><a class="back-weather" href="index.html">← Torna al meteo</a><button class="icon-btn" id="worldThemeBtn" aria-label="Cambia tema">☾</button></div>
+  </header>
+
+  <main class="world-main">
+    <section class="world-hero">
+      <div>
+        <div class="live-label"><i></i> MONITORAGGIO MONDIALE</div>
+        <h1>Il pianeta, <em>in tempo quasi reale.</em></h1>
+        <p>Eventi naturali osservati, livelli ufficiali e una lettura semplice del possibile impatto sulla località che stai seguendo.</p>
+      </div>
+      <div class="world-location-card">
+        <span>LOCALITÀ DI RIFERIMENTO</span>
+        <b id="worldLocationName">Messina, Italia</b>
+        <small>Gli eventi vengono ordinati anche in base alla distanza.</small>
+        <form id="worldLocationForm"><input id="worldLocationInput" autocomplete="off" placeholder="Cambia località…" aria-label="Cambia località di riferimento"><button>Cerca</button><div id="worldSuggestions"></div></form>
+      </div>
+    </section>
+
+    <section class="world-stats" aria-live="polite">
+      <article><span>EVENTI VISIBILI</span><b id="visibleCount">--</b><small>con i filtri attuali</small></article>
+      <article><span>ALTA CRITICITÀ</span><b id="criticalCount">--</b><small>eventi arancioni o rossi</small></article>
+      <article><span>PIÙ VICINO</span><b id="nearestEvent">--</b><small id="nearestDistance">alla località scelta</small></article>
+      <article><span>AGGIORNAMENTO</span><b id="worldUpdated">--:--</b><small id="sourceHealth">Fonti in caricamento</small></article>
+    </section>
+
+    <section class="world-controls" aria-label="Filtri degli eventi">
+      <div class="type-filters" id="typeFilters">
+        <button class="active" data-event-type="all"><i>◎</i>Tutti</button>
+        <button data-event-type="earthquake"><i>≋</i>Terremoti</button>
+        <button data-event-type="tsunami"><i>≈</i>Tsunami</button>
+        <button data-event-type="storm"><i>◉</i>Cicloni</button>
+        <button data-event-type="volcano"><i>▲</i>Vulcani</button>
+        <button data-event-type="wildfire"><i>♨</i>Incendi</button>
+        <button data-event-type="flood"><i>≋</i>Alluvioni</button>
+        <button data-event-type="other"><i>＋</i>Altri</button>
+      </div>
+      <div class="period-control"><label>Periodo<select id="periodSelect"><option value="day">24 ore</option><option value="week" selected>7 giorni</option><option value="month">30 giorni</option></select></label><button id="watchBtn">★ Sorveglianza <span id="watchCount">0</span></button><button id="nearMeBtn">⌖ Vicino alla località</button><button id="refreshWorldBtn">↻ Aggiorna</button></div>
+    </section>
+
+    <section class="watch-alerts hidden" id="watchAlerts">
+      <div class="watch-alerts-head"><div><span>RADAR PERSONALE</span><h2>Eventi nelle aree sorvegliate</h2></div><button id="openWatchAlerts">Gestisci località</button></div>
+      <div id="watchAlertList"></div>
+    </section>
+
+    <section class="world-workspace">
+      <div class="world-map-wrap">
+        <div id="worldMap" aria-label="Mappa mondiale degli eventi naturali"></div>
+        <div class="map-status" id="mapStatus"><i></i><span>Caricamento degli eventi reali…</span></div>
+        <div class="world-legend"><span><i class="low"></i>Bassa</span><span><i class="moderate"></i>Moderata</span><span><i class="high"></i>Alta</span><span><i class="extreme"></i>Estrema</span><small>Il colore indica la criticità dell’evento, non la probabilità.</small></div>
+      </div>
+      <aside class="event-stream">
+        <div class="stream-head"><div><span>EVENTI RILEVANTI</span><h2>Quadro mondiale</h2></div><select id="sortSelect" aria-label="Ordina eventi"><option value="relevance">Più rilevanti per te</option><option value="recent">Più recenti</option><option value="severity">Maggiore criticità</option><option value="distance">Più vicini</option></select></div>
+        <div class="source-notices" id="sourceNotices"></div>
+        <div class="event-list" id="eventList"><div class="event-loading"><i></i><b>Raccolgo gli eventi</b><p>Interrogo USGS, NASA EONET e i centri tsunami.</p></div></div>
+      </aside>
+    </section>
+
+    <section class="risk-explainer">
+      <div><span>TRASPARENZA METEO AI</span><h2>Probabilità, criticità e impatto non sono la stessa cosa.</h2><p>Meteo AI mostra una probabilità soltanto quando viene pubblicata dalla fonte. Per terremoti e vulcani non inventa percentuali di previsione: descrive l’evento osservato e calcola esclusivamente un indice orientativo d’impatto sulla località.</p></div>
+      <div class="risk-meanings">
+        <article><i>%</i><b>Probabilità ufficiale</b><p>Quanto è probabile uno scenario, solo se la fonte lo dichiara.</p></article>
+        <article><i>!</i><b>Criticità</b><p>Intensità o livello attribuito all’evento osservato.</p></article>
+        <article><i>AI</i><b>Impatto sulla località</b><p>Indice 0–100 basato su distanza, intensità, tipo e attualità.</p></article>
+      </div>
+    </section>
+
+    <section class="world-sources">
+      <div><span>FONTI E LIMITI</span><h2>Dati verificabili, spiegazioni semplici.</h2><p>I provider sono indipendenti da Meteo AI. Timeout, CORS, manutenzione o modifiche alle condizioni d’uso possono rendere una singola fonte temporaneamente indisponibile; le altre continuano a funzionare e il loro stato è mostrato nella pagina.</p></div>
+      <div class="source-grid">
+        <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php" target="_blank" rel="noopener"><b>USGS</b><span>Terremoti mondiali</span><small>Feed GeoJSON aggiornato frequentemente ↗</small></a>
+        <a href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noopener"><b>NASA EONET</b><span>Eventi naturali globali</span><small>Cicloni, vulcani, incendi e altro ↗</small></a>
+        <a href="https://www.tsunami.gov/" target="_blank" rel="noopener"><b>Tsunami.gov</b><span>Messaggi CAP ufficiali</span><small>Centri NOAA PTWC e NTWC ↗</small></a>
+        <a href="https://www.jma.go.jp/jma/indexe.html" target="_blank" rel="noopener"><b>JMA</b><span>Giappone e Pacifico nord-occidentale</span><small>Bollettini XML dell’agenzia giapponese ↗</small></a>
+        <a href="https://data.bmkg.go.id/gempabumi/" target="_blank" rel="noopener"><b>BMKG</b><span>Indonesia e mari circostanti</span><small>Dati aperti del sistema TEWS indonesiano ↗</small></a>
+      </div>
+      <p class="emergency-note">Mondo Live è informativo e non sostituisce protezione civile, autorità locali, ordini di evacuazione o bollettini ufficiali. In caso di emergenza segui esclusivamente le autorità competenti.</p>
+    </section>
+  </main>
+
+  <aside class="event-detail" id="eventDetail" aria-hidden="true">
+    <button class="detail-close" id="detailClose" aria-label="Chiudi scheda">×</button>
+    <div id="eventDetailContent"></div>
+  </aside>
+  <div class="detail-overlay" id="detailOverlay"></div>
+
+  <aside class="watch-drawer" id="watchDrawer" aria-hidden="true">
+    <button class="detail-close" id="watchClose" aria-label="Chiudi sorveglianza">×</button>
+    <div class="watch-intro"><span>RADAR PERSONALE</span><h2>Località sorvegliate</h2><p>Ricevi un avviso quando Mondo Live rileva un evento compatibile con le tue regole. Tutto resta su questo dispositivo.</p></div>
+    <div class="notification-box"><div><b id="notificationTitle">Notifiche del browser</b><p id="notificationStatus">Controllo disponibilità…</p></div><button id="enableNotifications">Attiva notifiche</button></div>
+    <form class="watch-form" id="watchForm">
+      <label>Località<input id="watchPlaceInput" autocomplete="off" placeholder="Es. Messina, Tokyo, Honolulu" required><div id="watchSuggestions"></div></label>
+      <div class="watch-form-grid"><label>Raggio<select id="watchRadius"><option value="100">100 km</option><option value="250" selected>250 km</option><option value="500">500 km</option><option value="1000">1.000 km</option><option value="3000">3.000 km</option></select></label><label>Criticità minima<select id="watchSeverity"><option value="low">Bassa</option><option value="moderate" selected>Moderata</option><option value="high">Alta</option><option value="extreme">Estrema</option></select></label></div>
+      <label>Tipo di evento<select id="watchType"><option value="all">Tutti gli eventi</option><option value="earthquake">Terremoti</option><option value="tsunami">Tsunami</option><option value="storm">Cicloni e tempeste</option><option value="volcano">Vulcani</option><option value="wildfire">Incendi</option><option value="flood">Alluvioni</option></select></label>
+      <div class="watch-actions"><button type="button" id="watchCurrentPlace">Usa località meteo</button><button type="button" id="watchGeolocation">⌖ Posizione dispositivo</button><button type="submit">Aggiungi sorveglianza</button></div>
+    </form>
+    <div class="watch-list-head"><span>REGOLE ATTIVE</span><b id="watchListCount">0 località</b></div>
+    <div class="watch-list" id="watchList"></div>
+    <p class="watch-limit"><b>Come funzionano davvero:</b> gli avvisi vengono controllati all’apertura e ogni dieci minuti mentre la pagina o la PWA è attiva. Le notifiche in background a sito completamente chiuso richiederebbero un servizio push esterno.</p>
+  </aside>
+  <div class="watch-overlay" id="watchOverlay"></div>
+
+  <footer><a class="brand" href="index.html"><span class="brand-mark">M</span><span>Meteo <b>AI</b></span></a><p>Il pianeta reale, spiegato con trasparenza.</p><p><a href="/installa.html">Installa gratuitamente Meteo AI</a></p><small>Dati: USGS • NASA EONET • NOAA Tsunami.gov • JMA • BMKG • Mappe: OpenStreetMap. Verifica sempre le fonti ufficiali.</small></footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="world-live.js"></script>
+  <script src="pwa-install.js"></script>
+</body>
+</html>
