@@ -150,3 +150,11 @@ body.dark .install-promo{background:linear-gradient(120deg,var(--surface),#17382
 .forecast-priority{margin-top:28px}
 @media(max-width:760px){.next-days-summary-grid{grid-template-columns:1fr}.next-day-mini{grid-template-columns:minmax(72px,.8fr) 38px minmax(90px,1.2fr) auto}}
 @media(max-width:430px){.next-day-mini{grid-template-columns:64px 34px 1fr auto;padding:10px 9px;gap:7px}.next-day-condition small{font-size:10px}.next-day-condition b{max-width:82px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+/* Impedisce ai pannelli off-canvas e alle griglie desktop di allargare la viewport mobile. */
+html,body{max-width:100%;overflow-x:hidden}
+@media(max-width:800px){
+  .confidence-panel,.wind-dashboard{grid-template-columns:minmax(0,1fr)}
+  .confidence-panel>*,.wind-dashboard>*,.ai-tools>*{min-width:0;max-width:100%}
+  .wind-hours,.wind-days{width:100%}
+}
