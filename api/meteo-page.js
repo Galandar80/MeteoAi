@@ -175,8 +175,7 @@ module.exports = async function handler(req, res) {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Meteo AI', item: `${SITE_ORIGIN}/` },
-          { '@type': 'ListItem', position: 2, name: place.c, item: `${SITE_ORIGIN}/meteo/${place.cc.toLowerCase()}` },
-          { '@type': 'ListItem', position: 3, name: place.n, item: canonical }
+          { '@type': 'ListItem', position: 2, name: place.n, item: canonical }
         ]
       }
     ]
@@ -236,7 +235,7 @@ module.exports = async function handler(req, res) {
     </div>
   </section>
   <main>
-    <div class="actions"><a class="primary" href="/?${escapeHtml(appQuery.toString())}">Apri tutti gli strumenti meteo per ${escapeHtml(place.n)}</a></div>
+    <div class="actions"><a class="primary" rel="nofollow" href="/?${escapeHtml(appQuery.toString())}">Apri tutti gli strumenti meteo per ${escapeHtml(place.n)}</a></div>
     <section class="panel">
       <h2>Previsioni meteo ${escapeHtml(place.n)}: prossimi 7 giorni</h2>
       <div class="table-wrap"><table>

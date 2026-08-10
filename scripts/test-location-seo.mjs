@@ -56,9 +56,11 @@ assert.match(found.headers['Content-Type'], /text\/html/);
 assert.match(found.body, /Meteo Messina oggi/);
 assert.match(found.body, /https:\/\/meteo-ai\.vercel\.app\/meteo\/it\/sicily\/messina-2524170/);
 assert.match(found.body, /application\/ld\+json/);
-assert.match(found.body, /property="og:image" content="https:\/\/meteo-ai\.vercel\.app\/social-preview\.png"/);
+assert.match(found.body, /property="og:image" content="https:\/\/meteo-ai\.vercel\.app\/social-preview\.jpg\?v=20260723b"/);
 assert.match(found.body, /name="twitter:card" content="summary_large_image"/);
-assert.match(found.body, /25 °C/);
+assert.match(found.body, /25°C/);
+assert.match(found.body, /class="primary" rel="nofollow"/);
+assert.doesNotMatch(found.body, /https:\/\/meteo-ai\.vercel\.app\/meteo\/it["#]/);
 assert.doesNotMatch(found.body, /\bundefined\b|\bNaN\b/);
 
 const missing = responseRecorder();
