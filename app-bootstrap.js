@@ -23,4 +23,10 @@
   if(!hasSharedLocation&&locationMode!=='manual'){
     window.setTimeout(()=>useDeviceLocation({silent:true}),300);
   }
+  document.addEventListener('meteo:languagechange',()=>{
+    if(lastData)render(lastData);
+    if(lastMarine)renderMarine(lastMarine);
+    renderSaved();
+    if(typeof drawShareCard==='function'&&$('#shareModal')?.open)drawShareCard();
+  });
 })();

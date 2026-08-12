@@ -80,7 +80,7 @@ function drawShareCard(){
   ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);
   ctx.fillStyle='rgba(201,242,93,.12)';ctx.beginPath();ctx.arc(w-60,60,180,0,Math.PI*2);ctx.fill();
   ctx.fillStyle='#c9f25d';ctx.font='800 24px Manrope, sans-serif';ctx.fillText('Meteo AI',40,50);
-  ctx.fillStyle='#ffffff';ctx.font='500 16px DM Sans, sans-serif';ctx.fillText(new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}),40,75);
+  ctx.fillStyle='#ffffff';ctx.font='500 16px DM Sans, sans-serif';ctx.fillText(new Date().toLocaleDateString(I18n.locale,{weekday:'long',day:'numeric',month:'long',year:'numeric'}),40,75);
   ctx.fillStyle='#ffffff';ctx.font='800 42px Manrope, sans-serif';ctx.fillText(lastPlace.name,40,140);
   if(lastPlace.country){ctx.fillStyle='#a2c4b9';ctx.font='600 20px DM Sans, sans-serif';ctx.fillText(lastPlace.country,40,170);}
   const curTemp=Math.round(lastData.current.temperature_2m),cCode=lastData.current.weather_code,desc=weather(cCode)[0],sym=weather(cCode)[1];

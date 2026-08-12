@@ -18,7 +18,7 @@
     buttons().forEach(button => {
       button.classList.toggle('hidden', installed || (!installPrompt && !ios && button.id === 'pwaInstallBtn'));
       button.disabled = installed;
-      if (installed) button.textContent = '✓ Meteo AI è installata';
+      if (installed) button.textContent = `✓ ${I18n.t('installed')}`;
     });
     promos().forEach(promo => promo.classList.toggle('hidden', installed));
     document.documentElement.classList.toggle('pwa-standalone', installed);
@@ -26,14 +26,14 @@
 
   async function requestInstall() {
     if (standalone()) {
-      notify('Meteo AI è già installata su questo dispositivo.');
+      notify(I18n.t('alreadyInstalled'));
       return;
     }
     if (installPrompt) {
       installPrompt.prompt();
       const result = await installPrompt.userChoice;
       installPrompt = null;
-      if (result.outcome === 'accepted') notify('Installazione avviata. Grazie!');
+      if (result.outcome === 'accepted') notify(I18n.t('installStarted'));
       refresh();
       return;
     }
@@ -50,7 +50,7 @@
   window.addEventListener('appinstalled', () => {
     installPrompt = null;
     try { localStorage.setItem('meteo-ai-installed', new Date().toISOString()); } catch (_) {}
-    notify('Meteo AI è stata installata correttamente.');
+    notify(I18n.t('installComplete'));
     refresh();
   });
   document.addEventListener('click', event => {
@@ -61,5 +61,6 @@
     }
   });
   window.addEventListener('DOMContentLoaded', refresh);
+  document.addEventListener('meteo:languagechange', refresh);
   window.meteoInstallPWA = requestInstall;
 })();

@@ -8,6 +8,42 @@
   ],
   "rewrites": [
     {
+      "source": "/en",
+      "destination": "/api/localized-page?lang=en&page=home"
+    },
+    {
+      "source": "/fr",
+      "destination": "/api/localized-page?lang=fr&page=home"
+    },
+    {
+      "source": "/pt-br",
+      "destination": "/api/localized-page?lang=pt-BR&page=home"
+    },
+    {
+      "source": "/en/world-live",
+      "destination": "/api/localized-page?lang=en&page=world"
+    },
+    {
+      "source": "/fr/world-live",
+      "destination": "/api/localized-page?lang=fr&page=world"
+    },
+    {
+      "source": "/pt-br/world-live",
+      "destination": "/api/localized-page?lang=pt-BR&page=world"
+    },
+    {
+      "source": "/en/install",
+      "destination": "/api/localized-page?lang=en&page=install"
+    },
+    {
+      "source": "/fr/install",
+      "destination": "/api/localized-page?lang=fr&page=install"
+    },
+    {
+      "source": "/pt-br/install",
+      "destination": "/api/localized-page?lang=pt-BR&page=install"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/seo-sitemap?kind=index"
     },
