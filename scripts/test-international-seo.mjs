@@ -47,7 +47,7 @@ assert.match(response.headers['X-Robots-Tag'],/index,follow/);
 const config=JSON.parse(fs.readFileSync(new URL('../vercel.json',import.meta.url),'utf8'));
 for(const source of ['/en','/fr','/pt-br','/en/world-live','/fr/world-live','/pt-br/world-live','/en/install','/fr/install','/pt-br/install'])assert.ok(config.rewrites.some(rule=>rule.source===source),`missing rewrite ${source}`);
 assert.equal(config.rewrites.filter(rule=>rule.source.startsWith('/meteo/')).length,1,'location routes must not be multiplied by locale');
-assert.deepEqual(config.functions?.['api/localized-page.js']?.includeFiles?.sort(),['i18n.js','index.html','installa.html','world-live.html'],'localized function must bundle its runtime templates');
+assert.equal(config.functions?.['api/localized-page.js']?.includeFiles,'{index.html,world-live.html,installa.html,i18n.js}','localized function must bundle its runtime templates with a Vercel-compatible glob');
 
 const sitemap=fs.readFileSync(new URL('../sitemaps/static.xml',import.meta.url),'utf8');
 assert.match(sitemap,/xmlns:xhtml=/);
