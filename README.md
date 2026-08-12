@@ -10,7 +10,7 @@ python3 -m http.server 8080
 
 ## Pagine SEO delle località
 
-Le pagine sotto `/meteo/{nazione}/{regione}/{localita-id}` vengono generate su richiesta dalla funzione Vercel `api/meteo-page.js`. Il catalogo e le sitemap derivano dal dump ufficiale GeoNames `cities15000`, che include circa 25.000 città con più di 15.000 abitanti o capoluoghi.
+Le pagine sotto `/meteo/{nazione}/{regione}/{localita-id}` vengono generate su richiesta dalla funzione Vercel `api/meteo-page.js`. Il catalogo deriva dal dump ufficiale GeoNames `cities15000` e resta interamente ricercabile; la sitemap delle località contiene invece un piccolo seed e gli ID attivati da una selezione manuale o dal GPS.
 
 Per rigenerare catalogo e sitemap:
 
@@ -54,7 +54,7 @@ L’interfaccia pubblicata è attualmente solo in italiano. Le precedenti traduz
 
 ## Architettura leggera
 
-Questa versione non usa API generative, database, account, pagamenti, pubblicità o analytics. L'analisi intelligente è deterministica e viene eseguita in JavaScript nel browser usando i dati meteo ricevuti.
+Questa versione non usa API generative, account, pagamenti, pubblicità o analytics. L'analisi intelligente è deterministica e viene eseguita in JavaScript nel browser usando i dati meteo ricevuti. Upstash Redis conserva esclusivamente gli ID delle località SEO attive.
 
 Il codice condiviso di rete, stato e formattazione è raccolto in `app-core.js`; l’interfaccia principale resta in `app.js`, mentre mare, assistenti, funzioni aggiuntive e testi legali sono separati rispettivamente in `app-marine.js`, `app-assistants.js`, `app-features.js` e `app-legal.js`. `app-bootstrap.js` avvia l’app soltanto dopo il caricamento di tutti i moduli.
 
@@ -64,7 +64,9 @@ Il dominio pubblico e i file tecnici per i motori di ricerca sono già configura
 
 Le pagine in `/meteo/paese/regione/localita-id` sono renderizzate sul server con titolo, descrizione, URL canonico, dati strutturati e previsioni specifiche. Il catalogo comprende le città GeoNames con almeno 15.000 abitanti e le capitali: non è quindi necessario inserire manualmente ogni località in Google o Bing.
 
-Il file `sitemap.xml` è un indice che collega la sitemap statica e sette sitemap di località, per un totale di oltre 34.000 URL. Le località sono suddivise nei file `data/localities-*.json` per restare compatibili con i limiti di pubblicazione e vengono attribuite a GeoNames secondo licenza CC BY 4.0.
+Il file `sitemap.xml` collega la sitemap statica e `/sitemaps/localita-attive.xml`. Quest'ultima include un seed di città principali e le località realmente impostate tramite ricerca/selezione manuale o GPS. Autocomplete, crawler e semplici visite alle pagine meteo non attivano ID. Le località restano suddivise nei file `data/localities-*.json` e attribuite a GeoNames secondo licenza CC BY 4.0.
+
+La persistenza usa `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`, oppure i nomi generati dal Marketplace `UPSTASH_REDIS_REST_KV_REST_API_URL`/`UPSTASH_REDIS_REST_KV_REST_API_TOKEN`. Se lo storage è temporaneamente indisponibile o limitato, app e pagine meteo continuano a funzionare e la sitemap mantiene il seed.
 
 Per rigenerare catalogo e sitemap partendo dai dump ufficiali `cities15000.txt`, `admin1CodesASCII.txt` e `countryInfo.txt`:
 

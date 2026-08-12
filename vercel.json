@@ -8,6 +8,14 @@
   ],
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/seo-sitemap?kind=index"
+    },
+    {
+      "source": "/sitemaps/localita-attive.xml",
+      "destination": "/api/seo-sitemap?kind=locations"
+    },
+    {
       "source": "/meteo/:country/:region/:place",
       "destination": "/api/meteo-page?country=:country&region=:region&place=:place"
     }

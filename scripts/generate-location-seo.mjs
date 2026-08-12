@@ -126,37 +126,18 @@ const staticSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 `;
 fs.writeFileSync(path.join(sitemapDirectory, 'static.xml'), staticSitemap, 'utf8');
 
-const chunkSize = 5000;
-const sitemapFiles = [];
-for (let offset = 0; offset < localities.length; offset += chunkSize) {
-  const part = Math.floor(offset / chunkSize) + 1;
-  const filename = `localita-${part}.xml`;
-  const urls = localities.slice(offset, offset + chunkSize)
-    .map(place => `  <url><loc>${xmlEscape(origin + place.path)}</loc><changefreq>daily</changefreq><priority>${place.p >= 100000 ? '0.7' : '0.6'}</priority></url>`)
-    .join('\n');
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
-</urlset>
-`;
-  fs.writeFileSync(path.join(sitemapDirectory, filename), xml, 'utf8');
-  sitemapFiles.push(filename);
+for (const filename of fs.readdirSync(sitemapDirectory)) {
+  if (/^localita-\d+\.xml$/.test(filename)) fs.unlinkSync(path.join(sitemapDirectory, filename));
 }
 
-const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap><loc>${origin}/sitemaps/static.xml</loc><lastmod>${lastModified}</lastmod></sitemap>
-${sitemapFiles.map(filename => `  <sitemap><loc>${origin}/sitemaps/${filename}</loc><lastmod>${lastModified}</lastmod></sitemap>`).join('\n')}
-</sitemapindex>
-`;
-fs.writeFileSync(path.join(root, 'sitemap.xml'), sitemapIndex, 'utf8');
+console.log('Indice sitemap dinamico disponibile su /sitemap.xml; nessun file statico generato.');
 
 console.log(JSON.stringify({
   localities: localities.length,
-  sitemapFiles: sitemapFiles.length,
+  sitemapFiles: 1,
   first: localities[0],
   output: {
     catalog: catalogFiles.map(filename => path.join(dataDirectory, filename)),
-    sitemap: path.join(root, 'sitemap.xml')
+    sitemap: '/sitemap.xml (dinamica)'
   }
 }, null, 2));
