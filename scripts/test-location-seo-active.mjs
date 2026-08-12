@@ -64,15 +64,12 @@ assert.match(sitemap.body, /messina-2524170/);
 assert.match(sitemap.body, /barlad-684802/,'activated foreign long-tail localities become discoverable');
 assert.doesNotMatch(sitemap.body, /inesistente/);
 assert.equal((sitemap.body.match(/rome-3169070/g) || []).length, 1);
-
-const discoverySitemap=fs.readFileSync(new URL('../sitemaps/localita-principali.xml',import.meta.url),'utf8');
-assert.match(discoverySitemap,/madonna-di-campagna-11288652/,'all Italian catalog localities remain discoverable');
-const discoveryUrlCount=(discoverySitemap.match(/<url>/g)||[]).length;
-assert.ok(discoveryUrlCount>6000&&discoveryUrlCount<10000,`balanced discovery sitemap expected, received ${discoveryUrlCount}`);
+const activeUrlCount=(sitemap.body.match(/<url>/g)||[]).length;
+assert.ok(activeUrlCount>=100&&activeUrlCount<200,`activation-first sitemap expected, received ${activeUrlCount}`);
 
 const sitemapIndex=fs.readFileSync(new URL('../sitemap.xml',import.meta.url),'utf8');
-assert.match(sitemapIndex,/sitemaps\/localita-principali\.xml/);
 assert.match(sitemapIndex,/sitemaps\/localita-attive\.xml/);
+assert.doesNotMatch(sitemapIndex,/localita-principali/);
 
 const appSource = fs.readFileSync(new URL('../app.js', import.meta.url), 'utf8');
 assert.match(appSource, /selectWeatherPlace\(place\).*activateLocationSeo\(\{source:'manual'/s);

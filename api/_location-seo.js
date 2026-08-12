@@ -2,12 +2,12 @@ const catalog = Array.from({ length: 12 }, (_, index) => require(`../data/locali
 
 const byId = new Map(catalog.map(place => [String(place.id), place]));
 const ACTIVE_KEY = 'meteo-ai:seo-active-localities';
-const SEED_IDS = Object.freeze([
-  3169070, 3173435, 3172394, 3165524, 2523920,
-  3176959, 3181928, 3176219, 3164603, 2524170
-]);
-const DISCOVERY_MIN_POPULATION = 100000;
-const discoveryPlaces = catalog.filter(place => place.cc === 'IT' || place.p >= DISCOVERY_MIN_POPULATION);
+const GLOBAL_SEED_COUNT = 70;
+const ITALY_SEED_COUNT = 30;
+const byPopulation = (left, right) => right.p - left.p || left.n.localeCompare(right.n);
+const globalSeed = [...catalog].sort(byPopulation).slice(0, GLOBAL_SEED_COUNT);
+const italianSeed = catalog.filter(place => place.cc === 'IT').sort(byPopulation).slice(0, ITALY_SEED_COUNT);
+const SEED_IDS = Object.freeze([...new Set([...globalSeed, ...italianSeed].map(place => place.id))]);
 
 function publicPlace(place) {
   return {
@@ -90,4 +90,4 @@ async function activePlaces() {
   return [...uniqueIds].map(id => byId.get(id)).filter(Boolean);
 }
 
-module.exports = { ACTIVE_KEY, SEED_IDS, DISCOVERY_MIN_POPULATION, discoveryPlaces, byId, publicPlace, nearestPlace, activate, activePlaces, redisCommand };
+module.exports = { ACTIVE_KEY, SEED_IDS, GLOBAL_SEED_COUNT, ITALY_SEED_COUNT, byId, publicPlace, nearestPlace, activate, activePlaces, redisCommand };
