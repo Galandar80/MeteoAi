@@ -34,7 +34,8 @@ let unit='c',selectedSpecialProfile='children',professionalData=null,professiona
 let marineAutoPending=false,marineAutoFailed=false;
 
 function weather(code){
-  return codes[code]||['Variabile','🌤'];
+  const value=codes[code]||['Variabile','🌤'];
+  return [I18n.translate(value[0]),value[1]];
 }
 
 function iconHTML(code,size='normal'){

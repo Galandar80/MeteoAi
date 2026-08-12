@@ -97,6 +97,7 @@ body.dark .alerts-head span,body.dark .profiles-intro>span,body.dark .probabilit
 
 /* Reliability and transparency improvements */
 .language-status{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:20px;padding:9px 12px;color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap}
+.language-picker{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:20px;padding:5px 8px;color:var(--muted);background:var(--surface);font-size:12px;font-weight:700;white-space:nowrap}.language-picker select{max-width:116px;border:0;outline:0;background:transparent;color:inherit;font:inherit;cursor:pointer}.language-picker option{background:var(--surface);color:var(--ink)}
 .port-form .route-ack{grid-column:1/-1;display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border:1px solid #e4b857;border-radius:10px;background:#fff8df;color:#624900;font-size:11px;line-height:1.45}
 .port-form .route-ack input{width:auto;min-width:auto;margin-top:2px}
 .navigation-safety{display:flex;gap:14px;align-items:flex-start;margin:0 0 13px;padding:14px 16px;border:1px solid #df9b91;border-radius:13px;background:#fff1ef}
@@ -110,7 +111,7 @@ body.dark .alerts-head span,body.dark .profiles-intro>span,body.dark .probabilit
 body.dark .port-form .route-ack,body.dark .navigation-safety,body.dark .legal-document .legal-missing{background:#332d19;color:#f3dc9b;border-color:#816c35}
 body.dark .navigation-safety b{color:#ffb6aa}
 body.dark .navigation-safety p{color:#e6c2bc}
-@media(max-width:900px){.language-status{display:none}}
+@media(max-width:900px){.language-status{display:none}.language-picker{padding:5px}.language-picker select{width:24px;max-width:24px;color:transparent}.language-picker select option{color:var(--ink)}}
 
 .history-card.history-today{background:linear-gradient(145deg,#0b5d47,#0c7a5a);color:#fff}.history-card.history-today small,.history-card.history-today span{color:#d1eee4}
 

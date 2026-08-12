@@ -1,0 +1,5 @@
+{
+  "id":"/","name":"Meteo AI — La météo réelle","short_name":"Meteo AI","description":"Météo mondiale, mer, vent, prévisions à 14 jours et événements naturels avec Monde en direct.","start_url":"/","scope":"/","lang":"fr-FR","dir":"ltr","display":"standalone","orientation":"any","background_color":"#f5f7f4","theme_color":"#0d7b57","categories":["weather","utilities","lifestyle"],
+  "icons":[{"src":"/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},{"src":"/icon-maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"},{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}],
+  "shortcuts":[{"name":"Monde en direct","short_name":"En direct","description":"Ouvrir la carte mondiale des événements naturels","url":"/world-live.html","icons":[{"src":"/icon-192.png","sizes":"192x192","type":"image/png"}]},{"name":"Installer Meteo AI","short_name":"Installer","description":"Instructions pour installer Meteo AI","url":"/installa.html","icons":[{"src":"/icon-192.png","sizes":"192x192","type":"image/png"}]}]
+}

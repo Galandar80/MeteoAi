@@ -1,5 +1,5 @@
 function initMap(){map=L.map('map',{zoomControl:true}).setView([lastPlace.latitude,lastPlace.longitude],10);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);marker=L.marker([lastPlace.latitude,lastPlace.longitude]).addTo(map)}
-async function searchPlaces(q){const r=await fetchResilient(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=it&format=json`);return (await r.json()).results||[]}
+async function searchPlaces(q){const r=await fetchResilient(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=${I18n.queryLanguage()}&format=json`);return (await r.json()).results||[]}
 function placeLabel(place){return `${place.name}${place.admin1&&place.admin1!==place.name?', '+place.admin1:''}${place.country?', '+place.country:''}`}
 function locationSlug(value){return String(value||'area').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'area'}
 function locationSeoPath(place){const id=Number(place?.id);if(!Number.isFinite(id)||!place?.country_code)return'';return `/meteo/${String(place.country_code).toLowerCase()}/${locationSlug(place.admin1)}/${locationSlug(place.name)}-${id}`}
