@@ -55,15 +55,22 @@ function redisConfig() {
 async function redisCommand(command) {
   const config = redisConfig();
   if (!config) throw new Error('SEO storage non configurato');
-  const response = await fetch(config.url, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${config.token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(command)
-  });
-  if (!response.ok) throw new Error(`SEO storage ${response.status}`);
-  const payload = await response.json();
-  if (payload.error) throw new Error(payload.error);
-  return payload.result;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2500);
+  try {
+    const response = await fetch(config.url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${config.token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(command),
+      signal: controller.signal
+    });
+    if (!response.ok) throw new Error(`SEO storage ${response.status}`);
+    const payload = await response.json();
+    if (payload.error) throw new Error(payload.error);
+    return payload.result;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function activate(place) {
@@ -79,15 +86,8 @@ async function activePlaces() {
   } catch (_) {
     // Fail-open: il seed resta disponibile anche se il piano gratuito e' temporaneamente limitato.
   }
-  // Mantiene una base editoriale abbastanza ampia per la ricerca organica senza
-  // riproporre a Google l'intero catalogo di 34 mila localita'. Le selezioni reali
-  // degli utenti aggiungono progressivamente anche le localita' long-tail estere.
-  const uniqueIds = new Set([
-    ...discoveryPlaces.map(place => String(place.id)),
-    ...SEED_IDS.map(String),
-    ...ids.map(String)
-  ]);
+  const uniqueIds = new Set([...SEED_IDS.map(String), ...ids.map(String)]);
   return [...uniqueIds].map(id => byId.get(id)).filter(Boolean);
 }
 
-module.exports = { ACTIVE_KEY, SEED_IDS, DISCOVERY_MIN_POPULATION, byId, publicPlace, nearestPlace, activate, activePlaces, redisCommand };
+module.exports = { ACTIVE_KEY, SEED_IDS, DISCOVERY_MIN_POPULATION, discoveryPlaces, byId, publicPlace, nearestPlace, activate, activePlaces, redisCommand };

@@ -49,10 +49,6 @@
       "destination": "/api/localized-page?lang=pt-BR&page=install"
     },
     {
-      "source": "/sitemap.xml",
-      "destination": "/api/seo-sitemap?kind=index"
-    },
-    {
       "source": "/sitemaps/localita-attive.xml",
       "destination": "/api/seo-sitemap?kind=locations"
     },
