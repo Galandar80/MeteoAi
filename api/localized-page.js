@@ -3,6 +3,7 @@ const path=require('node:path');
 const vm=require('node:vm');
 
 const ORIGIN=process.env.SITE_ORIGIN||'https://meteo-ai.vercel.app';
+const PROJECT_ROOT=path.join(__dirname,'..');
 const LOCALES={en:'en-GB',fr:'fr-FR','pt-BR':'pt-BR'};
 const PREFIX={en:'en',fr:'fr','pt-BR':'pt-br'};
 const FILES={home:'index.html',world:'world-live.html',install:'installa.html'};
@@ -33,7 +34,7 @@ let sourceCache;
 const translators=new Map();
 function translator(language){
   if(translators.has(language))return translators.get(language);
-  sourceCache||=fs.readFileSync(path.join(process.cwd(),'i18n.js'),'utf8');
+  sourceCache||=fs.readFileSync(path.join(PROJECT_ROOT,'i18n.js'),'utf8');
   const documentElement={lang:'it',closest:()=>null,childNodes:[],hasAttribute:()=>false};
   const document={documentElement,body:{},querySelector:()=>null,addEventListener:()=>{},dispatchEvent:()=>{}};
   const window={__METEO_LOCALE__:language};
@@ -79,7 +80,7 @@ function render(page,language){
   const locale=LOCALES[language];
   const canonical=`${ORIGIN}${ROUTES[page][language]}`;
   const meta=META[language][page];
-  let html=fs.readFileSync(path.join(process.cwd(),file),'utf8');
+  let html=fs.readFileSync(path.join(PROJECT_ROOT,file),'utf8');
   html=translateMarkup(html,language);
   html=localizeLinks(html,language);
   html=html.replace(/<html\s+lang="[^"]+">/i,`<html lang="${locale}">`);

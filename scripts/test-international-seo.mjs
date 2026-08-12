@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {createRequire} from 'node:module';
 
 const require=createRequire(import.meta.url);
@@ -25,6 +27,16 @@ for(const test of cases){
   assert.doesNotMatch(html,/@@METEO_BLOCK_/);
 }
 
+const originalDirectory=process.cwd();
+const unrelatedDirectory=fs.mkdtempSync(path.join(os.tmpdir(),'meteo-seo-cwd-'));
+try{
+  process.chdir(unrelatedDirectory);
+  assert.match(handler.render('home','en'),/<html lang="en-GB"/,'rendering must not depend on the function working directory');
+}finally{
+  process.chdir(originalDirectory);
+  fs.rmSync(unrelatedDirectory,{recursive:true,force:true});
+}
+
 function responseRecorder(){return{statusCode:200,headers:{},body:'',setHeader(name,value){this.headers[name]=value},end(body=''){this.body=body}}}
 const response=responseRecorder();
 handler({query:{page:'home',lang:'fr'}},response);
@@ -35,6 +47,7 @@ assert.match(response.headers['X-Robots-Tag'],/index,follow/);
 const config=JSON.parse(fs.readFileSync(new URL('../vercel.json',import.meta.url),'utf8'));
 for(const source of ['/en','/fr','/pt-br','/en/world-live','/fr/world-live','/pt-br/world-live','/en/install','/fr/install','/pt-br/install'])assert.ok(config.rewrites.some(rule=>rule.source===source),`missing rewrite ${source}`);
 assert.equal(config.rewrites.filter(rule=>rule.source.startsWith('/meteo/')).length,1,'location routes must not be multiplied by locale');
+assert.deepEqual(config.functions?.['api/localized-page.js']?.includeFiles?.sort(),['i18n.js','index.html','installa.html','world-live.html'],'localized function must bundle its runtime templates');
 
 const sitemap=fs.readFileSync(new URL('../sitemaps/static.xml',import.meta.url),'utf8');
 assert.match(sitemap,/xmlns:xhtml=/);

@@ -1,4 +1,14 @@
 {
+  "functions": {
+    "api/localized-page.js": {
+      "includeFiles": [
+        "index.html",
+        "world-live.html",
+        "installa.html",
+        "i18n.js"
+      ]
+    }
+  },
   "redirects": [
     {
       "source": "/meteo/:country",

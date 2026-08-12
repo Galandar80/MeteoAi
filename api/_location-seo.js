@@ -6,6 +6,8 @@ const SEED_IDS = Object.freeze([
   3169070, 3173435, 3172394, 3165524, 2523920,
   3176959, 3181928, 3176219, 3164603, 2524170
 ]);
+const DISCOVERY_MIN_POPULATION = 100000;
+const discoveryPlaces = catalog.filter(place => place.cc === 'IT' || place.p >= DISCOVERY_MIN_POPULATION);
 
 function publicPlace(place) {
   return {
@@ -77,8 +79,15 @@ async function activePlaces() {
   } catch (_) {
     // Fail-open: il seed resta disponibile anche se il piano gratuito e' temporaneamente limitato.
   }
-  const uniqueIds = new Set([...SEED_IDS.map(String), ...ids.map(String)]);
+  // Mantiene una base editoriale abbastanza ampia per la ricerca organica senza
+  // riproporre a Google l'intero catalogo di 34 mila localita'. Le selezioni reali
+  // degli utenti aggiungono progressivamente anche le localita' long-tail estere.
+  const uniqueIds = new Set([
+    ...discoveryPlaces.map(place => String(place.id)),
+    ...SEED_IDS.map(String),
+    ...ids.map(String)
+  ]);
   return [...uniqueIds].map(id => byId.get(id)).filter(Boolean);
 }
 
-module.exports = { ACTIVE_KEY, SEED_IDS, byId, publicPlace, nearestPlace, activate, activePlaces, redisCommand };
+module.exports = { ACTIVE_KEY, SEED_IDS, DISCOVERY_MIN_POPULATION, byId, publicPlace, nearestPlace, activate, activePlaces, redisCommand };
