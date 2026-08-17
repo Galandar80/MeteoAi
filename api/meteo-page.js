@@ -15,6 +15,7 @@ const localities = [
 
 const SITE_ORIGIN = process.env.SITE_ORIGIN || 'https://meteo-ai.vercel.app';
 const byId = new Map(localities.map(place => [String(place.id), place]));
+const { activePlaces } = require('./_location-seo.js');
 
 const escapeHtml = value => String(value ?? '')
   .replaceAll('&', '&amp;')
@@ -56,12 +57,26 @@ const distanceKm = (left, right) => {
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
-function nearbyPlaces(place) {
-  return localities
+const slug = value => String(value || 'area')
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-|-$/g, '');
+
+function nearbyPlaces(place, candidates) {
+  return candidates
     .filter(candidate => candidate.id !== place.id && candidate.cc === place.cc)
     .map(candidate => ({ ...candidate, distance: distanceKm(place, candidate) }))
     .sort((left, right) => left.distance - right.distance)
     .slice(0, 6);
+}
+
+function regionPlaces(place, candidates) {
+  return candidates
+    .filter(candidate => candidate.id !== place.id && candidate.cc === place.cc && candidate.ad === place.ad)
+    .sort((left, right) => right.p - left.p || left.n.localeCompare(right.n))
+    .slice(0, 8);
 }
 
 async function loadForecast(place) {
@@ -106,22 +121,23 @@ module.exports = async function handler(req, res) {
     return res.end();
   }
 
-  let forecast = null;
-  try {
-    forecast = await loadForecast(place);
-  } catch (_) {
-    forecast = null;
-  }
+  const [forecast, active] = await Promise.all([
+    loadForecast(place).catch(() => null),
+    activePlaces().catch(() => [])
+  ]);
 
   const canonical = `${SITE_ORIGIN}${place.path}`;
   const areaLabel = [place.ad, place.c].filter(Boolean).join(', ');
-  const title = `Meteo ${place.n} oggi e previsioni 7 giorni | Meteo AI`;
-  const description = `Meteo ${place.n}: temperatura di oggi, pioggia, vento e previsioni per i prossimi 7 giorni. Dati aggiornati per ${areaLabel}.`;
+  const title = `Meteo ${place.n}: oggi, domani e 7 giorni | Meteo AI`;
+  const description = `Meteo ${place.n} oggi e domani: temperature, pioggia, vento e previsioni per questa settimana. Dati aggiornati per ${areaLabel}.`;
   const current = forecast?.current;
   const daily = forecast?.daily;
   const currentCode = current?.weather_code;
   const currentLabel = weatherLabels[currentCode] || 'condizioni variabili';
-  const nearby = nearbyPlaces(place);
+  const nearby = nearbyPlaces(place, active);
+  const inRegion = regionPlaces(place, active);
+  const countryAnchor = `/localita#paese-${slug(place.cc)}`;
+  const regionAnchor = `/localita#regione-${slug(place.cc)}-${slug(place.ad)}`;
   const appQuery = new URLSearchParams({
     localita: place.n,
     lat: place.lat,
@@ -175,7 +191,10 @@ module.exports = async function handler(req, res) {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Meteo AI', item: `${SITE_ORIGIN}/` },
-          { '@type': 'ListItem', position: 2, name: place.n, item: canonical }
+          { '@type': 'ListItem', position: 2, name: 'Località meteo', item: `${SITE_ORIGIN}/localita` },
+          { '@type': 'ListItem', position: 3, name: place.c, item: `${SITE_ORIGIN}${countryAnchor}` },
+          { '@type': 'ListItem', position: 4, name: place.ad || place.c, item: `${SITE_ORIGIN}${regionAnchor}` },
+          { '@type': 'ListItem', position: 5, name: place.n, item: canonical }
         ]
       }
     ]
@@ -216,18 +235,19 @@ module.exports = async function handler(req, res) {
   <title>${escapeHtml(title)}</title>
   <script type="application/ld+json">${jsonForHtml(structuredData)}</script>
   <style>
-    :root{--bg:#f4f7f4;--surface:#fff;--ink:#13231e;--muted:#63716c;--green:#0d7b57;--lime:#c9f25d;--line:#dfe6e1;--navy:#102d26}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.top{display:flex;align-items:center;justify-content:space-between;padding:18px max(4vw,22px);background:#fff;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-weight:800;text-decoration:none}.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--green);color:#fff}.top nav{display:flex;gap:18px}.top nav a{color:var(--muted);font-size:14px;text-decoration:none}.hero{padding:70px 22px 46px;text-align:center;background:radial-gradient(circle at 82% 0,rgba(201,242,93,.28),transparent 24%)}.eyebrow{color:var(--green);font-size:11px;font-weight:800;letter-spacing:1.4px}.hero h1{max-width:900px;margin:14px auto 12px;font-size:clamp(38px,7vw,70px);line-height:1.02;letter-spacing:-2px}.hero p{max-width:720px;margin:0 auto;color:var(--muted);font-size:18px;line-height:1.6}.current{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;max-width:920px;margin:30px auto 0;padding:23px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 18px 50px rgba(20,45,37,.09);text-align:left}.current-icon{font-size:48px}.current strong{display:block;font-size:28px}.current span{color:var(--muted)}.current-temp{font-size:48px!important;color:var(--green)}main{max-width:1080px;margin:auto;padding:18px 22px 70px}.actions{display:flex;justify-content:center;margin:20px 0 38px}.primary{display:inline-block;border-radius:12px;padding:14px 20px;background:var(--green);color:#fff;text-decoration:none;font-weight:800}.panel{margin-top:18px;padding:26px;border:1px solid var(--line);border-radius:20px;background:#fff}.panel h2{margin:0 0 16px;font-size:26px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{font-size:13px}td{color:var(--muted)}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.fact{padding:16px;border-radius:13px;background:var(--bg)}.fact small,.fact strong{display:block}.fact small{color:var(--muted);margin-bottom:5px}.nearby{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.nearby a{display:block;padding:15px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none}.nearby small{display:block;color:var(--muted);margin-top:4px}.copy{color:var(--muted);line-height:1.7}.copy strong{color:var(--ink)}footer{padding:35px 20px;background:var(--navy);color:#b8c9c3;text-align:center}footer a{color:var(--lime)}@media(max-width:700px){.top nav{display:none}.current{grid-template-columns:auto 1fr}.current-temp{grid-column:1/-1}.facts,.nearby{grid-template-columns:1fr 1fr}.hero{padding-top:50px}}@media(max-width:460px){.facts,.nearby{grid-template-columns:1fr}}
+    :root{--bg:#f4f7f4;--surface:#fff;--ink:#13231e;--muted:#63716c;--green:#0d7b57;--lime:#c9f25d;--line:#dfe6e1;--navy:#102d26}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.top{display:flex;align-items:center;justify-content:space-between;padding:18px max(4vw,22px);background:#fff;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-weight:800;text-decoration:none}.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--green);color:#fff}.top nav{display:flex;gap:18px}.top nav a{color:var(--muted);font-size:14px;text-decoration:none}.breadcrumbs{max-width:1080px;margin:auto;padding:15px 22px 0;color:var(--muted);font-size:13px}.breadcrumbs a{color:var(--green);text-decoration:none}.hero{padding:55px 22px 46px;text-align:center;background:radial-gradient(circle at 82% 0,rgba(201,242,93,.28),transparent 24%)}.eyebrow{color:var(--green);font-size:11px;font-weight:800;letter-spacing:1.4px}.hero h1{max-width:980px;margin:14px auto 12px;font-size:clamp(36px,6vw,66px);line-height:1.04;letter-spacing:-2px}.hero p{max-width:720px;margin:0 auto;color:var(--muted);font-size:18px;line-height:1.6}.current{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;max-width:920px;margin:30px auto 0;padding:23px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 18px 50px rgba(20,45,37,.09);text-align:left}.current-icon{font-size:48px}.current strong{display:block;font-size:28px}.current span{color:var(--muted)}.current-temp{font-size:48px!important;color:var(--green)}main{max-width:1080px;margin:auto;padding:18px 22px 70px}.actions{display:flex;justify-content:center;margin:20px 0 38px}.primary{display:inline-block;border-radius:12px;padding:14px 20px;background:var(--green);color:#fff;text-decoration:none;font-weight:800}.panel{margin-top:18px;padding:26px;border:1px solid var(--line);border-radius:20px;background:#fff}.panel h2{margin:0 0 16px;font-size:26px}.panel-lead{margin:-8px 0 18px;color:var(--muted);line-height:1.6}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{font-size:13px}td{color:var(--muted)}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.fact{padding:16px;border-radius:13px;background:var(--bg)}.fact small,.fact strong{display:block}.fact small{color:var(--muted);margin-bottom:5px}.nearby{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.nearby a{display:block;padding:15px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none}.nearby a:hover{border-color:var(--green)}.nearby small{display:block;color:var(--muted);margin-top:4px}.copy{color:var(--muted);line-height:1.7}.copy strong{color:var(--ink)}footer{padding:35px 20px;background:var(--navy);color:#b8c9c3;text-align:center}footer a{color:var(--lime)}@media(max-width:700px){.top nav{display:none}.current{grid-template-columns:auto 1fr}.current-temp{grid-column:1/-1}.facts,.nearby{grid-template-columns:1fr 1fr}.hero{padding-top:42px}}@media(max-width:460px){.facts,.nearby{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <header class="top">
     <a class="brand" href="/"><span class="mark">M</span><span>Meteo AI</span></a>
-    <nav aria-label="Navigazione principale"><a href="/">Previsioni</a><a href="/world-live.html">Mondo Live</a></nav>
+    <nav aria-label="Navigazione principale"><a href="/">Previsioni</a><a href="/localita">Località</a><a href="/world-live.html">Mondo Live</a></nav>
   </header>
+  <nav class="breadcrumbs" aria-label="Percorso"><a href="/">Meteo AI</a> › <a href="/localita">Località meteo</a> › <a href="${escapeHtml(countryAnchor)}">${escapeHtml(place.c)}</a> › <a href="${escapeHtml(regionAnchor)}">${escapeHtml(place.ad || place.c)}</a> › <span>${escapeHtml(place.n)}</span></nav>
   <section class="hero">
     <div class="eyebrow">METEO LOCALE • DATI AGGIORNATI</div>
-    <h1>Meteo ${escapeHtml(place.n)} oggi</h1>
-    <p>Previsioni per ${escapeHtml(areaLabel)}: temperatura, probabilità di pioggia e vento per oggi e i prossimi sette giorni.</p>
+    <h1>Meteo ${escapeHtml(place.n)} oggi, domani e questa settimana</h1>
+    <p>Previsioni per ${escapeHtml(areaLabel)}: temperatura, probabilità di pioggia e vento per oggi, domani e i prossimi sette giorni.</p>
     <div class="current">
       <div class="current-icon" aria-hidden="true">${weatherIcons(currentCode)}</div>
       <div><strong>${escapeHtml(currentLabel)}</strong><span>Percepita ${rounded(current?.apparent_temperature)}° • Umidità ${rounded(current?.relative_humidity_2m)}%</span></div>
@@ -262,10 +282,16 @@ module.exports = async function handler(req, res) {
         <div class="fact"><small>Coordinate</small><strong>${place.lat.toFixed(3)}, ${place.lon.toFixed(3)}</strong></div>
       </div>
     </section>
-    <section class="panel">
+    ${inRegion.length ? `<section class="panel">
+      <h2>Altre località meteo in ${escapeHtml(place.ad || place.c)}</h2>
+      <p class="panel-lead">Confronta le previsioni nelle località attive della stessa area geografica.</p>
+      <div class="nearby">${inRegion.map(candidate => `<a href="${escapeHtml(candidate.path)}"><strong>Meteo ${escapeHtml(candidate.n)}</strong><small>${escapeHtml(candidate.ad || candidate.c)} • previsioni 7 giorni</small></a>`).join('')}</div>
+    </section>` : ''}
+    ${nearby.length ? `<section class="panel">
       <h2>Meteo nelle località vicine</h2>
+      <p class="panel-lead">Località già consultate dagli utenti e disponibili nell’indice attivo di Meteo AI.</p>
       <div class="nearby">${nearby.map(candidate => `<a href="${escapeHtml(candidate.path)}"><strong>${escapeHtml(candidate.n)}</strong><small>${Math.round(candidate.distance)} km • ${escapeHtml(candidate.ad || candidate.c)}</small></a>`).join('')}</div>
-    </section>
+    </section>` : ''}
   </main>
   <footer>
     <p>Meteo AI è uno strumento informativo e non sostituisce bollettini ufficiali o autorità locali.</p>

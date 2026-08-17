@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const handler = require('../api/meteo-page.js');
+const locationsIndexHandler = require('../api/locations-index.js');
 
 const forecast = {
   current: {
@@ -53,13 +54,18 @@ await handler(
 );
 assert.equal(found.statusCode, 200);
 assert.match(found.headers['Content-Type'], /text\/html/);
-assert.match(found.body, /Meteo Messina oggi/);
+assert.match(found.body, /Meteo Messina oggi, domani e questa settimana/);
+assert.match(found.body, /<title>Meteo Messina: oggi, domani e 7 giorni \| Meteo AI<\/title>/);
 assert.match(found.body, /https:\/\/meteo-ai\.vercel\.app\/meteo\/it\/sicily\/messina-2524170/);
 assert.match(found.body, /application\/ld\+json/);
 assert.match(found.body, /property="og:image" content="https:\/\/meteo-ai\.vercel\.app\/social-preview\.jpg\?v=20260723b"/);
 assert.match(found.body, /name="twitter:card" content="summary_large_image"/);
 assert.match(found.body, /25°C/);
 assert.match(found.body, /class="primary" rel="nofollow"/);
+assert.match(found.body, /href="\/localita"/);
+assert.match(found.body, /aria-label="Percorso"/);
+assert.match(found.body, /Altre località meteo in Sicily/);
+assert.doesNotMatch(found.body, /canavieiras-3467577/);
 assert.doesNotMatch(found.body, /https:\/\/meteo-ai\.vercel\.app\/meteo\/it["#]/);
 assert.doesNotMatch(found.body, /\bundefined\b|\bNaN\b/);
 
@@ -81,5 +87,15 @@ await handler(
 );
 assert.equal(nonCanonical.statusCode, 308);
 assert.equal(nonCanonical.headers.Location, '/meteo/it/lazio/rome-3169070');
+
+const index = responseRecorder();
+await locationsIndexHandler({}, index);
+assert.equal(index.statusCode, 200);
+assert.match(index.body, /Località meteo attive su Meteo AI/);
+assert.match(index.body, /100 località attive/);
+assert.match(index.body, /Meteo Rome/);
+assert.match(index.body, /CollectionPage/);
+assert.doesNotMatch(index.body, /canavieiras-3467577/);
+assert.doesNotMatch(index.body, /\bundefined\b|\bNaN\b/);
 
 console.log('Pagine località: test completato con successo.');

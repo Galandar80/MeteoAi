@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Meteo oggi e previsioni fino a 14 giorni per località di tutto il mondo. Consulta temperatura, pioggia, vento, mare, qualità dell'aria e mappe su Meteo AI." />
+  <meta name="description" content="Meteo AI offre previsioni meteo di oggi, domani e fino a 14 giorni per località di tutto il mondo, con pioggia, vento, mare, qualità dell'aria e mappe." />
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
   <meta name="theme-color" content="#0d7b57" />
-  <meta property="og:title" content="Meteo oggi e previsioni 14 giorni | Meteo AI" />
+  <meta property="og:title" content="Meteo AI: previsioni meteo oggi, domani e 14 giorni" />
   <meta property="og:description" content="Previsioni meteo mondiali con temperatura, pioggia, vento, mare, qualità dell'aria, confronto storico e mappe." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://meteo-ai.vercel.app/" />
@@ -21,7 +21,7 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Meteo AI — Il meteo reale, reso semplice" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Meteo oggi e previsioni 14 giorni | Meteo AI" />
+  <meta name="twitter:title" content="Meteo AI: previsioni meteo oggi, domani e 14 giorni" />
   <meta name="twitter:description" content="Previsioni mondiali, vento, mare, qualità dell'aria, confronto storico e mappe in un'unica applicazione gratuita." />
   <meta name="twitter:image" content="https://meteo-ai.vercel.app/social-preview.jpg?v=20260723b" />
   <meta name="twitter:image:alt" content="Meteo AI — Il meteo reale, reso semplice" />
@@ -38,7 +38,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Meteo AI" />
-  <title>Meteo oggi e previsioni 14 giorni nel mondo | Meteo AI</title>
+  <title>Meteo AI: previsioni meteo oggi, domani e 14 giorni</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
@@ -90,7 +90,7 @@
 <body>
   <header class="topbar">
     <a class="brand" href="/"><span class="brand-mark">M</span><span>Meteo <b>AI</b></span></a>
-    <nav><button class="nav-location" id="locationMenuBtn" data-i18n="locationBtn">⌖ Località</button><a href="#forecast" data-i18n="today">Oggi</a><a href="#fourteenDays" data-i18n="fourteenDays">Previsioni</a><a href="#marineSection" data-i18n="sea">Mare</a><a href="world-live.html" data-i18n="worldLive">Mondo Live</a><a href="installa.html">Installa</a><button class="nav-sections" id="sectionsMenuBtn" data-i18n="sectionsBtn" aria-expanded="false" aria-controls="sectionsMenu">☰ Tutte le sezioni</button></nav>
+    <nav><button class="nav-location" id="locationMenuBtn" data-i18n="locationBtn">⌖ Località</button><a href="#forecast" data-i18n="today">Oggi</a><a href="#fourteenDays" data-i18n="fourteenDays">Previsioni</a><a href="/localita">Città</a><a href="#marineSection" data-i18n="sea">Mare</a><a href="world-live.html" data-i18n="worldLive">Mondo Live</a><a href="installa.html">Installa</a><button class="nav-sections" id="sectionsMenuBtn" data-i18n="sectionsBtn" aria-expanded="false" aria-controls="sectionsMenu">☰ Tutte le sezioni</button></nav>
     <div class="header-actions">
       <span class="language-status" title="Interfaccia attualmente disponibile in italiano">🇮🇹 Italiano</span>
       <button class="icon-btn pwa-install-btn hidden" id="pwaInstallBtn" aria-label="Installa PWA" title="Installa App">📲 <span data-i18n="installApp">Installa App</span></button>
@@ -101,7 +101,7 @@
   </header>
 
   <aside class="sections-menu" id="sectionsMenu" aria-label="Menu delle sezioni">
-    <div><span>METEO</span><a href="#forecast">Condizioni attuali</a><a href="#fourteenDays">Previsioni 14 giorni</a><a href="#historySection">Confronto storico</a><a href="#alertsSection">Avvisi previsionali</a></div>
+    <div><span>METEO</span><a href="#forecast">Condizioni attuali</a><a href="#fourteenDays">Previsioni 14 giorni</a><a href="/localita">Località meteo attive</a><a href="#historySection">Confronto storico</a><a href="#alertsSection">Avvisi previsionali</a></div>
     <div><span>VENTO E MARE</span><a href="#windSection">Situazione dei venti</a><a href="#marineSection">Situazione del mare</a><a href="#italySeaOverview">Atlante dei mari</a><a href="#portPlanner">Confronto fra porti</a></div>
     <div><span>MAPPE E FENOMENI</span><a href="world-live.html">Mondo Live</a><a href="#mapSection">Mappa della località</a><a href="#airSection">Aria e astronomia</a></div>
     <div><span>STRUMENTI PERSONALI</span><a href="#weatherWindow">Finestra Meteo</a><a href="#profilesSection">Profili specializzati</a><a href="#aiSection">Assistenti Meteo AI</a></div>
@@ -122,7 +122,7 @@
     <section class="hero">
       <div class="hero-weather" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="eyebrow"><span></span> DATI REALI • PREVISIONI GLOBALI • ANALISI AI</div>
-      <h1>Non guardare soltanto<br>che tempo farà. <em>Capiscilo.</em></h1>
+      <h1>Meteo AI: non guardare soltanto<br>che tempo farà. <em>Capiscilo.</em></h1>
       <p>Meteo, qualità dell’aria, mappe e consigli personali in un’unica esperienza semplice. Cerca qualsiasi luogo nel mondo.</p>
       <form class="search" id="searchForm">
         <span>⌕</span><input id="placeInput" autocomplete="off" placeholder="Cerca città, località o CAP..." aria-label="Cerca una località" />
