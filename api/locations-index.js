@@ -52,7 +52,7 @@ module.exports = async function handler(req, res) {
   const countries = groupPlaces(places, language);
   const canonical = `${SITE_ORIGIN}${locale.directoryPath}`;
   const languageLinks = [
-    ['it', 'IT'], ['pt-BR', 'PT'], ['es', 'ES']
+    ['it', 'IT'], ['en', 'EN'], ['fr', 'FR'], ['pt-BR', 'PT'], ['es', 'ES']
   ].map(([code, label]) => `<a lang="${LOCALES[code].locale}" href="${LOCALES[code].directoryPath}"${language === code ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const title = locale.directoryTitle;
   const description = locale.directoryDescription(places.length);

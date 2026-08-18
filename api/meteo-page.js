@@ -45,6 +45,18 @@ const weatherLabels = {
 };
 
 const translatedWeatherLabels = {
+  en: {
+    0: 'clear sky', 1: 'mainly clear', 2: 'partly cloudy', 3: 'overcast', 45: 'fog', 48: 'rime fog',
+    51: 'light drizzle', 53: 'drizzle', 55: 'heavy drizzle', 61: 'light rain', 63: 'rain', 65: 'heavy rain',
+    71: 'light snow', 73: 'snow', 75: 'heavy snow', 80: 'light showers', 81: 'showers', 82: 'heavy showers',
+    95: 'thunderstorm', 96: 'thunderstorm with hail', 99: 'severe thunderstorm'
+  },
+  fr: {
+    0: 'ciel dégagé', 1: 'généralement dégagé', 2: 'partiellement nuageux', 3: 'couvert', 45: 'brouillard', 48: 'brouillard givrant',
+    51: 'bruine faible', 53: 'bruine', 55: 'bruine forte', 61: 'pluie faible', 63: 'pluie', 65: 'forte pluie',
+    71: 'neige faible', 73: 'neige', 75: 'fortes chutes de neige', 80: 'averses faibles', 81: 'averses', 82: 'fortes averses',
+    95: 'orage', 96: 'orage avec grêle', 99: 'orage violent'
+  },
   'pt-BR': {
     0: 'céu limpo', 1: 'predominantemente limpo', 2: 'parcialmente nublado', 3: 'nublado',
     45: 'nevoeiro', 48: 'nevoeiro com geada', 51: 'garoa fraca', 53: 'garoa', 55: 'garoa forte',
@@ -166,7 +178,7 @@ module.exports = async function handler(req, res) {
   const canonical = `${SITE_ORIGIN}${expectedPath}`;
   const placeName = displayPlaceName(place, language);
   const languageLinks = [
-    ['it', 'IT'], ['pt-BR', 'PT'], ['es', 'ES']
+    ['it', 'IT'], ['en', 'EN'], ['fr', 'FR'], ['pt-BR', 'PT'], ['es', 'ES']
   ].map(([code, label]) => `<a lang="${LOCALES[code].locale}" href="${localizedPlacePath(place, code)}"${language === code ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const countryName = displayCountry(place, language);
   const areaLabel = [place.ad, countryName].filter(Boolean).join(', ');

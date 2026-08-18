@@ -69,6 +69,14 @@
       "destination": "/api/locations-index"
     },
     {
+      "source": "/en/locations",
+      "destination": "/api/locations-index?lang=en"
+    },
+    {
+      "source": "/fr/localites",
+      "destination": "/api/locations-index?lang=fr"
+    },
+    {
       "source": "/pt-br/localidades",
       "destination": "/api/locations-index?lang=pt-BR"
     },
@@ -79,6 +87,14 @@
     {
       "source": "/pt-br/previsao/:country/:region/:place",
       "destination": "/api/meteo-page?lang=pt-BR&country=:country&region=:region&place=:place"
+    },
+    {
+      "source": "/en/weather/:country/:region/:place",
+      "destination": "/api/meteo-page?lang=en&country=:country&region=:region&place=:place"
+    },
+    {
+      "source": "/fr/meteo/:country/:region/:place",
+      "destination": "/api/meteo-page?lang=fr&country=:country&region=:region&place=:place"
     },
     {
       "source": "/es/tiempo/:country/:region/:place",
@@ -105,6 +121,20 @@
     },
     {
       "source": "/pt-br/previsao/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/en/weather/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/fr/meteo/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }

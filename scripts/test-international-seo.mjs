@@ -46,8 +46,8 @@ assert.equal(response.headers['Content-Language'],'fr-FR');
 assert.match(response.headers['X-Robots-Tag'],/index,follow/);
 
 const config=JSON.parse(fs.readFileSync(new URL('../vercel.json',import.meta.url),'utf8'));
-for(const source of ['/en','/fr','/pt-br','/es','/en/world-live','/fr/world-live','/pt-br/world-live','/es/world-live','/en/install','/fr/install','/pt-br/install','/es/install','/pt-br/localidades','/es/localidades','/pt-br/previsao/:country/:region/:place','/es/tiempo/:country/:region/:place'])assert.ok(config.rewrites.some(rule=>rule.source===source),`missing rewrite ${source}`);
-assert.equal(config.rewrites.filter(rule=>/:(country)\/:region\/:place$/.test(rule.source)).length,3,'active location routes must cover Italian, pt-BR and Spanish');
+for(const source of ['/en','/fr','/pt-br','/es','/en/world-live','/fr/world-live','/pt-br/world-live','/es/world-live','/en/install','/fr/install','/pt-br/install','/es/install','/en/locations','/fr/localites','/pt-br/localidades','/es/localidades','/en/weather/:country/:region/:place','/fr/meteo/:country/:region/:place','/pt-br/previsao/:country/:region/:place','/es/tiempo/:country/:region/:place'])assert.ok(config.rewrites.some(rule=>rule.source===source),`missing rewrite ${source}`);
+assert.equal(config.rewrites.filter(rule=>/:(country)\/:region\/:place$/.test(rule.source)).length,5,'active location routes must cover all supported SEO locales');
 assert.equal(config.functions?.['api/localized-page.js']?.includeFiles,'{index.html,world-live.html,installa.html,i18n.js}','localized function must bundle its runtime templates with a Vercel-compatible glob');
 
 const sitemap=fs.readFileSync(new URL('../sitemaps/static.xml',import.meta.url),'utf8');

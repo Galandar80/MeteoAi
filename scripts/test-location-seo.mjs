@@ -81,6 +81,24 @@ assert.match(portuguese.body, /Previsão do tempo em Messina hoje, amanhã e est
 assert.match(portuguese.body, /rel="canonical" href="https:\/\/meteo-ai\.vercel\.app\/pt-br\/previsao\/it\/sicily\/messina-2524170"/);
 assert.match(portuguese.body, /hreflang="es" href="https:\/\/meteo-ai\.vercel\.app\/es\/tiempo\/it\/sicily\/messina-2524170"/);
 
+const english = responseRecorder();
+await handler(
+  { query: { lang: 'en', country: 'it', region: 'lazio', place: 'rome-3169070' } },
+  english
+);
+assert.equal(english.headers['Content-Language'], 'en-GB');
+assert.match(english.body, /Weather in Rome today, tomorrow and this week/);
+assert.match(english.body, /rel="canonical" href="https:\/\/meteo-ai\.vercel\.app\/en\/weather\/it\/lazio\/rome-3169070"/);
+
+const french = responseRecorder();
+await handler(
+  { query: { lang: 'fr', country: 'it', region: 'lazio', place: 'rome-3169070' } },
+  french
+);
+assert.equal(french.headers['Content-Language'], 'fr-FR');
+assert.match(french.body, /Météo à Rome aujourd’hui, demain et cette semaine/);
+assert.match(french.body, /href="\/fr\/meteo\/it\/[^\"]+"/);
+
 const spanish = responseRecorder();
 await handler(
   { query: { lang: 'es', country: 'it', region: 'sicily', place: 'messina-2524170' } },
@@ -128,5 +146,15 @@ assert.match(spanishIndex.body, /Localidades meteorológicas activas en Meteo AI
 assert.match(spanishIndex.body, /Tiempo Roma/);
 assert.match(spanishIndex.body, /href="\/es\/tiempo\/it\/lazio\/rome-3169070"/);
 assert.match(spanishIndex.body, /hreflang="pt-BR" href="https:\/\/meteo-ai\.vercel\.app\/pt-br\/localidades"/);
+
+const englishIndex = responseRecorder();
+await locationsIndexHandler({ query: { lang: 'en' } }, englishIndex);
+assert.match(englishIndex.body, /Active weather locations on Meteo AI/);
+assert.match(englishIndex.body, /href="\/en\/weather\/it\/lazio\/rome-3169070"/);
+
+const frenchIndex = responseRecorder();
+await locationsIndexHandler({ query: { lang: 'fr' } }, frenchIndex);
+assert.match(frenchIndex.body, /Localités météo actives sur Meteo AI/);
+assert.match(frenchIndex.body, /href="\/fr\/meteo\/it\/lazio\/rome-3169070"/);
 
 console.log('Pagine località: test completato con successo.');

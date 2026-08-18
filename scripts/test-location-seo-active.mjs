@@ -65,10 +65,12 @@ assert.match(sitemap.body, /barlad-684802/,'activated foreign long-tail localiti
 assert.doesNotMatch(sitemap.body, /inesistente/);
 assert.match(sitemap.body, /<loc>https:\/\/meteo-ai\.vercel\.app\/pt-br\/previsao\/it\/lazio\/rome-3169070<\/loc>/);
 assert.match(sitemap.body, /<loc>https:\/\/meteo-ai\.vercel\.app\/es\/tiempo\/it\/lazio\/rome-3169070<\/loc>/);
+assert.match(sitemap.body, /<loc>https:\/\/meteo-ai\.vercel\.app\/en\/weather\/it\/lazio\/rome-3169070<\/loc>/);
+assert.match(sitemap.body, /<loc>https:\/\/meteo-ai\.vercel\.app\/fr\/meteo\/it\/lazio\/rome-3169070<\/loc>/);
 assert.match(sitemap.body, /hreflang="pt-BR"/);
 assert.match(sitemap.body, /hreflang="es"/);
 const activeUrlCount=(sitemap.body.match(/<url>/g)||[]).length;
-assert.ok(activeUrlCount>=300&&activeUrlCount<600,`activation-first multilingual sitemap expected, received ${activeUrlCount}`);
+assert.ok(activeUrlCount>=500&&activeUrlCount<1000,`activation-first multilingual sitemap expected, received ${activeUrlCount}`);
 
 const sitemapIndex=fs.readFileSync(new URL('../sitemap.xml',import.meta.url),'utf8');
 assert.match(sitemapIndex,/sitemaps\/localita-attive\.xml/);
@@ -79,6 +81,8 @@ assert.match(appSource, /selectWeatherPlace\(place\).*activateLocationSeo\(\{sou
 assert.match(appSource, /source:'gps',latitude,longitude/);
 assert.match(appSource, /'\/pt-br\/previsao'/);
 assert.match(appSource, /'\/es\/tiempo'/);
+assert.match(appSource, /'\/en\/weather'/);
+assert.match(appSource, /'\/fr\/meteo'/);
 const autocompleteBlock = appSource.slice(appSource.indexOf("$('#placeInput').addEventListener('input'"), appSource.indexOf('function openLocationModal'));
 assert.doesNotMatch(autocompleteBlock, /activateLocationSeo/);
 

@@ -11,10 +11,12 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
   if (kind === 'locations') {
     const places = await activePlaces();
-    const languages = ['it', 'pt-BR', 'es'];
+    const languages = ['it', 'en', 'fr', 'pt-BR', 'es'];
     const urls = places.flatMap(place => {
       const alternates = [
         ['it', localizedPlacePath(place, 'it')],
+        ['en', localizedPlacePath(place, 'en')],
+        ['fr', localizedPlacePath(place, 'fr')],
         ['pt-BR', localizedPlacePath(place, 'pt-BR')],
         ['es', localizedPlacePath(place, 'es')],
         ['x-default', localizedPlacePath(place, 'it')]

@@ -8,6 +8,12 @@ const PLACE_NAMES = {
     'Saint Petersburg': 'San Pietroburgo', Beijing: 'Pechino', Cairo: 'Il Cairo',
     'Cape Town': 'Città del Capo'
   },
+  fr: {
+    Rome: 'Rome', Milan: 'Milan', Naples: 'Naples', Turin: 'Turin', Genoa: 'Gênes',
+    Florence: 'Florence', Padua: 'Padoue', London: 'Londres', 'New York City': 'New York',
+    'Mexico City': 'Mexico', Moscow: 'Moscou', 'Saint Petersburg': 'Saint-Pétersbourg',
+    Beijing: 'Pékin', Seoul: 'Séoul', Cairo: 'Le Caire', 'Cape Town': 'Le Cap'
+  },
   'pt-BR': {
     Rome: 'Roma', Milan: 'Milão', Naples: 'Nápoles', Turin: 'Turim', Genoa: 'Gênova',
     Florence: 'Florença', Padua: 'Pádua', London: 'Londres', 'New York City': 'Nova York',
@@ -58,6 +64,78 @@ const LOCALES = {
     weatherIn: country => `Meteo in ${country}`, placeWeather: name => `Meteo ${name}`, todayTomorrow: 'Oggi, domani e 7 giorni',
     directoryUpdating: 'Directory in aggiornamento', directoryUpdatingCopy: 'Le località attive saranno nuovamente disponibili a breve.',
     footerDirectory: 'Previsioni meteo globali, gratuite e senza registrazione', pathLabel: 'Percorso'
+  },
+  en: {
+    code: 'en', locale: 'en-GB', hreflang: 'en', ogLocale: 'en_GB',
+    homePath: '/en', directoryPath: '/en/locations', locationSegment: 'weather',
+    navForecast: 'Forecast', navLocations: 'Locations', directoryName: 'Weather locations',
+    title: name => `Weather ${name}: today, tomorrow and 7 days | Meteo AI`,
+    description: (name, area) => `Weather in ${name} today and tomorrow: temperature, rain, wind and this week's forecast. Updated data for ${area}.`,
+    h1: name => `Weather in ${name} today, tomorrow and this week`,
+    hero: area => `Forecast for ${area}: temperature, chance of rain and wind for today, tomorrow and the next seven days.`,
+    eyebrow: 'LOCAL WEATHER • UPDATED DATA', perceived: 'Feels like', humidity: 'Humidity',
+    openTools: name => `Open all weather tools for ${name}`,
+    nextDays: name => `${name} weather forecast: next 7 days`,
+    headers: ['Day', 'Conditions', 'Temperatures', 'Rain', 'Maximum wind'],
+    todayConditions: name => `Today's conditions in ${name}`,
+    temperature: 'Temperature', wind: 'Wind', pressure: 'Pressure', precipitation: 'Precipitation',
+    locationInfo: 'Location information', area: 'Area', population: 'Population', timezone: 'Time zone', coordinates: 'Coordinates',
+    otherRegion: area => `Other active weather locations in ${area}`,
+    otherRegionLead: 'Compare forecasts for active locations in the same geographical area.',
+    nearby: 'Weather in nearby locations',
+    nearbyLead: 'Locations already viewed by users and available in Meteo AI’s active index.',
+    sevenDays: '7-day forecast',
+    currentCopy: (name, condition, temperature) => `${name} weather is updated using global forecast model data. Current conditions are ${condition}, with a temperature of around ${temperature} °C. Always check the latest updates before planning weather-sensitive activities.`,
+    unavailable: 'Forecast temporarily unavailable. Open the app to try again.',
+    variable: 'variable', variableConditions: 'variable conditions',
+    footerNotice: 'Meteo AI is an information tool and does not replace official bulletins or local authorities.',
+    weatherData: 'Weather data', placesData: 'Locations',
+    directoryTitle: 'Active weather locations: forecasts by city and region | Meteo AI',
+    directoryDescription: count => `View Meteo AI forecasts for ${count} active locations, organised by country and region. The directory grows only with locations actually searched by users.`,
+    directoryEyebrow: 'ACTIVE DIRECTORY • AUTOMATICALLY UPDATED',
+    directoryH1: 'Active weather locations on Meteo AI',
+    directoryHero: 'Quickly find forecasts for cities and areas already viewed by users. Each page shows weather for today, tomorrow and the next seven days.',
+    activeCount: count => `${count} active locations`, countryCount: count => `${count} countries`,
+    directoryIntro: 'This directory does not generate pages in bulk: it includes relevant locations and grows when a new place is actually used in the app. Country and region links help people and search engines reach the most useful forecasts.',
+    weatherIn: country => `Weather in ${country}`, placeWeather: name => `${name} weather`, todayTomorrow: 'Today, tomorrow and 7 days',
+    directoryUpdating: 'Directory updating', directoryUpdatingCopy: 'Active locations will be available again shortly.',
+    footerDirectory: 'Free worldwide weather forecasts with no registration', pathLabel: 'Breadcrumb'
+  },
+  fr: {
+    code: 'fr', locale: 'fr-FR', hreflang: 'fr', ogLocale: 'fr_FR',
+    homePath: '/fr', directoryPath: '/fr/localites', locationSegment: 'meteo',
+    navForecast: 'Prévisions', navLocations: 'Localités', directoryName: 'Localités météo',
+    title: name => `Météo ${name} : aujourd’hui, demain et 7 jours | Meteo AI`,
+    description: (name, area) => `Météo à ${name} aujourd’hui et demain : température, pluie, vent et prévisions de la semaine. Données actualisées pour ${area}.`,
+    h1: name => `Météo à ${name} aujourd’hui, demain et cette semaine`,
+    hero: area => `Prévisions pour ${area} : température, risque de pluie et vent aujourd’hui, demain et les sept prochains jours.`,
+    eyebrow: 'MÉTÉO LOCALE • DONNÉES ACTUALISÉES', perceived: 'Ressentie', humidity: 'Humidité',
+    openTools: name => `Ouvrir tous les outils météo pour ${name}`,
+    nextDays: name => `Prévisions météo ${name} : les 7 prochains jours`,
+    headers: ['Jour', 'Conditions', 'Températures', 'Pluie', 'Vent maximal'],
+    todayConditions: name => `Conditions aujourd’hui à ${name}`,
+    temperature: 'Température', wind: 'Vent', pressure: 'Pression', precipitation: 'Précipitations',
+    locationInfo: 'Informations sur la localité', area: 'Zone', population: 'Population', timezone: 'Fuseau horaire', coordinates: 'Coordonnées',
+    otherRegion: area => `Autres localités météo dans ${area}`,
+    otherRegionLead: 'Comparez les prévisions des localités actives de la même zone géographique.',
+    nearby: 'Météo dans les localités voisines',
+    nearbyLead: 'Localités déjà consultées et disponibles dans l’index actif de Meteo AI.',
+    sevenDays: 'prévisions à 7 jours',
+    currentCopy: (name, condition, temperature) => `La météo de ${name} est actualisée à partir de modèles météorologiques mondiaux. Les conditions actuelles sont ${condition}, avec une température d’environ ${temperature} °C. Consultez toujours les dernières mises à jour avant de planifier des activités sensibles à la météo.`,
+    unavailable: 'Prévisions temporairement indisponibles. Ouvrez l’application pour réessayer.',
+    variable: 'variable', variableConditions: 'conditions variables',
+    footerNotice: 'Meteo AI est un outil d’information et ne remplace pas les bulletins officiels ni les autorités locales.',
+    weatherData: 'Données météo', placesData: 'Localités',
+    directoryTitle: 'Localités météo actives : prévisions par ville et région | Meteo AI',
+    directoryDescription: count => `Consultez les prévisions Meteo AI pour ${count} localités actives, classées par pays et région. Le répertoire évolue uniquement avec les lieux réellement recherchés.`,
+    directoryEyebrow: 'RÉPERTOIRE ACTIF • MISE À JOUR AUTOMATIQUE',
+    directoryH1: 'Localités météo actives sur Meteo AI',
+    directoryHero: 'Trouvez rapidement les prévisions des villes et territoires déjà consultés. Chaque page présente la météo d’aujourd’hui, de demain et des sept prochains jours.',
+    activeCount: count => `${count} localités actives`, countryCount: count => `${count} pays`,
+    directoryIntro: 'Ce répertoire ne génère pas de pages en masse : il contient des localités pertinentes et s’enrichit lorsqu’un nouveau lieu est réellement utilisé dans l’application. Les liens par pays et région aident les personnes et les moteurs de recherche à trouver les prévisions les plus utiles.',
+    weatherIn: country => `Météo en ${country}`, placeWeather: name => `Météo ${name}`, todayTomorrow: 'Aujourd’hui, demain et 7 jours',
+    directoryUpdating: 'Répertoire en cours de mise à jour', directoryUpdatingCopy: 'Les localités actives seront à nouveau disponibles prochainement.',
+    footerDirectory: 'Prévisions météo mondiales gratuites et sans inscription', pathLabel: 'Fil d’Ariane'
   },
   'pt-BR': {
     code: 'pt-BR', locale: 'pt-BR', hreflang: 'pt-BR', ogLocale: 'pt_BR',
@@ -135,6 +213,8 @@ const LOCALES = {
 
 const normalizeLanguage = value => {
   const language = String(value || 'it').toLowerCase();
+  if (language === 'en' || language.startsWith('en-')) return 'en';
+  if (language === 'fr' || language.startsWith('fr-')) return 'fr';
   if (language === 'pt' || language === 'pt-br') return 'pt-BR';
   if (language === 'es' || language.startsWith('es-')) return 'es';
   return 'it';
@@ -172,6 +252,8 @@ const displayPlaceName = (place, language) => PLACE_NAMES[normalizeLanguage(lang
 
 const alternateLinks = place => [
   ['it', localizedPlacePath(place, 'it')],
+  ['en', localizedPlacePath(place, 'en')],
+  ['fr', localizedPlacePath(place, 'fr')],
   ['pt-BR', localizedPlacePath(place, 'pt-BR')],
   ['es', localizedPlacePath(place, 'es')],
   ['x-default', localizedPlacePath(place, 'it')]
@@ -179,6 +261,8 @@ const alternateLinks = place => [
 
 const directoryAlternateLinks = () => [
   ['it', LOCALES.it.directoryPath],
+  ['en', LOCALES.en.directoryPath],
+  ['fr', LOCALES.fr.directoryPath],
   ['pt-BR', LOCALES['pt-BR'].directoryPath],
   ['es', LOCALES.es.directoryPath],
   ['x-default', LOCALES.it.directoryPath]
