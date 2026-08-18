@@ -22,6 +22,7 @@ const {
   localizedPlacePath,
   localizedDirectoryAnchor,
   displayCountry,
+  displayPlaceName,
   alternateLinks
 } = require('./_seo-locales.js');
 
@@ -163,13 +164,14 @@ module.exports = async function handler(req, res) {
   ]);
 
   const canonical = `${SITE_ORIGIN}${expectedPath}`;
+  const placeName = displayPlaceName(place, language);
   const languageLinks = [
     ['it', 'IT'], ['pt-BR', 'PT'], ['es', 'ES']
   ].map(([code, label]) => `<a lang="${LOCALES[code].locale}" href="${localizedPlacePath(place, code)}"${language === code ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const countryName = displayCountry(place, language);
   const areaLabel = [place.ad, countryName].filter(Boolean).join(', ');
-  const title = locale.title(place.n);
-  const description = locale.description(place.n, areaLabel);
+  const title = locale.title(placeName);
+  const description = locale.description(placeName, areaLabel);
   const current = forecast?.current;
   const daily = forecast?.daily;
   const currentCode = current?.weather_code;
@@ -215,7 +217,7 @@ module.exports = async function handler(req, res) {
       {
         '@type': 'Place',
         '@id': `${canonical}#place`,
-        name: place.n,
+        name: placeName,
         address: {
           '@type': 'PostalAddress',
           addressRegion: place.ad,
@@ -234,7 +236,7 @@ module.exports = async function handler(req, res) {
           { '@type': 'ListItem', position: 2, name: locale.directoryName, item: `${SITE_ORIGIN}${locale.directoryPath}` },
           { '@type': 'ListItem', position: 3, name: countryName, item: `${SITE_ORIGIN}${countryAnchor}` },
           { '@type': 'ListItem', position: 4, name: place.ad || countryName, item: `${SITE_ORIGIN}${regionAnchor}` },
-          { '@type': 'ListItem', position: 5, name: place.n, item: canonical }
+          { '@type': 'ListItem', position: 5, name: placeName, item: canonical }
         ]
       }
     ]
@@ -286,10 +288,10 @@ module.exports = async function handler(req, res) {
     <nav aria-label="${escapeHtml(locale.pathLabel)}"><a href="${locale.homePath}">${locale.navForecast}</a><a href="${locale.directoryPath}">${locale.navLocations}</a></nav>
     <nav class="languages" aria-label="Language">${languageLinks}</nav>
   </header>
-  <nav class="breadcrumbs" aria-label="${escapeHtml(locale.pathLabel)}"><a href="${locale.homePath}">Meteo AI</a> › <a href="${locale.directoryPath}">${locale.directoryName}</a> › <a href="${escapeHtml(countryAnchor)}">${escapeHtml(countryName)}</a> › <a href="${escapeHtml(regionAnchor)}">${escapeHtml(place.ad || countryName)}</a> › <span>${escapeHtml(place.n)}</span></nav>
+  <nav class="breadcrumbs" aria-label="${escapeHtml(locale.pathLabel)}"><a href="${locale.homePath}">Meteo AI</a> › <a href="${locale.directoryPath}">${locale.directoryName}</a> › <a href="${escapeHtml(countryAnchor)}">${escapeHtml(countryName)}</a> › <a href="${escapeHtml(regionAnchor)}">${escapeHtml(place.ad || countryName)}</a> › <span>${escapeHtml(placeName)}</span></nav>
   <section class="hero">
     <div class="eyebrow">${locale.eyebrow}</div>
-    <h1>${escapeHtml(locale.h1(place.n))}</h1>
+    <h1>${escapeHtml(locale.h1(placeName))}</h1>
     <p>${escapeHtml(locale.hero(areaLabel))}</p>
     <div class="current">
       <div class="current-icon" aria-hidden="true">${weatherIcons(currentCode)}</div>
@@ -298,23 +300,23 @@ module.exports = async function handler(req, res) {
     </div>
   </section>
   <main>
-    <div class="actions"><a class="primary" rel="nofollow" href="${locale.homePath}?${escapeHtml(appQuery.toString())}">${escapeHtml(locale.openTools(place.n))}</a></div>
+    <div class="actions"><a class="primary" rel="nofollow" href="${locale.homePath}?${escapeHtml(appQuery.toString())}">${escapeHtml(locale.openTools(placeName))}</a></div>
     <section class="panel">
-      <h2>${escapeHtml(locale.nextDays(place.n))}</h2>
+      <h2>${escapeHtml(locale.nextDays(placeName))}</h2>
       <div class="table-wrap"><table>
         <thead><tr>${locale.headers.map(header => `<th>${escapeHtml(header)}</th>`).join('')}</tr></thead>
         <tbody>${forecastRows}</tbody>
       </table></div>
     </section>
     <section class="panel">
-      <h2>${escapeHtml(locale.todayConditions(place.n))}</h2>
+      <h2>${escapeHtml(locale.todayConditions(placeName))}</h2>
       <div class="facts">
         <div class="fact"><small>${locale.temperature}</small><strong>${rounded(current?.temperature_2m)}°C</strong></div>
         <div class="fact"><small>${locale.wind}</small><strong>${rounded(current?.wind_speed_10m)} km/h</strong></div>
         <div class="fact"><small>${locale.pressure}</small><strong>${rounded(current?.surface_pressure)} hPa</strong></div>
         <div class="fact"><small>${locale.precipitation}</small><strong>${Number(current?.precipitation || 0).toFixed(1)} mm</strong></div>
       </div>
-      <p class="copy">${escapeHtml(locale.currentCopy(place.n, currentLabel, rounded(current?.temperature_2m)))}</p>
+      <p class="copy">${escapeHtml(locale.currentCopy(placeName, currentLabel, rounded(current?.temperature_2m)))}</p>
     </section>
     <section class="panel">
       <h2>${locale.locationInfo}</h2>
@@ -328,12 +330,12 @@ module.exports = async function handler(req, res) {
     ${inRegion.length ? `<section class="panel">
       <h2>${escapeHtml(locale.otherRegion(place.ad || countryName))}</h2>
       <p class="panel-lead">${locale.otherRegionLead}</p>
-      <div class="nearby">${inRegion.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(locale.placeWeather(candidate.n))}</strong><small>${escapeHtml(candidate.ad || displayCountry(candidate, language))} • ${locale.sevenDays}</small></a>`).join('')}</div>
+      <div class="nearby">${inRegion.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(locale.placeWeather(displayPlaceName(candidate, language)))}</strong><small>${escapeHtml(candidate.ad || displayCountry(candidate, language))} • ${locale.sevenDays}</small></a>`).join('')}</div>
     </section>` : ''}
     ${nearby.length ? `<section class="panel">
       <h2>${locale.nearby}</h2>
       <p class="panel-lead">${locale.nearbyLead}</p>
-      <div class="nearby">${nearby.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(candidate.n)}</strong><small>${Math.round(candidate.distance)} km • ${escapeHtml(candidate.ad || displayCountry(candidate, language))}</small></a>`).join('')}</div>
+      <div class="nearby">${nearby.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(displayPlaceName(candidate, language))}</strong><small>${Math.round(candidate.distance)} km • ${escapeHtml(candidate.ad || displayCountry(candidate, language))}</small></a>`).join('')}</div>
     </section>` : ''}
   </main>
   <footer>

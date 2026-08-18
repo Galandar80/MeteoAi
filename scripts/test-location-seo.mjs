@@ -116,7 +116,7 @@ await locationsIndexHandler({}, index);
 assert.equal(index.statusCode, 200);
 assert.match(index.body, /Località meteo attive su Meteo AI/);
 assert.match(index.body, /100 località attive/);
-assert.match(index.body, /Meteo Rome/);
+assert.match(index.body, /Meteo Roma/);
 assert.match(index.body, /CollectionPage/);
 assert.doesNotMatch(index.body, /canavieiras-3467577/);
 assert.doesNotMatch(index.body, /\bundefined\b|\bNaN\b/);
@@ -125,6 +125,7 @@ const spanishIndex = responseRecorder();
 await locationsIndexHandler({ query: { lang: 'es' } }, spanishIndex);
 assert.equal(spanishIndex.headers['Content-Language'], 'es-ES');
 assert.match(spanishIndex.body, /Localidades meteorológicas activas en Meteo AI/);
+assert.match(spanishIndex.body, /Tiempo Roma/);
 assert.match(spanishIndex.body, /href="\/es\/tiempo\/it\/lazio\/rome-3169070"/);
 assert.match(spanishIndex.body, /hreflang="pt-BR" href="https:\/\/meteo-ai\.vercel\.app\/pt-br\/localidades"/);
 

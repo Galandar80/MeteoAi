@@ -1,5 +1,27 @@
 const ORIGIN = process.env.SITE_ORIGIN || 'https://meteo-ai.vercel.app';
 
+const PLACE_NAMES = {
+  it: {
+    Rome: 'Roma', Milan: 'Milano', Naples: 'Napoli', Turin: 'Torino', Genoa: 'Genova',
+    Florence: 'Firenze', Padua: 'Padova', "Reggio nell'Emilia": 'Reggio Emilia',
+    'New York City': 'New York', 'Mexico City': 'Città del Messico', Moscow: 'Mosca',
+    'Saint Petersburg': 'San Pietroburgo', Beijing: 'Pechino', Cairo: 'Il Cairo',
+    'Cape Town': 'Città del Capo'
+  },
+  'pt-BR': {
+    Rome: 'Roma', Milan: 'Milão', Naples: 'Nápoles', Turin: 'Turim', Genoa: 'Gênova',
+    Florence: 'Florença', Padua: 'Pádua', London: 'Londres', 'New York City': 'Nova York',
+    'Mexico City': 'Cidade do México', Moscow: 'Moscou', 'Saint Petersburg': 'São Petersburgo',
+    Beijing: 'Pequim', Seoul: 'Seul', Cairo: 'Cairo', 'Cape Town': 'Cidade do Cabo'
+  },
+  es: {
+    Rome: 'Roma', Milan: 'Milán', Naples: 'Nápoles', Turin: 'Turín', Genoa: 'Génova',
+    Florence: 'Florencia', Padua: 'Padua', London: 'Londres', 'New York City': 'Nueva York',
+    'Mexico City': 'Ciudad de México', Moscow: 'Moscú', 'Saint Petersburg': 'San Petersburgo',
+    Beijing: 'Pekín', Seoul: 'Seúl', Cairo: 'El Cairo', 'Cape Town': 'Ciudad del Cabo'
+  }
+};
+
 const LOCALES = {
   it: {
     code: 'it', locale: 'it-IT', hreflang: 'it', ogLocale: 'it_IT',
@@ -146,6 +168,8 @@ const displayCountry = (place, language) => {
   }
 };
 
+const displayPlaceName = (place, language) => PLACE_NAMES[normalizeLanguage(language)]?.[place.n] || place.n;
+
 const alternateLinks = place => [
   ['it', localizedPlacePath(place, 'it')],
   ['pt-BR', localizedPlacePath(place, 'pt-BR')],
@@ -168,6 +192,7 @@ module.exports = {
   localizedPlacePath,
   localizedDirectoryAnchor,
   displayCountry,
+  displayPlaceName,
   alternateLinks,
   directoryAlternateLinks
 };

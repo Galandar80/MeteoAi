@@ -4,6 +4,7 @@ const {
   LOCALES,
   localizedPlacePath,
   displayCountry,
+  displayPlaceName,
   directoryAlternateLinks
 } = require('./_seo-locales.js');
 
@@ -72,7 +73,7 @@ module.exports = async function handler(req, res) {
           itemListElement: places.slice(0, 100).map((place, index) => ({
             '@type': 'ListItem',
             position: index + 1,
-            name: locale.placeWeather(place.n),
+            name: locale.placeWeather(displayPlaceName(place, language)),
             url: `${SITE_ORIGIN}${localizedPlacePath(place, language)}`
           }))
         }
@@ -93,7 +94,7 @@ module.exports = async function handler(req, res) {
       ${country.regions.map(region => `
         <section class="region" id="regione-${slug(country.code)}-${slug(region.name)}">
           <h3>${escapeHtml(region.name)}</h3>
-          <div class="places">${region.entries.map(place => `<a href="${escapeHtml(localizedPlacePath(place, language))}"><strong>${escapeHtml(locale.placeWeather(place.n))}</strong><small>${locale.todayTomorrow}</small></a>`).join('')}</div>
+          <div class="places">${region.entries.map(place => `<a href="${escapeHtml(localizedPlacePath(place, language))}"><strong>${escapeHtml(locale.placeWeather(displayPlaceName(place, language)))}</strong><small>${locale.todayTomorrow}</small></a>`).join('')}</div>
         </section>`).join('')}
     </section>`).join('');
 
