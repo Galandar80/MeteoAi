@@ -12,6 +12,10 @@ const ROUTES={
   world:{it:'/world-live.html',en:'/en/world-live',fr:'/fr/world-live','pt-BR':'/pt-br/world-live',es:'/es/world-live'},
   install:{it:'/installa.html',en:'/en/install',fr:'/fr/install','pt-BR':'/pt-br/install',es:'/es/install'}
 };
+const GROWTH_ROUTES={
+  how:{it:'/come-funziona',en:'/en/how-it-works',fr:'/fr/comment-ca-marche','pt-BR':'/pt-br/como-funciona',es:'/es/como-funciona'},
+  widget:{it:'/widget',en:'/en/widget',fr:'/fr/widget','pt-BR':'/pt-br/widget',es:'/es/widget'}
+};
 const META={
   en:{
     home:{title:'Weather today and 14-day worldwide forecast | Meteo AI',description:'Worldwide weather forecasts with temperature, rain, wind, sea conditions, air quality, historical comparison and maps.'},
@@ -72,6 +76,7 @@ function localizeLinks(html,language){
     '/':ROUTES.home[language],'/index.html':ROUTES.home[language],'index.html':ROUTES.home[language],
     '/world-live.html':ROUTES.world[language],'world-live.html':ROUTES.world[language],
     '/installa.html':ROUTES.install[language],'installa.html':ROUTES.install[language]
+    ,'/come-funziona':GROWTH_ROUTES.how[language],'/widget':GROWTH_ROUTES.widget[language]
   };
   return html.replace(/href=("|')([^"']+)(\1)/g,(match,quote,href)=>{
     const [base,hash='']=href.split('#');

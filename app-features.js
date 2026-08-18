@@ -71,6 +71,15 @@ function resetHistoryComparison(){
 
 
 /* Share Card Generator */
+const shareCopy={
+  it:{max:'Max',min:'Min',humidity:'Umidità',wind:'Vento',uv:'Indice UV',rain:'Pioggia',data:'Dati Open-Meteo',title:name=>`Meteo ${name}`,text:name=>`Ecco le previsioni per ${name} su Meteo AI`,copied:'Testo e link copiati. Puoi incollarli sui social.'},
+  en:{max:'High',min:'Low',humidity:'Humidity',wind:'Wind',uv:'UV index',rain:'Rain',data:'Data by Open-Meteo',title:name=>`${name} weather`,text:name=>`See the forecast for ${name} on Meteo AI`,copied:'Text and link copied. You can paste them on social media.'},
+  fr:{max:'Max',min:'Min',humidity:'Humidité',wind:'Vent',uv:'Indice UV',rain:'Pluie',data:'Données Open-Meteo',title:name=>`Météo ${name}`,text:name=>`Consultez les prévisions pour ${name} sur Meteo AI`,copied:'Texte et lien copiés. Vous pouvez les publier sur les réseaux.'},
+  'pt-BR':{max:'Máx',min:'Mín',humidity:'Umidade',wind:'Vento',uv:'Índice UV',rain:'Chuva',data:'Dados Open-Meteo',title:name=>`Previsão ${name}`,text:name=>`Veja a previsão para ${name} no Meteo AI`,copied:'Texto e link copiados. Você pode colá-los nas redes sociais.'},
+  es:{max:'Máx',min:'Mín',humidity:'Humedad',wind:'Viento',uv:'Índice UV',rain:'Lluvia',data:'Datos Open-Meteo',title:name=>`Tiempo ${name}`,text:name=>`Consulta la previsión para ${name} en Meteo AI`,copied:'Texto y enlace copiados. Puedes pegarlos en redes sociales.'}
+};
+const currentShareCopy=()=>shareCopy[I18n?.language]||shareCopy.it;
+function shareLink(){const url=new URL(location.href);url.searchParams.delete('condiviso');url.searchParams.set('utm_source','share');url.searchParams.set('utm_medium','referral');return url.href}
 function drawShareCard(){
   const canvas=$('#shareCanvas');
   if(!canvas||!lastData)return;
@@ -86,12 +95,13 @@ function drawShareCard(){
   const curTemp=Math.round(lastData.current.temperature_2m),cCode=lastData.current.weather_code,desc=weather(cCode)[0],sym=weather(cCode)[1];
   ctx.fillStyle='#ffffff';ctx.font='800 84px Manrope, sans-serif';ctx.fillText(`${curTemp}°`,40,270);
   ctx.fillStyle='#c9f25d';ctx.font='700 28px DM Sans, sans-serif';ctx.fillText(`${sym} ${desc}`,220,240);
-  ctx.fillStyle='#e1ebe7';ctx.font='500 18px DM Sans, sans-serif';ctx.fillText(`Max: ${Math.round(lastData.daily.temperature_2m_max[0])}° • Min: ${Math.round(lastData.daily.temperature_2m_min[0])}°`,220,272);
+  const copy=currentShareCopy();
+  ctx.fillStyle='#e1ebe7';ctx.font='500 18px DM Sans, sans-serif';ctx.fillText(`${copy.max}: ${Math.round(lastData.daily.temperature_2m_max[0])}° • ${copy.min}: ${Math.round(lastData.daily.temperature_2m_min[0])}°`,220,272);
   const metrics=[
-    {label:'Umidità',val:`${lastData.current.relative_humidity_2m}%`},
-    {label:'Vento',val:`${Math.round(lastData.current.wind_speed_10m)} km/h`},
-    {label:'UV Index',val:`${lastData.daily.uv_index_max[0].toFixed(1)}`},
-    {label:'Pioggia',val:`${lastData.daily.precipitation_probability_max[0]}%`}
+    {label:copy.humidity,val:`${lastData.current.relative_humidity_2m}%`},
+    {label:copy.wind,val:`${Math.round(lastData.current.wind_speed_10m)} km/h`},
+    {label:copy.uv,val:`${lastData.daily.uv_index_max[0].toFixed(1)}`},
+    {label:copy.rain,val:`${lastData.daily.precipitation_probability_max[0]}%`}
   ];
   metrics.forEach((m,i)=>{
     const bx=40+i*180,by=350;
@@ -100,7 +110,7 @@ function drawShareCard(){
     ctx.fillStyle='#a2c4b9';ctx.font='600 14px DM Sans, sans-serif';ctx.fillText(m.label,bx+16,by+32);
     ctx.fillStyle='#ffffff';ctx.font='800 22px Manrope, sans-serif';ctx.fillText(m.val,bx+16,by+68);
   });
-  ctx.fillStyle='#a2c4b9';ctx.font='500 13px DM Sans, sans-serif';ctx.fillText('meteo-ai.vercel.app • Dati Open-Meteo',40,475);
+  ctx.fillStyle='#a2c4b9';ctx.font='500 13px DM Sans, sans-serif';ctx.fillText(`meteo-ai.vercel.app • ${copy.data}`,40,475);
 }
 $('#shareCardBtn').onclick=()=>{drawShareCard();$('#shareModal').showModal()};
 $('#btnDownloadPng').onclick=()=>{
@@ -112,8 +122,8 @@ $('#btnShareNative').onclick=()=>{
   canvas.toBlob(async blob=>{
     if(navigator.share&&blob){
       const file=new File([blob],`meteo-${lastPlace.name}.png`,{type:'image/png'});
-      const shareUrl=new URL(location.href);shareUrl.searchParams.set('condiviso','20260723b');
-      const shareData={title:`Meteo ${lastPlace.name}`,text:`Ecco le previsioni per ${lastPlace.name} su Meteo AI`,url:shareUrl.href};
+      const copy=currentShareCopy();
+      const shareData={title:copy.title(lastPlace.name),text:copy.text(lastPlace.name),url:shareLink()};
       try{
         if(!navigator.canShare||navigator.canShare({files:[file]}))await navigator.share({...shareData,files:[file]});
         else await navigator.share(shareData);
@@ -123,7 +133,7 @@ $('#btnShareNative').onclick=()=>{
         }
       }
     }else{
-      try{const shareUrl=new URL(location.href);shareUrl.searchParams.set('condiviso','20260723b');await navigator.clipboard.writeText(shareUrl.href);toast('Link copiato. Puoi incollarlo sui social.')}catch(_){$('#btnDownloadPng').click()}
+      try{const copy=currentShareCopy(),text=`${copy.text(lastPlace.name)}\n${shareLink()}`;await navigator.clipboard.writeText(text);toast(copy.copied)}catch(_){$('#btnDownloadPng').click()}
     }
   });
 };

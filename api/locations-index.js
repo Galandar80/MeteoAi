@@ -143,7 +143,7 @@ module.exports = async function handler(req, res) {
     <p class="intro">${locale.directoryIntro}</p>
     ${countrySections || `<section class="country"><h2>${locale.directoryUpdating}</h2><p>${locale.directoryUpdatingCopy}</p></section>`}
   </main>
-  <footer><p><a href="${locale.homePath}">Meteo AI</a> • ${locale.footerDirectory}</p></footer>
+  <footer><p><a href="${locale.homePath}">Meteo AI</a> • <a href="${locale.howPath}">${escapeHtml(locale.howLabel)}</a> • <a href="${locale.widgetPath}">${escapeHtml(locale.widgetLabel)}</a></p><p>${locale.footerDirectory}</p></footer>
 </body>
 </html>`);
 };

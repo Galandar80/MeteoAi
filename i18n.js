@@ -76,6 +76,10 @@
   Object.assign(lexicons.fr,{'Il pianeta,':'La planète,','in tempo quasi reale.':'presque en temps réel.','Porta Meteo AI':'Ajoutez Meteo AI','sulla schermata Home.':"à l’écran d’accueil."});
   Object.assign(lexicons['pt-BR'],{'Il pianeta,':'O planeta,','in tempo quasi reale.':'quase em tempo real.','Porta Meteo AI':'Leve o Meteo AI','sulla schermata Home.':'para a tela inicial.'});
   Object.assign(lexicons.es,{'Il pianeta,':'El planeta,','in tempo quasi reale.':'casi en tiempo real.','Porta Meteo AI':'Lleva Meteo AI','sulla schermata Home.':'a la pantalla de inicio.'});
+  Object.assign(lexicons.en,{'Widget meteo':'Weather widget'});
+  Object.assign(lexicons.fr,{'Widget meteo':'Widget météo'});
+  Object.assign(lexicons['pt-BR'],{'Widget meteo':'Widget de previsão'});
+  Object.assign(lexicons.es,{'Widget meteo':'Widget del tiempo'});
   Object.assign(lexicons.en,{'Geolocalizzazione non supportata':'Geolocation is not supported','Il GPS richiede una connessione sicura HTTPS':'GPS requires a secure HTTPS connection','Permesso GPS non concesso':'GPS permission was not granted','Posizione non disponibile':'Location is unavailable','Posizione attuale':'Current location','Posizione non disponibile o autorizzazione negata.':'Location unavailable or permission denied.'});
   Object.assign(lexicons.fr,{'Geolocalizzazione non supportata':"La géolocalisation n’est pas prise en charge",'Il GPS richiede una connessione sicura HTTPS':'Le GPS nécessite une connexion HTTPS sécurisée','Permesso GPS non concesso':"L’autorisation GPS n’a pas été accordée",'Posizione non disponibile':'Position indisponible','Posizione attuale':'Position actuelle','Posizione non disponibile o autorizzazione negata.':'Position indisponible ou autorisation refusée.'});
   Object.assign(lexicons['pt-BR'],{'Geolocalizzazione non supportata':'Geolocalização não suportada','Il GPS richiede una connessione sicura HTTPS':'O GPS requer uma conexão HTTPS segura','Permesso GPS non concesso':'A permissão de GPS não foi concedida','Posizione non disponibile':'Localização indisponível','Posizione attuale':'Localização atual','Posizione non disponibile o autorizzazione negata.':'Localização indisponível ou permissão negada.'});
@@ -157,6 +161,8 @@
     }
     let fallback=document.querySelector('link[rel="alternate"][hreflang="x-default"]');if(!fallback){fallback=document.createElement('link');fallback.rel='alternate';fallback.hreflang='x-default';document.head.append(fallback)}fallback.href=origin+localizedPath('it',kind);
     const ogUrl=document.querySelector('meta[property="og:url"]');if(ogUrl)ogUrl.content=origin+localizedPath(language,kind);
+    const growth={how:{it:'/come-funziona',en:'/en/how-it-works',fr:'/fr/comment-ca-marche','pt-BR':'/pt-br/como-funciona',es:'/es/como-funciona'},widget:{it:'/widget',en:'/en/widget',fr:'/fr/widget','pt-BR':'/pt-br/widget',es:'/es/widget'}};
+    document.querySelectorAll('[data-growth-link]').forEach(link=>{const routes=growth[link.dataset.growthLink];if(routes)link.href=routes[language]});
   }
   function selector(){
     let select=document.getElementById('languageSelect');if(select)return select;

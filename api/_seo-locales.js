@@ -63,7 +63,10 @@ const LOCALES = {
     directoryIntro: 'Questa directory non genera pagine in massa: include il nucleo iniziale di località rilevanti e si amplia quando una nuova località viene realmente utilizzata nell’app. I collegamenti per paese e regione aiutano persone e motori di ricerca a raggiungere le previsioni più utili.',
     weatherIn: country => `Meteo in ${country}`, placeWeather: name => `Meteo ${name}`, todayTomorrow: 'Oggi, domani e 7 giorni',
     directoryUpdating: 'Directory in aggiornamento', directoryUpdatingCopy: 'Le località attive saranno nuovamente disponibili a breve.',
-    footerDirectory: 'Previsioni meteo globali, gratuite e senza registrazione', pathLabel: 'Percorso'
+    footerDirectory: 'Previsioni meteo globali, gratuite e senza registrazione', pathLabel: 'Percorso',
+    howPath: '/come-funziona', widgetPath: '/widget', howLabel: 'Come funziona', widgetLabel: 'Widget meteo',
+    shareButton: 'Condividi previsione', shareCopied: 'Testo e link copiati',
+    shareText: (name, condition, temperature) => `Meteo ${name} oggi: ${condition}, ${temperature} °C. Scopri oggi, domani e i prossimi 7 giorni su Meteo AI.`
   },
   en: {
     code: 'en', locale: 'en-GB', hreflang: 'en', ogLocale: 'en_GB',
@@ -99,7 +102,10 @@ const LOCALES = {
     directoryIntro: 'This directory does not generate pages in bulk: it includes relevant locations and grows when a new place is actually used in the app. Country and region links help people and search engines reach the most useful forecasts.',
     weatherIn: country => `Weather in ${country}`, placeWeather: name => `${name} weather`, todayTomorrow: 'Today, tomorrow and 7 days',
     directoryUpdating: 'Directory updating', directoryUpdatingCopy: 'Active locations will be available again shortly.',
-    footerDirectory: 'Free worldwide weather forecasts with no registration', pathLabel: 'Breadcrumb'
+    footerDirectory: 'Free worldwide weather forecasts with no registration', pathLabel: 'Breadcrumb',
+    howPath: '/en/how-it-works', widgetPath: '/en/widget', howLabel: 'How it works', widgetLabel: 'Weather widget',
+    shareButton: 'Share forecast', shareCopied: 'Text and link copied',
+    shareText: (name, condition, temperature) => `${name} weather today: ${condition}, ${temperature} °C. See today, tomorrow and the next 7 days on Meteo AI.`
   },
   fr: {
     code: 'fr', locale: 'fr-FR', hreflang: 'fr', ogLocale: 'fr_FR',
@@ -135,7 +141,10 @@ const LOCALES = {
     directoryIntro: 'Ce répertoire ne génère pas de pages en masse : il contient des localités pertinentes et s’enrichit lorsqu’un nouveau lieu est réellement utilisé dans l’application. Les liens par pays et région aident les personnes et les moteurs de recherche à trouver les prévisions les plus utiles.',
     weatherIn: country => `Météo en ${country}`, placeWeather: name => `Météo ${name}`, todayTomorrow: 'Aujourd’hui, demain et 7 jours',
     directoryUpdating: 'Répertoire en cours de mise à jour', directoryUpdatingCopy: 'Les localités actives seront à nouveau disponibles prochainement.',
-    footerDirectory: 'Prévisions météo mondiales gratuites et sans inscription', pathLabel: 'Fil d’Ariane'
+    footerDirectory: 'Prévisions météo mondiales gratuites et sans inscription', pathLabel: 'Fil d’Ariane',
+    howPath: '/fr/comment-ca-marche', widgetPath: '/fr/widget', howLabel: 'Comment ça marche', widgetLabel: 'Widget météo',
+    shareButton: 'Partager les prévisions', shareCopied: 'Texte et lien copiés',
+    shareText: (name, condition, temperature) => `Météo ${name} aujourd’hui : ${condition}, ${temperature} °C. Consultez aujourd’hui, demain et les 7 prochains jours sur Meteo AI.`
   },
   'pt-BR': {
     code: 'pt-BR', locale: 'pt-BR', hreflang: 'pt-BR', ogLocale: 'pt_BR',
@@ -171,7 +180,10 @@ const LOCALES = {
     directoryIntro: 'Esta lista não cria páginas em massa: inclui localidades relevantes e cresce quando um novo local é realmente usado no aplicativo. Os links por país e região ajudam pessoas e buscadores a encontrar as previsões mais úteis.',
     weatherIn: country => `Previsão do tempo em ${country}`, placeWeather: name => `Previsão ${name}`, todayTomorrow: 'Hoje, amanhã e 7 dias',
     directoryUpdating: 'Lista em atualização', directoryUpdatingCopy: 'As localidades ativas estarão disponíveis novamente em breve.',
-    footerDirectory: 'Previsões globais gratuitas e sem cadastro', pathLabel: 'Navegação'
+    footerDirectory: 'Previsões globais gratuitas e sem cadastro', pathLabel: 'Navegação',
+    howPath: '/pt-br/como-funciona', widgetPath: '/pt-br/widget', howLabel: 'Como funciona', widgetLabel: 'Widget de previsão',
+    shareButton: 'Compartilhar previsão', shareCopied: 'Texto e link copiados',
+    shareText: (name, condition, temperature) => `Previsão do tempo em ${name} hoje: ${condition}, ${temperature} °C. Veja hoje, amanhã e os próximos 7 dias no Meteo AI.`
   },
   es: {
     code: 'es', locale: 'es-ES', hreflang: 'es', ogLocale: 'es_ES',
@@ -207,7 +219,10 @@ const LOCALES = {
     directoryIntro: 'Este directorio no genera páginas en masa: incluye localidades relevantes y crece cuando un nuevo lugar se utiliza realmente en la aplicación. Los enlaces por país y región ayudan a personas y buscadores a encontrar las previsiones más útiles.',
     weatherIn: country => `El tiempo en ${country}`, placeWeather: name => `Tiempo ${name}`, todayTomorrow: 'Hoy, mañana y 7 días',
     directoryUpdating: 'Directorio en actualización', directoryUpdatingCopy: 'Las localidades activas volverán a estar disponibles en breve.',
-    footerDirectory: 'Previsiones meteorológicas globales, gratuitas y sin registro', pathLabel: 'Ruta de navegación'
+    footerDirectory: 'Previsiones meteorológicas globales, gratuitas y sin registro', pathLabel: 'Ruta de navegación',
+    howPath: '/es/como-funciona', widgetPath: '/es/widget', howLabel: 'Cómo funciona', widgetLabel: 'Widget del tiempo',
+    shareButton: 'Compartir previsión', shareCopied: 'Texto y enlace copiados',
+    shareText: (name, condition, temperature) => `El tiempo en ${name} hoy: ${condition}, ${temperature} °C. Consulta hoy, mañana y los próximos 7 días en Meteo AI.`
   }
 };
 

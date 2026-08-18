@@ -12,6 +12,17 @@
     }
   ],
   "rewrites": [
+    { "source": "/come-funziona", "destination": "/api/about-page?lang=it" },
+    { "source": "/en/how-it-works", "destination": "/api/about-page?lang=en" },
+    { "source": "/fr/comment-ca-marche", "destination": "/api/about-page?lang=fr" },
+    { "source": "/pt-br/como-funciona", "destination": "/api/about-page?lang=pt-BR" },
+    { "source": "/es/como-funciona", "destination": "/api/about-page?lang=es" },
+    { "source": "/widget", "destination": "/api/widget-page?lang=it" },
+    { "source": "/en/widget", "destination": "/api/widget-page?lang=en" },
+    { "source": "/fr/widget", "destination": "/api/widget-page?lang=fr" },
+    { "source": "/pt-br/widget", "destination": "/api/widget-page?lang=pt-BR" },
+    { "source": "/es/widget", "destination": "/api/widget-page?lang=es" },
+    { "source": "/embed/weather", "destination": "/api/weather-widget" },
     {
       "source": "/en",
       "destination": "/api/localized-page?lang=en&page=home"
