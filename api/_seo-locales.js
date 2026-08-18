@@ -69,7 +69,7 @@ const LOCALES = {
     code: 'en', locale: 'en-GB', hreflang: 'en', ogLocale: 'en_GB',
     homePath: '/en', directoryPath: '/en/locations', locationSegment: 'weather',
     navForecast: 'Forecast', navLocations: 'Locations', directoryName: 'Weather locations',
-    title: name => `Weather ${name}: today, tomorrow and 7 days | Meteo AI`,
+    title: name => `${name} weather: today, tomorrow and 7 days | Meteo AI`,
     description: (name, area) => `Weather in ${name} today and tomorrow: temperature, rain, wind and this week's forecast. Updated data for ${area}.`,
     h1: name => `Weather in ${name} today, tomorrow and this week`,
     hero: area => `Forecast for ${area}: temperature, chance of rain and wind for today, tomorrow and the next seven days.`,

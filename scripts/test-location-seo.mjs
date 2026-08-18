@@ -88,6 +88,7 @@ await handler(
 );
 assert.equal(english.headers['Content-Language'], 'en-GB');
 assert.match(english.body, /Weather in Rome today, tomorrow and this week/);
+assert.match(english.body, /<title>Rome weather: today, tomorrow and 7 days \| Meteo AI<\/title>/);
 assert.match(english.body, /rel="canonical" href="https:\/\/meteo-ai\.vercel\.app\/en\/weather\/it\/lazio\/rome-3169070"/);
 
 const french = responseRecorder();
