@@ -4,13 +4,13 @@ const vm=require('node:vm');
 
 const ORIGIN=process.env.SITE_ORIGIN||'https://meteo-ai.vercel.app';
 const PROJECT_ROOT=path.join(__dirname,'..');
-const LOCALES={en:'en-GB',fr:'fr-FR','pt-BR':'pt-BR'};
-const PREFIX={en:'en',fr:'fr','pt-BR':'pt-br'};
+const LOCALES={en:'en-GB',fr:'fr-FR','pt-BR':'pt-BR',es:'es-ES'};
+const PREFIX={en:'en',fr:'fr','pt-BR':'pt-br',es:'es'};
 const FILES={home:'index.html',world:'world-live.html',install:'installa.html'};
 const ROUTES={
-  home:{it:'/',en:'/en',fr:'/fr','pt-BR':'/pt-br'},
-  world:{it:'/world-live.html',en:'/en/world-live',fr:'/fr/world-live','pt-BR':'/pt-br/world-live'},
-  install:{it:'/installa.html',en:'/en/install',fr:'/fr/install','pt-BR':'/pt-br/install'}
+  home:{it:'/',en:'/en',fr:'/fr','pt-BR':'/pt-br',es:'/es'},
+  world:{it:'/world-live.html',en:'/en/world-live',fr:'/fr/world-live','pt-BR':'/pt-br/world-live',es:'/es/world-live'},
+  install:{it:'/installa.html',en:'/en/install',fr:'/fr/install','pt-BR':'/pt-br/install',es:'/es/install'}
 };
 const META={
   en:{
@@ -27,6 +27,11 @@ const META={
     home:{title:'Clima hoje e previsão mundial de 14 dias | Meteo AI',description:'Previsão do tempo mundial com temperatura, chuva, vento, mar, qualidade do ar, comparação histórica e mapas.'},
     world:{title:'Mundo ao vivo — Eventos e riscos naturais | Meteo AI',description:'Terremotos, ciclones, vulcões, incêndios, inundações e alertas de tsunami de fontes públicas internacionais.'},
     install:{title:'Instale o Meteo AI grátis | Android, iPhone e computador',description:'Adicione o Meteo AI à tela inicial para acesso rápido, experiência em tela cheia e sem necessidade de conta.'}
+  },
+  es:{
+    home:{title:'El tiempo hoy y previsión mundial de 14 días | Meteo AI',description:'Previsión meteorológica mundial con temperatura, lluvia, viento, mar, calidad del aire, comparación histórica y mapas.'},
+    world:{title:'Mundo en directo — Eventos y riesgos naturales | Meteo AI',description:'Terremotos, ciclones, volcanes, incendios, inundaciones y avisos de tsunami procedentes de fuentes públicas internacionales.'},
+    install:{title:'Instala Meteo AI gratis | Android, iPhone y ordenador',description:'Añade Meteo AI a la pantalla de inicio para un acceso rápido, una experiencia a pantalla completa y sin necesidad de cuenta.'}
   }
 };
 

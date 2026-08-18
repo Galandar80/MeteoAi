@@ -25,6 +25,10 @@
       "destination": "/api/localized-page?lang=pt-BR&page=home"
     },
     {
+      "source": "/es",
+      "destination": "/api/localized-page?lang=es&page=home"
+    },
+    {
       "source": "/en/world-live",
       "destination": "/api/localized-page?lang=en&page=world"
     },
@@ -35,6 +39,10 @@
     {
       "source": "/pt-br/world-live",
       "destination": "/api/localized-page?lang=pt-BR&page=world"
+    },
+    {
+      "source": "/es/world-live",
+      "destination": "/api/localized-page?lang=es&page=world"
     },
     {
       "source": "/en/install",
@@ -49,12 +57,32 @@
       "destination": "/api/localized-page?lang=pt-BR&page=install"
     },
     {
+      "source": "/es/install",
+      "destination": "/api/localized-page?lang=es&page=install"
+    },
+    {
       "source": "/sitemaps/localita-attive.xml",
       "destination": "/api/seo-sitemap?kind=locations"
     },
     {
       "source": "/localita",
       "destination": "/api/locations-index"
+    },
+    {
+      "source": "/pt-br/localidades",
+      "destination": "/api/locations-index?lang=pt-BR"
+    },
+    {
+      "source": "/es/localidades",
+      "destination": "/api/locations-index?lang=es"
+    },
+    {
+      "source": "/pt-br/previsao/:country/:region/:place",
+      "destination": "/api/meteo-page?lang=pt-BR&country=:country&region=:region&place=:place"
+    },
+    {
+      "source": "/es/tiempo/:country/:region/:place",
+      "destination": "/api/meteo-page?lang=es&country=:country&region=:region&place=:place"
     },
     {
       "source": "/meteo/:country/:region/:place",
@@ -73,6 +101,20 @@
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
         }
+      ]
+    },
+    {
+      "source": "/pt-br/previsao/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/es/tiempo/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
   ]

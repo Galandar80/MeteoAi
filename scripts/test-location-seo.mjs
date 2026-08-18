@@ -69,6 +69,29 @@ assert.doesNotMatch(found.body, /canavieiras-3467577/);
 assert.doesNotMatch(found.body, /https:\/\/meteo-ai\.vercel\.app\/meteo\/it["#]/);
 assert.doesNotMatch(found.body, /\bundefined\b|\bNaN\b/);
 
+const portuguese = responseRecorder();
+await handler(
+  { query: { lang: 'pt-BR', country: 'it', region: 'sicily', place: 'messina-2524170' } },
+  portuguese
+);
+assert.equal(portuguese.statusCode, 200);
+assert.equal(portuguese.headers['Content-Language'], 'pt-BR');
+assert.match(portuguese.body, /<html lang="pt-BR">/);
+assert.match(portuguese.body, /Previsão do tempo em Messina hoje, amanhã e esta semana/);
+assert.match(portuguese.body, /rel="canonical" href="https:\/\/meteo-ai\.vercel\.app\/pt-br\/previsao\/it\/sicily\/messina-2524170"/);
+assert.match(portuguese.body, /hreflang="es" href="https:\/\/meteo-ai\.vercel\.app\/es\/tiempo\/it\/sicily\/messina-2524170"/);
+
+const spanish = responseRecorder();
+await handler(
+  { query: { lang: 'es', country: 'it', region: 'sicily', place: 'messina-2524170' } },
+  spanish
+);
+assert.equal(spanish.statusCode, 200);
+assert.equal(spanish.headers['Content-Language'], 'es-ES');
+assert.match(spanish.body, /El tiempo en Messina hoy, mañana y esta semana/);
+assert.match(spanish.body, /<title>Tiempo en Messina: hoy, mañana y 7 días \| Meteo AI<\/title>/);
+assert.match(spanish.body, /href="\/es\/tiempo\/it\/[^\"]+"/);
+
 const missing = responseRecorder();
 await handler(
   { query: { place: 'inesistente-999999999' }, url: '/api/meteo-page?place=inesistente-999999999' },
@@ -97,5 +120,12 @@ assert.match(index.body, /Meteo Rome/);
 assert.match(index.body, /CollectionPage/);
 assert.doesNotMatch(index.body, /canavieiras-3467577/);
 assert.doesNotMatch(index.body, /\bundefined\b|\bNaN\b/);
+
+const spanishIndex = responseRecorder();
+await locationsIndexHandler({ query: { lang: 'es' } }, spanishIndex);
+assert.equal(spanishIndex.headers['Content-Language'], 'es-ES');
+assert.match(spanishIndex.body, /Localidades meteorológicas activas en Meteo AI/);
+assert.match(spanishIndex.body, /href="\/es\/tiempo\/it\/lazio\/rome-3169070"/);
+assert.match(spanishIndex.body, /hreflang="pt-BR" href="https:\/\/meteo-ai\.vercel\.app\/pt-br\/localidades"/);
 
 console.log('Pagine località: test completato con successo.');

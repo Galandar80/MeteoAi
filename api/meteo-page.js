@@ -16,6 +16,14 @@ const localities = [
 const SITE_ORIGIN = process.env.SITE_ORIGIN || 'https://meteo-ai.vercel.app';
 const byId = new Map(localities.map(place => [String(place.id), place]));
 const { activePlaces } = require('./_location-seo.js');
+const {
+  localeFor,
+  LOCALES,
+  localizedPlacePath,
+  localizedDirectoryAnchor,
+  displayCountry,
+  alternateLinks
+} = require('./_seo-locales.js');
 
 const escapeHtml = value => String(value ?? '')
   .replaceAll('&', '&amp;')
@@ -35,6 +43,23 @@ const weatherLabels = {
   99: 'temporale forte'
 };
 
+const translatedWeatherLabels = {
+  'pt-BR': {
+    0: 'céu limpo', 1: 'predominantemente limpo', 2: 'parcialmente nublado', 3: 'nublado',
+    45: 'nevoeiro', 48: 'nevoeiro com geada', 51: 'garoa fraca', 53: 'garoa', 55: 'garoa forte',
+    61: 'chuva fraca', 63: 'chuva', 65: 'chuva forte', 71: 'neve fraca', 73: 'neve', 75: 'neve forte',
+    80: 'pancadas fracas', 81: 'pancadas de chuva', 82: 'pancadas fortes', 95: 'trovoada',
+    96: 'trovoada com granizo', 99: 'trovoada forte'
+  },
+  es: {
+    0: 'despejado', 1: 'mayormente despejado', 2: 'parcialmente nublado', 3: 'nublado',
+    45: 'niebla', 48: 'niebla con escarcha', 51: 'llovizna débil', 53: 'llovizna', 55: 'llovizna intensa',
+    61: 'lluvia débil', 63: 'lluvia', 65: 'lluvia intensa', 71: 'nieve débil', 73: 'nieve', 75: 'nieve intensa',
+    80: 'chubascos débiles', 81: 'chubascos', 82: 'chubascos intensos', 95: 'tormenta',
+    96: 'tormenta con granizo', 99: 'tormenta fuerte'
+  }
+};
+
 const weatherIcons = code => {
   if (code === 0) return '☀️';
   if ([1, 2].includes(code)) return '🌤️';
@@ -44,9 +69,11 @@ const weatherIcons = code => {
   return '🌧️';
 };
 
-const formatNumber = number => new Intl.NumberFormat('it-IT').format(number || 0);
-const formatDay = date => new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'short' }).format(new Date(`${date}T12:00:00`));
+const formatNumber = (number, locale) => new Intl.NumberFormat(locale).format(number || 0);
+const formatDay = (date, locale) => new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'short' }).format(new Date(`${date}T12:00:00`));
 const rounded = value => Number.isFinite(Number(value)) ? Math.round(Number(value)) : '—';
+
+const conditionLabel = (code, language, fallback) => translatedWeatherLabels[language]?.[code] || weatherLabels[code] || fallback;
 
 const distanceKm = (left, right) => {
   const toRadians = degrees => degrees * Math.PI / 180;
@@ -99,25 +126,34 @@ async function loadForecast(place) {
   }
 }
 
-function notFound(res) {
+function notFound(res, language = 'it') {
+  const locale = localeFor(language);
+  const copy = locale.code === 'pt-BR'
+    ? { title: 'Localidade não encontrada', link: 'Pesquise outra localidade no Meteo AI' }
+    : locale.code === 'es'
+      ? { title: 'Localidad no encontrada', link: 'Busca otra localidad en Meteo AI' }
+      : { title: 'Località non trovata', link: 'Cerca un’altra località su Meteo AI' };
   res.statusCode = 404;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('X-Robots-Tag', 'noindex,follow');
-  res.end('<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="robots" content="noindex,follow"><title>Località non trovata | Meteo AI</title></head><body><main><h1>Località non trovata</h1><p><a href="/">Cerca un’altra località su Meteo AI</a></p></main></body></html>');
+  res.end(`<!doctype html><html lang="${locale.locale}"><head><meta charset="utf-8"><meta name="robots" content="noindex,follow"><title>${copy.title} | Meteo AI</title></head><body><main><h1>${copy.title}</h1><p><a href="${locale.homePath}">${copy.link}</a></p></main></body></html>`);
 }
 
 module.exports = async function handler(req, res) {
+  const language = localeFor(req.query?.lang).code;
+  const locale = localeFor(language);
   const placeToken = String(req.query?.place || '');
   const id = placeToken.match(/-(\d+)$/)?.[1];
   const place = id ? byId.get(id) : null;
-  if (!place) return notFound(res);
+  if (!place) return notFound(res, language);
 
   const requestedPath = req.query?.country && req.query?.region
-    ? `/meteo/${req.query.country}/${req.query.region}/${placeToken}`
+    ? `${locale.homePath === '/' ? '' : locale.homePath}/${locale.locationSegment}/${req.query.country}/${req.query.region}/${placeToken}`
     : '';
-  if (requestedPath && requestedPath !== place.path) {
+  const expectedPath = localizedPlacePath(place, language);
+  if (requestedPath && requestedPath !== expectedPath) {
     res.statusCode = 308;
-    res.setHeader('Location', place.path);
+    res.setHeader('Location', expectedPath);
     return res.end();
   }
 
@@ -126,18 +162,22 @@ module.exports = async function handler(req, res) {
     activePlaces().catch(() => [])
   ]);
 
-  const canonical = `${SITE_ORIGIN}${place.path}`;
-  const areaLabel = [place.ad, place.c].filter(Boolean).join(', ');
-  const title = `Meteo ${place.n}: oggi, domani e 7 giorni | Meteo AI`;
-  const description = `Meteo ${place.n} oggi e domani: temperature, pioggia, vento e previsioni per questa settimana. Dati aggiornati per ${areaLabel}.`;
+  const canonical = `${SITE_ORIGIN}${expectedPath}`;
+  const languageLinks = [
+    ['it', 'IT'], ['pt-BR', 'PT'], ['es', 'ES']
+  ].map(([code, label]) => `<a lang="${LOCALES[code].locale}" href="${localizedPlacePath(place, code)}"${language === code ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+  const countryName = displayCountry(place, language);
+  const areaLabel = [place.ad, countryName].filter(Boolean).join(', ');
+  const title = locale.title(place.n);
+  const description = locale.description(place.n, areaLabel);
   const current = forecast?.current;
   const daily = forecast?.daily;
   const currentCode = current?.weather_code;
-  const currentLabel = weatherLabels[currentCode] || 'condizioni variabili';
+  const currentLabel = conditionLabel(currentCode, language, locale.variableConditions);
   const nearby = nearbyPlaces(place, active);
   const inRegion = regionPlaces(place, active);
-  const countryAnchor = `/localita#paese-${slug(place.cc)}`;
-  const regionAnchor = `/localita#regione-${slug(place.cc)}-${slug(place.ad)}`;
+  const countryAnchor = localizedDirectoryAnchor(place, language);
+  const regionAnchor = localizedDirectoryAnchor(place, language, true);
   const appQuery = new URLSearchParams({
     localita: place.n,
     lat: place.lat,
@@ -150,13 +190,13 @@ module.exports = async function handler(req, res) {
 
   const forecastRows = daily?.time?.map((date, index) => `
     <tr>
-      <th scope="row">${escapeHtml(formatDay(date))}</th>
-      <td><span aria-hidden="true">${weatherIcons(daily.weather_code[index])}</span> ${escapeHtml(weatherLabels[daily.weather_code[index]] || 'variabile')}</td>
+      <th scope="row">${escapeHtml(formatDay(date, locale.locale))}</th>
+      <td><span aria-hidden="true">${weatherIcons(daily.weather_code[index])}</span> ${escapeHtml(conditionLabel(daily.weather_code[index], language, locale.variable))}</td>
       <td><strong>${rounded(daily.temperature_2m_max[index])}°</strong> / ${rounded(daily.temperature_2m_min[index])}°</td>
       <td>${rounded(daily.precipitation_probability_max[index])}%</td>
       <td>${rounded(daily.wind_speed_10m_max[index])} km/h</td>
     </tr>`).join('') || `
-    <tr><td colspan="5">Previsioni temporaneamente non disponibili. Apri l’app per riprovare.</td></tr>`;
+    <tr><td colspan="5">${locale.unavailable}</td></tr>`;
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -167,7 +207,7 @@ module.exports = async function handler(req, res) {
         url: canonical,
         name: title,
         description,
-        inLanguage: 'it-IT',
+        inLanguage: locale.locale,
         isPartOf: { '@id': `${SITE_ORIGIN}/#website` },
         about: { '@id': `${canonical}#place` },
         dateModified: new Date().toISOString()
@@ -190,10 +230,10 @@ module.exports = async function handler(req, res) {
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Meteo AI', item: `${SITE_ORIGIN}/` },
-          { '@type': 'ListItem', position: 2, name: 'Località meteo', item: `${SITE_ORIGIN}/localita` },
-          { '@type': 'ListItem', position: 3, name: place.c, item: `${SITE_ORIGIN}${countryAnchor}` },
-          { '@type': 'ListItem', position: 4, name: place.ad || place.c, item: `${SITE_ORIGIN}${regionAnchor}` },
+          { '@type': 'ListItem', position: 1, name: 'Meteo AI', item: `${SITE_ORIGIN}${locale.homePath}` },
+          { '@type': 'ListItem', position: 2, name: locale.directoryName, item: `${SITE_ORIGIN}${locale.directoryPath}` },
+          { '@type': 'ListItem', position: 3, name: countryName, item: `${SITE_ORIGIN}${countryAnchor}` },
+          { '@type': 'ListItem', position: 4, name: place.ad || countryName, item: `${SITE_ORIGIN}${regionAnchor}` },
           { '@type': 'ListItem', position: 5, name: place.n, item: canonical }
         ]
       }
@@ -203,9 +243,10 @@ module.exports = async function handler(req, res) {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=86400');
+  res.setHeader('Content-Language', locale.locale);
   res.setHeader('X-Robots-Tag', 'index,follow,max-image-preview:large,max-snippet:-1');
   res.end(`<!doctype html>
-<html lang="it">
+<html lang="${locale.locale}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -213,7 +254,7 @@ module.exports = async function handler(req, res) {
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta name="theme-color" content="#0d7b57">
   <meta property="og:type" content="website">
-  <meta property="og:locale" content="it_IT">
+  <meta property="og:locale" content="${locale.ogLocale}">
   <meta property="og:site_name" content="Meteo AI">
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
@@ -224,78 +265,80 @@ module.exports = async function handler(req, res) {
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Meteo AI — Il meteo reale, reso semplice">
+  <meta property="og:image:alt" content="Meteo AI">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${escapeHtml(title)}">
   <meta name="twitter:description" content="${escapeHtml(description)}">
   <meta name="twitter:image" content="${SITE_ORIGIN}/social-preview.jpg?v=20260723b">
-  <meta name="twitter:image:alt" content="Meteo AI — Il meteo reale, reso semplice">
+  <meta name="twitter:image:alt" content="Meteo AI">
   <link rel="canonical" href="${escapeHtml(canonical)}">
+  ${alternateLinks(place)}
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <title>${escapeHtml(title)}</title>
   <script type="application/ld+json">${jsonForHtml(structuredData)}</script>
   <style>
-    :root{--bg:#f4f7f4;--surface:#fff;--ink:#13231e;--muted:#63716c;--green:#0d7b57;--lime:#c9f25d;--line:#dfe6e1;--navy:#102d26}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.top{display:flex;align-items:center;justify-content:space-between;padding:18px max(4vw,22px);background:#fff;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-weight:800;text-decoration:none}.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--green);color:#fff}.top nav{display:flex;gap:18px}.top nav a{color:var(--muted);font-size:14px;text-decoration:none}.breadcrumbs{max-width:1080px;margin:auto;padding:15px 22px 0;color:var(--muted);font-size:13px}.breadcrumbs a{color:var(--green);text-decoration:none}.hero{padding:55px 22px 46px;text-align:center;background:radial-gradient(circle at 82% 0,rgba(201,242,93,.28),transparent 24%)}.eyebrow{color:var(--green);font-size:11px;font-weight:800;letter-spacing:1.4px}.hero h1{max-width:980px;margin:14px auto 12px;font-size:clamp(36px,6vw,66px);line-height:1.04;letter-spacing:-2px}.hero p{max-width:720px;margin:0 auto;color:var(--muted);font-size:18px;line-height:1.6}.current{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;max-width:920px;margin:30px auto 0;padding:23px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 18px 50px rgba(20,45,37,.09);text-align:left}.current-icon{font-size:48px}.current strong{display:block;font-size:28px}.current span{color:var(--muted)}.current-temp{font-size:48px!important;color:var(--green)}main{max-width:1080px;margin:auto;padding:18px 22px 70px}.actions{display:flex;justify-content:center;margin:20px 0 38px}.primary{display:inline-block;border-radius:12px;padding:14px 20px;background:var(--green);color:#fff;text-decoration:none;font-weight:800}.panel{margin-top:18px;padding:26px;border:1px solid var(--line);border-radius:20px;background:#fff}.panel h2{margin:0 0 16px;font-size:26px}.panel-lead{margin:-8px 0 18px;color:var(--muted);line-height:1.6}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{font-size:13px}td{color:var(--muted)}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.fact{padding:16px;border-radius:13px;background:var(--bg)}.fact small,.fact strong{display:block}.fact small{color:var(--muted);margin-bottom:5px}.nearby{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.nearby a{display:block;padding:15px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none}.nearby a:hover{border-color:var(--green)}.nearby small{display:block;color:var(--muted);margin-top:4px}.copy{color:var(--muted);line-height:1.7}.copy strong{color:var(--ink)}footer{padding:35px 20px;background:var(--navy);color:#b8c9c3;text-align:center}footer a{color:var(--lime)}@media(max-width:700px){.top nav{display:none}.current{grid-template-columns:auto 1fr}.current-temp{grid-column:1/-1}.facts,.nearby{grid-template-columns:1fr 1fr}.hero{padding-top:42px}}@media(max-width:460px){.facts,.nearby{grid-template-columns:1fr}}
+    :root{--bg:#f4f7f4;--surface:#fff;--ink:#13231e;--muted:#63716c;--green:#0d7b57;--lime:#c9f25d;--line:#dfe6e1;--navy:#102d26}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.top{display:flex;align-items:center;justify-content:space-between;padding:18px max(4vw,22px);background:#fff;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-weight:800;text-decoration:none}.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--green);color:#fff}.top nav{display:flex;gap:18px}.top nav a{color:var(--muted);font-size:14px;text-decoration:none}.languages{gap:8px!important}.languages a[aria-current="page"]{color:var(--green);font-weight:800}.breadcrumbs{max-width:1080px;margin:auto;padding:15px 22px 0;color:var(--muted);font-size:13px}.breadcrumbs a{color:var(--green);text-decoration:none}.hero{padding:55px 22px 46px;text-align:center;background:radial-gradient(circle at 82% 0,rgba(201,242,93,.28),transparent 24%)}.eyebrow{color:var(--green);font-size:11px;font-weight:800;letter-spacing:1.4px}.hero h1{max-width:980px;margin:14px auto 12px;font-size:clamp(36px,6vw,66px);line-height:1.04;letter-spacing:-2px}.hero p{max-width:720px;margin:0 auto;color:var(--muted);font-size:18px;line-height:1.6}.current{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;max-width:920px;margin:30px auto 0;padding:23px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 18px 50px rgba(20,45,37,.09);text-align:left}.current-icon{font-size:48px}.current strong{display:block;font-size:28px}.current span{color:var(--muted)}.current-temp{font-size:48px!important;color:var(--green)}main{max-width:1080px;margin:auto;padding:18px 22px 70px}.actions{display:flex;justify-content:center;margin:20px 0 38px}.primary{display:inline-block;border-radius:12px;padding:14px 20px;background:var(--green);color:#fff;text-decoration:none;font-weight:800}.panel{margin-top:18px;padding:26px;border:1px solid var(--line);border-radius:20px;background:#fff}.panel h2{margin:0 0 16px;font-size:26px}.panel-lead{margin:-8px 0 18px;color:var(--muted);line-height:1.6}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{font-size:13px}td{color:var(--muted)}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.fact{padding:16px;border-radius:13px;background:var(--bg)}.fact small,.fact strong{display:block}.fact small{color:var(--muted);margin-bottom:5px}.nearby{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.nearby a{display:block;padding:15px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none}.nearby a:hover{border-color:var(--green)}.nearby small{display:block;color:var(--muted);margin-top:4px}.copy{color:var(--muted);line-height:1.7}.copy strong{color:var(--ink)}footer{padding:35px 20px;background:var(--navy);color:#b8c9c3;text-align:center}footer a{color:var(--lime)}@media(max-width:700px){.top nav:not(.languages){display:none}.current{grid-template-columns:auto 1fr}.current-temp{grid-column:1/-1}.facts,.nearby{grid-template-columns:1fr 1fr}.hero{padding-top:42px}}@media(max-width:460px){.facts,.nearby{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="/"><span class="mark">M</span><span>Meteo AI</span></a>
-    <nav aria-label="Navigazione principale"><a href="/">Previsioni</a><a href="/localita">Località</a><a href="/world-live.html">Mondo Live</a></nav>
+    <a class="brand" href="${locale.homePath}"><span class="mark">M</span><span>Meteo AI</span></a>
+    <nav aria-label="${escapeHtml(locale.pathLabel)}"><a href="${locale.homePath}">${locale.navForecast}</a><a href="${locale.directoryPath}">${locale.navLocations}</a></nav>
+    <nav class="languages" aria-label="Language">${languageLinks}</nav>
   </header>
-  <nav class="breadcrumbs" aria-label="Percorso"><a href="/">Meteo AI</a> › <a href="/localita">Località meteo</a> › <a href="${escapeHtml(countryAnchor)}">${escapeHtml(place.c)}</a> › <a href="${escapeHtml(regionAnchor)}">${escapeHtml(place.ad || place.c)}</a> › <span>${escapeHtml(place.n)}</span></nav>
+  <nav class="breadcrumbs" aria-label="${escapeHtml(locale.pathLabel)}"><a href="${locale.homePath}">Meteo AI</a> › <a href="${locale.directoryPath}">${locale.directoryName}</a> › <a href="${escapeHtml(countryAnchor)}">${escapeHtml(countryName)}</a> › <a href="${escapeHtml(regionAnchor)}">${escapeHtml(place.ad || countryName)}</a> › <span>${escapeHtml(place.n)}</span></nav>
   <section class="hero">
-    <div class="eyebrow">METEO LOCALE • DATI AGGIORNATI</div>
-    <h1>Meteo ${escapeHtml(place.n)} oggi, domani e questa settimana</h1>
-    <p>Previsioni per ${escapeHtml(areaLabel)}: temperatura, probabilità di pioggia e vento per oggi, domani e i prossimi sette giorni.</p>
+    <div class="eyebrow">${locale.eyebrow}</div>
+    <h1>${escapeHtml(locale.h1(place.n))}</h1>
+    <p>${escapeHtml(locale.hero(areaLabel))}</p>
     <div class="current">
       <div class="current-icon" aria-hidden="true">${weatherIcons(currentCode)}</div>
-      <div><strong>${escapeHtml(currentLabel)}</strong><span>Percepita ${rounded(current?.apparent_temperature)}° • Umidità ${rounded(current?.relative_humidity_2m)}%</span></div>
+      <div><strong>${escapeHtml(currentLabel)}</strong><span>${locale.perceived} ${rounded(current?.apparent_temperature)}° • ${locale.humidity} ${rounded(current?.relative_humidity_2m)}%</span></div>
       <strong class="current-temp">${rounded(current?.temperature_2m)}°</strong>
     </div>
   </section>
   <main>
-    <div class="actions"><a class="primary" rel="nofollow" href="/?${escapeHtml(appQuery.toString())}">Apri tutti gli strumenti meteo per ${escapeHtml(place.n)}</a></div>
+    <div class="actions"><a class="primary" rel="nofollow" href="${locale.homePath}?${escapeHtml(appQuery.toString())}">${escapeHtml(locale.openTools(place.n))}</a></div>
     <section class="panel">
-      <h2>Previsioni meteo ${escapeHtml(place.n)}: prossimi 7 giorni</h2>
+      <h2>${escapeHtml(locale.nextDays(place.n))}</h2>
       <div class="table-wrap"><table>
-        <thead><tr><th>Giorno</th><th>Condizioni</th><th>Temperature</th><th>Pioggia</th><th>Vento massimo</th></tr></thead>
+        <thead><tr>${locale.headers.map(header => `<th>${escapeHtml(header)}</th>`).join('')}</tr></thead>
         <tbody>${forecastRows}</tbody>
       </table></div>
     </section>
     <section class="panel">
-      <h2>Condizioni di oggi a ${escapeHtml(place.n)}</h2>
+      <h2>${escapeHtml(locale.todayConditions(place.n))}</h2>
       <div class="facts">
-        <div class="fact"><small>Temperatura</small><strong>${rounded(current?.temperature_2m)}°C</strong></div>
-        <div class="fact"><small>Vento</small><strong>${rounded(current?.wind_speed_10m)} km/h</strong></div>
-        <div class="fact"><small>Pressione</small><strong>${rounded(current?.surface_pressure)} hPa</strong></div>
-        <div class="fact"><small>Precipitazioni</small><strong>${Number(current?.precipitation || 0).toFixed(1)} mm</strong></div>
+        <div class="fact"><small>${locale.temperature}</small><strong>${rounded(current?.temperature_2m)}°C</strong></div>
+        <div class="fact"><small>${locale.wind}</small><strong>${rounded(current?.wind_speed_10m)} km/h</strong></div>
+        <div class="fact"><small>${locale.pressure}</small><strong>${rounded(current?.surface_pressure)} hPa</strong></div>
+        <div class="fact"><small>${locale.precipitation}</small><strong>${Number(current?.precipitation || 0).toFixed(1)} mm</strong></div>
       </div>
-      <p class="copy"><strong>Il meteo di ${escapeHtml(place.n)}</strong> viene aggiornato utilizzando dati modellistici globali. La previsione mostra ${escapeHtml(currentLabel)} e una temperatura attuale di circa ${rounded(current?.temperature_2m)} °C. Controlla sempre gli aggiornamenti più recenti prima di programmare attività sensibili al tempo.</p>
+      <p class="copy">${escapeHtml(locale.currentCopy(place.n, currentLabel, rounded(current?.temperature_2m)))}</p>
     </section>
     <section class="panel">
-      <h2>Informazioni sulla località</h2>
+      <h2>${locale.locationInfo}</h2>
       <div class="facts">
-        <div class="fact"><small>Area</small><strong>${escapeHtml(areaLabel)}</strong></div>
-        <div class="fact"><small>Popolazione</small><strong>${formatNumber(place.p)}</strong></div>
-        <div class="fact"><small>Fuso orario</small><strong>${escapeHtml(place.tz)}</strong></div>
-        <div class="fact"><small>Coordinate</small><strong>${place.lat.toFixed(3)}, ${place.lon.toFixed(3)}</strong></div>
+        <div class="fact"><small>${locale.area}</small><strong>${escapeHtml(areaLabel)}</strong></div>
+        <div class="fact"><small>${locale.population}</small><strong>${formatNumber(place.p, locale.locale)}</strong></div>
+        <div class="fact"><small>${locale.timezone}</small><strong>${escapeHtml(place.tz)}</strong></div>
+        <div class="fact"><small>${locale.coordinates}</small><strong>${place.lat.toFixed(3)}, ${place.lon.toFixed(3)}</strong></div>
       </div>
     </section>
     ${inRegion.length ? `<section class="panel">
-      <h2>Altre località meteo in ${escapeHtml(place.ad || place.c)}</h2>
-      <p class="panel-lead">Confronta le previsioni nelle località attive della stessa area geografica.</p>
-      <div class="nearby">${inRegion.map(candidate => `<a href="${escapeHtml(candidate.path)}"><strong>Meteo ${escapeHtml(candidate.n)}</strong><small>${escapeHtml(candidate.ad || candidate.c)} • previsioni 7 giorni</small></a>`).join('')}</div>
+      <h2>${escapeHtml(locale.otherRegion(place.ad || countryName))}</h2>
+      <p class="panel-lead">${locale.otherRegionLead}</p>
+      <div class="nearby">${inRegion.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(locale.placeWeather(candidate.n))}</strong><small>${escapeHtml(candidate.ad || displayCountry(candidate, language))} • ${locale.sevenDays}</small></a>`).join('')}</div>
     </section>` : ''}
     ${nearby.length ? `<section class="panel">
-      <h2>Meteo nelle località vicine</h2>
-      <p class="panel-lead">Località già consultate dagli utenti e disponibili nell’indice attivo di Meteo AI.</p>
-      <div class="nearby">${nearby.map(candidate => `<a href="${escapeHtml(candidate.path)}"><strong>${escapeHtml(candidate.n)}</strong><small>${Math.round(candidate.distance)} km • ${escapeHtml(candidate.ad || candidate.c)}</small></a>`).join('')}</div>
+      <h2>${locale.nearby}</h2>
+      <p class="panel-lead">${locale.nearbyLead}</p>
+      <div class="nearby">${nearby.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(candidate.n)}</strong><small>${Math.round(candidate.distance)} km • ${escapeHtml(candidate.ad || displayCountry(candidate, language))}</small></a>`).join('')}</div>
     </section>` : ''}
   </main>
   <footer>
-    <p>Meteo AI è uno strumento informativo e non sostituisce bollettini ufficiali o autorità locali.</p>
-    <p>Dati meteo: <a href="https://open-meteo.com/" rel="nofollow">Open-Meteo</a> • Località: <a href="https://www.geonames.org/" rel="nofollow">GeoNames</a> CC BY 4.0</p>
+    <p>${locale.footerNotice}</p>
+    <p>${locale.weatherData}: <a href="https://open-meteo.com/" rel="nofollow">Open-Meteo</a> • ${locale.placesData}: <a href="https://www.geonames.org/" rel="nofollow">GeoNames</a> CC BY 4.0</p>
   </footer>
 </body>
 </html>`);

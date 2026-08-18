@@ -11,6 +11,7 @@ const cases=[
   {page:'home',language:'en',lang:'en-GB',canonical:'/en',title:'Weather today',heading:'Don’t just look'},
   {page:'home',language:'fr',lang:'fr-FR',canonical:'/fr',title:'Météo du jour',heading:'Ne regardez pas seulement'},
   {page:'home',language:'pt-BR',lang:'pt-BR',canonical:'/pt-br',title:'Clima hoje',heading:'Não veja apenas'},
+  {page:'home',language:'es',lang:'es-ES',canonical:'/es',title:'El tiempo hoy',heading:'No te limites a mirar'},
   {page:'world',language:'en',lang:'en-GB',canonical:'/en/world-live',title:'World Live',heading:'The planet'},
   {page:'install',language:'fr',lang:'fr-FR',canonical:'/fr/install',title:'Installer Meteo AI',heading:'Ajoutez Meteo AI'}
 ];
@@ -22,7 +23,7 @@ for(const test of cases){
   assert.match(html,new RegExp(`rel="canonical" href="https://meteo-ai\\.vercel\\.app${test.canonical.replaceAll('/','\\/')}`));
   assert.match(html,new RegExp(test.heading));
   assert.match(html,/<!--meteo-i18n:/,'server output must retain canonical source markers for live language changes');
-  for(const hreflang of ['it','en','fr','pt-BR','x-default'])assert.match(html,new RegExp(`hreflang="${hreflang}"`));
+  for(const hreflang of ['it','en','fr','pt-BR','es','x-default'])assert.match(html,new RegExp(`hreflang="${hreflang}"`));
   assert.match(html,new RegExp(`window\\.__METEO_LOCALE__=${JSON.stringify(test.language)}`));
   assert.doesNotMatch(html,/@@METEO_BLOCK_/);
 }
@@ -45,12 +46,13 @@ assert.equal(response.headers['Content-Language'],'fr-FR');
 assert.match(response.headers['X-Robots-Tag'],/index,follow/);
 
 const config=JSON.parse(fs.readFileSync(new URL('../vercel.json',import.meta.url),'utf8'));
-for(const source of ['/en','/fr','/pt-br','/en/world-live','/fr/world-live','/pt-br/world-live','/en/install','/fr/install','/pt-br/install'])assert.ok(config.rewrites.some(rule=>rule.source===source),`missing rewrite ${source}`);
-assert.equal(config.rewrites.filter(rule=>rule.source.startsWith('/meteo/')).length,1,'location routes must not be multiplied by locale');
+for(const source of ['/en','/fr','/pt-br','/es','/en/world-live','/fr/world-live','/pt-br/world-live','/es/world-live','/en/install','/fr/install','/pt-br/install','/es/install','/pt-br/localidades','/es/localidades','/pt-br/previsao/:country/:region/:place','/es/tiempo/:country/:region/:place'])assert.ok(config.rewrites.some(rule=>rule.source===source),`missing rewrite ${source}`);
+assert.equal(config.rewrites.filter(rule=>/:(country)\/:region\/:place$/.test(rule.source)).length,3,'active location routes must cover Italian, pt-BR and Spanish');
 assert.equal(config.functions?.['api/localized-page.js']?.includeFiles,'{index.html,world-live.html,installa.html,i18n.js}','localized function must bundle its runtime templates with a Vercel-compatible glob');
 
 const sitemap=fs.readFileSync(new URL('../sitemaps/static.xml',import.meta.url),'utf8');
 assert.match(sitemap,/xmlns:xhtml=/);
 assert.match(sitemap,/https:\/\/meteo-ai\.vercel\.app\/pt-br\/world-live/);
+assert.match(sitemap,/https:\/\/meteo-ai\.vercel\.app\/es\/localidades/);
 assert.doesNotMatch(sitemap,/\/en\/meteo\/|\/fr\/meteo\/|\/pt-br\/meteo\//);
 console.log('SEO internazionale: rendering server-side, URL, canonical, hreflang e sitemap OK');
