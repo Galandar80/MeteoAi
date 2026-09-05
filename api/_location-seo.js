@@ -75,6 +75,7 @@ async function redisCommand(command) {
 }
 
 const activeState = globalThis.__METEO_ACTIVE_PLACES__ ||= { places:[...new Set(SEED_IDS.map(String))].map(id=>byId.get(id)).filter(Boolean), updatedAt:0, inflight:null };
+const languageState=globalThis.__METEO_ACTIVE_LANGUAGES__||={pairs:new Set(),updatedAt:0,inflight:null};
 async function refreshActivePlaces() {
   if (activeState.inflight) return activeState.inflight;
   activeState.inflight=(async()=>{let ids=[];try{const result=await redisCommand(['SMEMBERS',ACTIVE_KEY]);if(Array.isArray(result))ids=result}catch(_){}const unique=new Set([...SEED_IDS.map(String),...ids.map(String)]);activeState.places=[...unique].map(id=>byId.get(id)).filter(Boolean);activeState.updatedAt=Date.now();return activeState.places})().finally(()=>{activeState.inflight=null});
@@ -84,6 +85,7 @@ async function activate(place, language='it') {
   const pair=`${language}:${place.id}`;
   const [added]=await Promise.all([redisCommand(['SADD',ACTIVE_KEY,String(place.id)]),redisCommand(['SADD',LANGUAGE_ACTIVE_KEY,pair]).catch(()=>0)]);
   if(!activeState.places.some(item=>item.id===place.id))activeState.places.push(place);
+  languageState.pairs.add(pair);
   return { place:publicPlace(place), language, added:Number(added)===1 };
 }
 async function activePlaces({fresh=false}={}) {
@@ -93,4 +95,6 @@ async function activePlaces({fresh=false}={}) {
   return activeState.places;
 }
 function legacyLanguagesForPlace(){return ['it','en','fr','pt-BR','es']}
-module.exports = { ACTIVE_KEY, LANGUAGE_ACTIVE_KEY, SEED_IDS, GLOBAL_SEED_COUNT, ITALY_SEED_COUNT, byId, publicPlace, nearestPlace, activate, activePlaces, refreshActivePlaces, legacyLanguagesForPlace, redisCommand };
+async function activeLanguagePairs({fresh=false}={}){if(!fresh&&Date.now()-languageState.updatedAt<5*60*1000)return languageState.pairs;if(languageState.inflight)return languageState.inflight;languageState.inflight=(async()=>{try{const result=await redisCommand(['SMEMBERS',LANGUAGE_ACTIVE_KEY]);if(Array.isArray(result))languageState.pairs=new Set(result)}catch(_){}languageState.updatedAt=Date.now();return languageState.pairs})().finally(()=>{languageState.inflight=null});return languageState.inflight}
+function languagesForPlace(place,pairs=languageState.pairs){if(process.env.SEO_LANGUAGE_ACTIVATION_MODE!=='pair')return legacyLanguagesForPlace();const active=['it','en','fr','pt-BR','es'].filter(language=>pairs.has(`${language}:${place.id}`)),local={IT:'it',FR:'fr',BR:'pt-BR',PT:'pt-BR',ES:'es'}[place.cc];if(place.p>=1000000)active.push('en');if(local)active.push(local);active.push('it');return [...new Set(active)]}
+module.exports = { ACTIVE_KEY, LANGUAGE_ACTIVE_KEY, SEED_IDS, GLOBAL_SEED_COUNT, ITALY_SEED_COUNT, byId, publicPlace, nearestPlace, activate, activePlaces, refreshActivePlaces, activeLanguagePairs, languagesForPlace, legacyLanguagesForPlace, redisCommand };

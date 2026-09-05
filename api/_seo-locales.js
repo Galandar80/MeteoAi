@@ -33,7 +33,7 @@ const LOCALES = {
     code: 'it', locale: 'it-IT', hreflang: 'it', ogLocale: 'it_IT',
     homePath: '/', directoryPath: '/localita', tomorrowPath: '/meteo-domani', locationSegment: 'meteo',
     navForecast: 'Previsioni', navLocations: 'Località', directoryName: 'Località meteo',
-    title: name => `Meteo ${name}: oggi, domani e 7 giorni | Meteo AI`,
+    title: name => `Meteo ${name} domani e prossimi 7 giorni | Meteo AI`,
     description: (name, area) => `Meteo ${name} oggi e domani: temperature, pioggia, vento e previsioni per questa settimana. Dati aggiornati per ${area}.`,
     h1: name => `Meteo ${name} oggi, domani e questa settimana`,
     hero: area => `Previsioni per ${area}: temperatura, probabilità di pioggia e vento per oggi, domani e i prossimi sette giorni.`,
@@ -42,6 +42,8 @@ const LOCALES = {
     nextDays: name => `Previsioni meteo ${name}: prossimi 7 giorni`,
     headers: ['Giorno', 'Condizioni', 'Temperature', 'Pioggia', 'Vento massimo'],
     todayConditions: name => `Condizioni di oggi a ${name}`,
+    tomorrowHeading: name => `Meteo domani a ${name}`, tomorrowSummary: (name,c,min,max,rain,wind) => `Domani a ${name}: ${c}, minima ${min} °C e massima ${max} °C. Probabilità di pioggia ${rain}% e vento massimo ${wind} km/h.`,
+    tomorrowUnavailable: 'La previsione di domani non è disponibile in questo momento.', updatedLabel:'Previsione aggiornata', rainfall:'Pioggia prevista', gusts:'Raffiche massime', sunrise:'Alba', sunset:'Tramonto', uv:'Indice UV', bestWindow:'Fascia più favorevole', weekendHeading:name=>`Previsione del weekend a ${name}`, reliability:'Affidabilità', reliabilityHigh:'alta', reliabilityMedium:'media', reliabilityIndicative:'indicativa', tomorrowHubLabel:'Meteo domani',
     temperature: 'Temperatura', wind: 'Vento', pressure: 'Pressione', precipitation: 'Precipitazioni',
     locationInfo: 'Informazioni sulla località', area: 'Area', population: 'Popolazione', timezone: 'Fuso orario', coordinates: 'Coordinate',
     otherRegion: area => `Altre località meteo in ${area}`,
@@ -72,7 +74,7 @@ const LOCALES = {
     code: 'en', locale: 'en-GB', hreflang: 'en', ogLocale: 'en_GB',
     homePath: '/en', directoryPath: '/en/locations', tomorrowPath: '/en/weather-tomorrow', locationSegment: 'weather',
     navForecast: 'Forecast', navLocations: 'Locations', directoryName: 'Weather locations',
-    title: name => `${name} weather: today, tomorrow and 7 days | Meteo AI`,
+    title: name => `${name} weather tomorrow and 7-day forecast | Meteo AI`,
     description: (name, area) => `Weather in ${name} today and tomorrow: temperature, rain, wind and this week's forecast. Updated data for ${area}.`,
     h1: name => `Weather in ${name} today, tomorrow and this week`,
     hero: area => `Forecast for ${area}: temperature, chance of rain and wind for today, tomorrow and the next seven days.`,
@@ -81,6 +83,8 @@ const LOCALES = {
     nextDays: name => `${name} weather forecast: next 7 days`,
     headers: ['Day', 'Conditions', 'Temperatures', 'Rain', 'Maximum wind'],
     todayConditions: name => `Today's conditions in ${name}`,
+    tomorrowHeading:name=>`Weather tomorrow in ${name}`, tomorrowSummary:(name,c,min,max,rain,wind)=>`Tomorrow in ${name}: ${c}, a low of ${min} °C and a high of ${max} °C. Rain chance ${rain}% and maximum wind ${wind} km/h.`,
+    tomorrowUnavailable:'Tomorrow’s forecast is currently unavailable.', updatedLabel:'Forecast updated', rainfall:'Expected rain', gusts:'Maximum gusts', sunrise:'Sunrise', sunset:'Sunset', uv:'UV index', bestWindow:'Most favourable time', weekendHeading:name=>`${name} weekend forecast`, reliability:'Reliability', reliabilityHigh:'high', reliabilityMedium:'medium', reliabilityIndicative:'indicative', tomorrowHubLabel:'Weather tomorrow',
     temperature: 'Temperature', wind: 'Wind', pressure: 'Pressure', precipitation: 'Precipitation',
     locationInfo: 'Location information', area: 'Area', population: 'Population', timezone: 'Time zone', coordinates: 'Coordinates',
     otherRegion: area => `Other active weather locations in ${area}`,
@@ -111,7 +115,7 @@ const LOCALES = {
     code: 'fr', locale: 'fr-FR', hreflang: 'fr', ogLocale: 'fr_FR',
     homePath: '/fr', directoryPath: '/fr/localites', tomorrowPath: '/fr/meteo-demain', locationSegment: 'meteo',
     navForecast: 'Prévisions', navLocations: 'Localités', directoryName: 'Localités météo',
-    title: name => `Météo ${name} : aujourd’hui, demain et 7 jours | Meteo AI`,
+    title: name => `Météo ${name} demain et prévisions à 7 jours | Meteo AI`,
     description: (name, area) => `Météo à ${name} aujourd’hui et demain : température, pluie, vent et prévisions de la semaine. Données actualisées pour ${area}.`,
     h1: name => `Météo à ${name} aujourd’hui, demain et cette semaine`,
     hero: area => `Prévisions pour ${area} : température, risque de pluie et vent aujourd’hui, demain et les sept prochains jours.`,
@@ -120,6 +124,8 @@ const LOCALES = {
     nextDays: name => `Prévisions météo ${name} : les 7 prochains jours`,
     headers: ['Jour', 'Conditions', 'Températures', 'Pluie', 'Vent maximal'],
     todayConditions: name => `Conditions aujourd’hui à ${name}`,
+    tomorrowHeading:name=>`Météo demain à ${name}`, tomorrowSummary:(name,c,min,max,rain,wind)=>`Demain à ${name} : ${c}, minimale ${min} °C et maximale ${max} °C. Risque de pluie ${rain}% et vent maximal ${wind} km/h.`,
+    tomorrowUnavailable:'La prévision de demain est momentanément indisponible.', updatedLabel:'Prévision actualisée', rainfall:'Pluie prévue', gusts:'Rafales maximales', sunrise:'Lever du soleil', sunset:'Coucher du soleil', uv:'Indice UV', bestWindow:'Créneau le plus favorable', weekendHeading:name=>`Prévision du week-end à ${name}`, reliability:'Fiabilité', reliabilityHigh:'élevée', reliabilityMedium:'moyenne', reliabilityIndicative:'indicative', tomorrowHubLabel:'Météo demain',
     temperature: 'Température', wind: 'Vent', pressure: 'Pression', precipitation: 'Précipitations',
     locationInfo: 'Informations sur la localité', area: 'Zone', population: 'Population', timezone: 'Fuseau horaire', coordinates: 'Coordonnées',
     otherRegion: area => `Autres localités météo dans ${area}`,
@@ -150,7 +156,7 @@ const LOCALES = {
     code: 'pt-BR', locale: 'pt-BR', hreflang: 'pt-BR', ogLocale: 'pt_BR',
     homePath: '/pt-br', directoryPath: '/pt-br/localidades', tomorrowPath: '/pt-br/previsao-amanha', locationSegment: 'previsao',
     navForecast: 'Previsões', navLocations: 'Localidades', directoryName: 'Localidades com previsão',
-    title: name => `Previsão do tempo ${name}: hoje, amanhã e 7 dias | Meteo AI`,
+    title: name => `Previsão do tempo em ${name} amanhã e 7 dias | Meteo AI`,
     description: (name, area) => `Previsão do tempo em ${name} hoje e amanhã: temperatura, chuva, vento e previsão para esta semana. Dados atualizados para ${area}.`,
     h1: name => `Previsão do tempo em ${name} hoje, amanhã e esta semana`,
     hero: area => `Previsão para ${area}: temperatura, probabilidade de chuva e vento para hoje, amanhã e os próximos sete dias.`,
@@ -159,6 +165,8 @@ const LOCALES = {
     nextDays: name => `Previsão do tempo em ${name}: próximos 7 dias`,
     headers: ['Dia', 'Condições', 'Temperaturas', 'Chuva', 'Vento máximo'],
     todayConditions: name => `Condições de hoje em ${name}`,
+    tomorrowHeading:name=>`Previsão do tempo amanhã em ${name}`, tomorrowSummary:(name,c,min,max,rain,wind)=>`Amanhã em ${name}: ${c}, mínima de ${min} °C e máxima de ${max} °C. Chance de chuva ${rain}% e vento máximo ${wind} km/h.`,
+    tomorrowUnavailable:'A previsão de amanhã está indisponível no momento.', updatedLabel:'Previsão atualizada', rainfall:'Chuva prevista', gusts:'Rajadas máximas', sunrise:'Nascer do sol', sunset:'Pôr do sol', uv:'Índice UV', bestWindow:'Faixa mais favorável', weekendHeading:name=>`Previsão do fim de semana em ${name}`, reliability:'Confiabilidade', reliabilityHigh:'alta', reliabilityMedium:'média', reliabilityIndicative:'indicativa', tomorrowHubLabel:'Previsão para amanhã',
     temperature: 'Temperatura', wind: 'Vento', pressure: 'Pressão', precipitation: 'Precipitação',
     locationInfo: 'Informações sobre a localidade', area: 'Área', population: 'População', timezone: 'Fuso horário', coordinates: 'Coordenadas',
     otherRegion: area => `Outras localidades com previsão em ${area}`,
@@ -189,7 +197,7 @@ const LOCALES = {
     code: 'es', locale: 'es-ES', hreflang: 'es', ogLocale: 'es_ES',
     homePath: '/es', directoryPath: '/es/localidades', tomorrowPath: '/es/tiempo-manana', locationSegment: 'tiempo',
     navForecast: 'Previsión', navLocations: 'Localidades', directoryName: 'Localidades meteorológicas',
-    title: name => `Tiempo en ${name}: hoy, mañana y 7 días | Meteo AI`,
+    title: name => `Tiempo en ${name} mañana y próximos 7 días | Meteo AI`,
     description: (name, area) => `El tiempo en ${name} hoy y mañana: temperatura, lluvia, viento y previsión para esta semana. Datos actualizados para ${area}.`,
     h1: name => `El tiempo en ${name} hoy, mañana y esta semana`,
     hero: area => `Previsión para ${area}: temperatura, probabilidad de lluvia y viento para hoy, mañana y los próximos siete días.`,
@@ -198,6 +206,8 @@ const LOCALES = {
     nextDays: name => `El tiempo en ${name}: próximos 7 días`,
     headers: ['Día', 'Condiciones', 'Temperaturas', 'Lluvia', 'Viento máximo'],
     todayConditions: name => `Condiciones de hoy en ${name}`,
+    tomorrowHeading:name=>`El tiempo mañana en ${name}`, tomorrowSummary:(name,c,min,max,rain,wind)=>`Mañana en ${name}: ${c}, mínima de ${min} °C y máxima de ${max} °C. Probabilidad de lluvia ${rain}% y viento máximo ${wind} km/h.`,
+    tomorrowUnavailable:'La previsión de mañana no está disponible en este momento.', updatedLabel:'Previsión actualizada', rainfall:'Lluvia prevista', gusts:'Rachas máximas', sunrise:'Amanecer', sunset:'Atardecer', uv:'Índice UV', bestWindow:'Franja más favorable', weekendHeading:name=>`Previsión del fin de semana en ${name}`, reliability:'Fiabilidad', reliabilityHigh:'alta', reliabilityMedium:'media', reliabilityIndicative:'indicativa', tomorrowHubLabel:'El tiempo mañana',
     temperature: 'Temperatura', wind: 'Viento', pressure: 'Presión', precipitation: 'Precipitaciones',
     locationInfo: 'Información de la localidad', area: 'Área', population: 'Población', timezone: 'Zona horaria', coordinates: 'Coordenadas',
     otherRegion: area => `Otras localidades meteorológicas en ${area}`,
@@ -265,14 +275,10 @@ const displayCountry = (place, language) => {
 
 const displayPlaceName = (place, language) => PLACE_NAMES[normalizeLanguage(language)]?.[place.n] || place.n;
 
-const alternateLinks = place => [
-  ['it', localizedPlacePath(place, 'it')],
-  ['en', localizedPlacePath(place, 'en')],
-  ['fr', localizedPlacePath(place, 'fr')],
-  ['pt-BR', localizedPlacePath(place, 'pt-BR')],
-  ['es', localizedPlacePath(place, 'es')],
-  ['x-default', localizedPlacePath(place, 'it')]
-].map(([hreflang, path]) => `<link rel="alternate" hreflang="${hreflang}" href="${ORIGIN}${path}">`).join('\n  ');
+const alternateLinks = (place, languages=['it','en','fr','pt-BR','es']) => [
+  ...languages.map(language=>[LOCALES[language].hreflang,localizedPlacePath(place,language)]),
+  ['x-default',localizedPlacePath(place,'it')]
+].map(([hreflang,path])=>`<link rel="alternate" hreflang="${hreflang}" href="${ORIGIN}${path}">`).join('\n  ');
 
 const directoryAlternateLinks = () => [
   ['it', LOCALES.it.directoryPath],
