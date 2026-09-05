@@ -31,7 +31,7 @@ const PLACE_NAMES = {
 const LOCALES = {
   it: {
     code: 'it', locale: 'it-IT', hreflang: 'it', ogLocale: 'it_IT',
-    homePath: '/', directoryPath: '/localita', locationSegment: 'meteo',
+    homePath: '/', directoryPath: '/localita', tomorrowPath: '/meteo-domani', locationSegment: 'meteo',
     navForecast: 'Previsioni', navLocations: 'Località', directoryName: 'Località meteo',
     title: name => `Meteo ${name}: oggi, domani e 7 giorni | Meteo AI`,
     description: (name, area) => `Meteo ${name} oggi e domani: temperature, pioggia, vento e previsioni per questa settimana. Dati aggiornati per ${area}.`,
@@ -70,7 +70,7 @@ const LOCALES = {
   },
   en: {
     code: 'en', locale: 'en-GB', hreflang: 'en', ogLocale: 'en_GB',
-    homePath: '/en', directoryPath: '/en/locations', locationSegment: 'weather',
+    homePath: '/en', directoryPath: '/en/locations', tomorrowPath: '/en/weather-tomorrow', locationSegment: 'weather',
     navForecast: 'Forecast', navLocations: 'Locations', directoryName: 'Weather locations',
     title: name => `${name} weather: today, tomorrow and 7 days | Meteo AI`,
     description: (name, area) => `Weather in ${name} today and tomorrow: temperature, rain, wind and this week's forecast. Updated data for ${area}.`,
@@ -109,7 +109,7 @@ const LOCALES = {
   },
   fr: {
     code: 'fr', locale: 'fr-FR', hreflang: 'fr', ogLocale: 'fr_FR',
-    homePath: '/fr', directoryPath: '/fr/localites', locationSegment: 'meteo',
+    homePath: '/fr', directoryPath: '/fr/localites', tomorrowPath: '/fr/meteo-demain', locationSegment: 'meteo',
     navForecast: 'Prévisions', navLocations: 'Localités', directoryName: 'Localités météo',
     title: name => `Météo ${name} : aujourd’hui, demain et 7 jours | Meteo AI`,
     description: (name, area) => `Météo à ${name} aujourd’hui et demain : température, pluie, vent et prévisions de la semaine. Données actualisées pour ${area}.`,
@@ -148,7 +148,7 @@ const LOCALES = {
   },
   'pt-BR': {
     code: 'pt-BR', locale: 'pt-BR', hreflang: 'pt-BR', ogLocale: 'pt_BR',
-    homePath: '/pt-br', directoryPath: '/pt-br/localidades', locationSegment: 'previsao',
+    homePath: '/pt-br', directoryPath: '/pt-br/localidades', tomorrowPath: '/pt-br/previsao-amanha', locationSegment: 'previsao',
     navForecast: 'Previsões', navLocations: 'Localidades', directoryName: 'Localidades com previsão',
     title: name => `Previsão do tempo ${name}: hoje, amanhã e 7 dias | Meteo AI`,
     description: (name, area) => `Previsão do tempo em ${name} hoje e amanhã: temperatura, chuva, vento e previsão para esta semana. Dados atualizados para ${area}.`,
@@ -187,7 +187,7 @@ const LOCALES = {
   },
   es: {
     code: 'es', locale: 'es-ES', hreflang: 'es', ogLocale: 'es_ES',
-    homePath: '/es', directoryPath: '/es/localidades', locationSegment: 'tiempo',
+    homePath: '/es', directoryPath: '/es/localidades', tomorrowPath: '/es/tiempo-manana', locationSegment: 'tiempo',
     navForecast: 'Previsión', navLocations: 'Localidades', directoryName: 'Localidades meteorológicas',
     title: name => `Tiempo en ${name}: hoy, mañana y 7 días | Meteo AI`,
     description: (name, area) => `El tiempo en ${name} hoy y mañana: temperatura, lluvia, viento y previsión para esta semana. Datos actualizados para ${area}.`,
