@@ -14,7 +14,8 @@ const ROUTES={
 };
 const GROWTH_ROUTES={
   how:{it:'/come-funziona',en:'/en/how-it-works',fr:'/fr/comment-ca-marche','pt-BR':'/pt-br/como-funciona',es:'/es/como-funciona'},
-  widget:{it:'/widget',en:'/en/widget',fr:'/fr/widget','pt-BR':'/pt-br/widget',es:'/es/widget'}
+  widget:{it:'/widget',en:'/en/widget',fr:'/fr/widget','pt-BR':'/pt-br/widget',es:'/es/widget'},
+  tomorrow:{it:'/meteo-domani',en:'/en/weather-tomorrow',fr:'/fr/meteo-demain','pt-BR':'/pt-br/previsao-amanha',es:'/es/tiempo-manana'}
 };
 const META={
   en:{
@@ -38,6 +39,33 @@ const META={
     install:{title:'Instala Meteo AI gratis | Android, iPhone y ordenador',description:'Añade Meteo AI a la pantalla de inicio para un acceso rápido, una experiencia a pantalla completa y sin necesidad de cuenta.'}
   }
 };
+const INSTALL_COPY=[
+  ['GRATUITA • NESSUN ACCOUNT • SEMPRE A PORTATA DI MANO','FREE • NO ACCOUNT • ALWAYS WITH YOU','GRATUITE • SANS COMPTE • TOUJOURS À PORTÉE DE MAIN','GRÁTIS • SEM CONTA • SEMPRE À MÃO','GRATIS • SIN CUENTA • SIEMPRE A MANO'],
+  ['Non devi scaricare nulla da uno store. Installa il sito come una normale app e aprilo con un tocco.','There is nothing to download from an app store. Install the website like a regular app and open it with one tap.','Aucun téléchargement depuis une boutique n’est nécessaire. Installez le site comme une application et ouvrez-le en un geste.','Você não precisa baixar nada de uma loja. Instale o site como um aplicativo e abra com um toque.','No necesitas descargar nada de una tienda. Instala el sitio como una aplicación y ábrelo con un toque.'],
+  ['Il pulsante userà il metodo disponibile sul tuo dispositivo.','The button will use the method available on your device.','Le bouton utilisera la méthode disponible sur votre appareil.','O botão usará o método disponível no seu dispositivo.','El botón usará el método disponible en tu dispositivo.'],
+  ['Apri direttamente Meteo AI senza cercarla ogni volta nel browser.','Open Meteo AI directly without searching for it in your browser.','Ouvrez directement Meteo AI sans la rechercher dans le navigateur.','Abra o Meteo AI diretamente sem procurar no navegador.','Abre Meteo AI directamente sin buscarlo en el navegador.'],
+  ['Interfaccia più pulita e simile a un’app, su telefono e computer.','A cleaner, app-like interface on phone and computer.','Une interface épurée, semblable à une application, sur téléphone et ordinateur.','Uma interface mais limpa, como um aplicativo, no celular e computador.','Una interfaz más limpia, similar a una aplicación, en móvil y ordenador.'],
+  ['Preferiti e impostazioni restano sul dispositivo, senza registrazione.','Favourites and settings stay on your device, with no registration.','Les favoris et réglages restent sur votre appareil, sans inscription.','Favoritos e configurações ficam no dispositivo, sem cadastro.','Los favoritos y ajustes permanecen en tu dispositivo, sin registro.'],
+  ['Se compare il messaggio del browser, basta premere “Installa”. In alternativa segui questi passaggi.','If your browser shows a prompt, select “Install”. Otherwise follow these steps.','Si le navigateur affiche une invite, sélectionnez « Installer ». Sinon, suivez ces étapes.','Se o navegador mostrar uma mensagem, toque em “Instalar”. Caso contrário, siga estas etapas.','Si el navegador muestra un aviso, pulsa «Instalar». Si no, sigue estos pasos.'],
+  ['Apri Meteo AI con Chrome.','Open Meteo AI in Chrome.','Ouvrez Meteo AI dans Chrome.','Abra o Meteo AI no Chrome.','Abre Meteo AI en Chrome.'],
+  ['Tocca il menu','Tap the menu','Touchez le menu','Toque no menu','Toca el menú'],
+  ['in alto a destra.','at the top right.','en haut à droite.','no canto superior direito.','arriba a la derecha.'],
+  ['Aggiungi a schermata Home','Add to Home screen','Ajouter à l’écran d’accueil','Adicionar à tela inicial','Añadir a pantalla de inicio'],
+  ['Conferma con','Confirm with','Confirmez avec','Confirme com','Confirma con'],
+  ['Apri Meteo AI in','Open Meteo AI in','Ouvrez Meteo AI dans','Abra o Meteo AI no','Abre Meteo AI en'],
+  ['Tocca il pulsante','Tap the button','Touchez le bouton','Toque no botão','Toca el botón'],
+  ['quadrato con freccia verso l’alto','square with an upward arrow','carré avec une flèche vers le haut','quadrado com uma seta para cima','cuadrado con una flecha hacia arriba'],
+  ['Scorri e scegli','Scroll and select','Faites défiler et sélectionnez','Role e selecione','Desplázate y elige'],
+  ['Aggiungi alla schermata Home','Add to Home Screen','Ajouter à l’écran d’accueil','Adicionar à Tela de Início','Añadir a la pantalla de inicio'],
+  ['Su iPhone il pulsante automatico non è disponibile: questi passaggi sono il metodo previsto da Apple.','On iPhone the automatic button is unavailable; these are Apple’s supported steps.','Sur iPhone, le bouton automatique n’est pas disponible ; suivez la méthode prévue par Apple.','No iPhone, o botão automático não está disponível; siga o método indicado pela Apple.','En iPhone el botón automático no está disponible; sigue el método previsto por Apple.'],
+  ['Apri Meteo AI nel browser.','Open Meteo AI in your browser.','Ouvrez Meteo AI dans votre navigateur.','Abra o Meteo AI no navegador.','Abre Meteo AI en el navegador.'],
+  ['Clicca l’icona di installazione nella barra degli indirizzi oppure il menu.','Click the install icon in the address bar or open the menu.','Cliquez sur l’icône d’installation dans la barre d’adresse ou ouvrez le menu.','Clique no ícone de instalação na barra de endereço ou abra o menu.','Haz clic en el icono de instalación de la barra de direcciones o abre el menú.'],
+  ['Conferma: comparirà tra le tue applicazioni.','Confirm; it will appear among your applications.','Confirmez ; Meteo AI apparaîtra parmi vos applications.','Confirme; o Meteo AI aparecerá entre seus aplicativos.','Confirma; Meteo AI aparecerá entre tus aplicaciones.'],
+  ['PRONTA IN POCHI SECONDI','READY IN SECONDS','PRÊTE EN QUELQUES SECONDES','PRONTO EM POUCOS SEGUNDOS','LISTA EN POCOS SEGUNDOS'],
+  ['L’installazione è gratuita e puoi rimuovere l’app in qualsiasi momento.','Installation is free and you can remove the app at any time.','L’installation est gratuite et vous pouvez supprimer l’application à tout moment.','A instalação é grátis e você pode remover o aplicativo a qualquer momento.','La instalación es gratuita y puedes eliminar la aplicación cuando quieras.'],
+  ['Applicazione web gratuita. Nessun acquisto e nessuna registrazione richiesta.','Free web application. No purchase or registration required.','Application web gratuite. Aucun achat ni inscription requis.','Aplicativo web gratuito. Nenhuma compra ou cadastro necessário.','Aplicación web gratuita. No requiere compra ni registro.']
+];
+function applyPageCopy(html,page,language){if(page!=='install'||language==='it')return html;const index={en:1,fr:2,'pt-BR':3,es:4}[language];for(const row of INSTALL_COPY)html=html.replaceAll(row[0],row[index]);return html}
 
 let sourceCache;
 const translators=new Map();
@@ -76,13 +104,17 @@ function localizeLinks(html,language){
     '/':ROUTES.home[language],'/index.html':ROUTES.home[language],'index.html':ROUTES.home[language],
     '/world-live.html':ROUTES.world[language],'world-live.html':ROUTES.world[language],
     '/installa.html':ROUTES.install[language],'installa.html':ROUTES.install[language]
-    ,'/come-funziona':GROWTH_ROUTES.how[language],'/widget':GROWTH_ROUTES.widget[language]
+    ,'/come-funziona':GROWTH_ROUTES.how[language],'/widget':GROWTH_ROUTES.widget[language],'/meteo-domani':GROWTH_ROUTES.tomorrow[language]
   };
   return html.replace(/href=("|')([^"']+)(\1)/g,(match,quote,href)=>{
     const [base,hash='']=href.split('#');
     const replacement=routes[base];
     return replacement?`href=${quote}${replacement}${hash?`#${hash}`:''}${quote}`:match;
   });
+}
+function localizeStructuredData(html,page,language,canonical,meta){
+  const translate=translator(language);
+  return html.replace(/<script\s+type=("|')application\/ld\+json\1>([\s\S]*?)<\/script>/gi,(match,quote,json)=>{try{const data=JSON.parse(json);const visit=value=>{if(Array.isArray(value)){value.forEach(visit);return}if(!value||typeof value!=='object')return;for(const [key,item]of Object.entries(value)){if(typeof item==='string'&&!['@id','url','logo','image'].includes(key))value[key]=translate(item);else visit(item)}};visit(data);const root=Array.isArray(data?.['@graph'])?data['@graph'].find(item=>['WebPage','CollectionPage','WebApplication'].includes(item?.['@type'])):data;if(root){root.url=canonical;root.name=meta.title;root.description=meta.description;root.inLanguage=LOCALES[language]}return `<script type=${quote}application/ld+json${quote}>${JSON.stringify(data)}</script>`}catch(_){return match}});
 }
 
 function render(page,language){
@@ -91,6 +123,7 @@ function render(page,language){
   const canonical=`${ORIGIN}${ROUTES[page][language]}`;
   const meta=META[language][page];
   let html=fs.readFileSync(path.join(PROJECT_ROOT,file),'utf8');
+  html=applyPageCopy(html,page,language);
   html=translateMarkup(html,language);
   html=localizeLinks(html,language);
   html=html.replace(/<html\s+lang="[^"]+">/i,`<html lang="${locale}">`);
@@ -106,6 +139,7 @@ function render(page,language){
   html=html.replace(/<link\s+rel="canonical"\s+href="[^"]+"\s*\/?>/i,`<link rel="canonical" href="${canonical}">\n${alternateLinks(page)}`);
   html=html.replace(/("inLanguage"\s*:\s*)"it-IT"/g,`$1"${locale}"`);
   html=html.replace(/<script\s+src=("|')\/?i18n\.js\1><\/script>/i,`<script>window.__METEO_LOCALE__=${JSON.stringify(language)}</script>\n  <script src="/i18n.js"></script>`);
+  html=localizeStructuredData(html,page,language,canonical,meta);
   return html;
 }
 

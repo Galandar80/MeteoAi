@@ -15,7 +15,8 @@ const localities = [
 
 const SITE_ORIGIN = process.env.SITE_ORIGIN || 'https://meteo-ai.vercel.app';
 const byId = new Map(localities.map(place => [String(place.id), place]));
-const { activePlaces } = require('./_location-seo.js');
+const { activePlaces, languagesForPlace } = require('./_location-seo.js');
+const { getForecast } = require('./_forecast-cache.js');
 const {
   localeFor,
   LOCALES,
@@ -84,6 +85,14 @@ const weatherIcons = code => {
 
 const formatNumber = (number, locale) => new Intl.NumberFormat(locale).format(number || 0);
 const formatDay = (date, locale) => new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'short' }).format(new Date(`${date}T12:00:00`));
+// Open-Meteo returns sunrise/sunset as local wall-clock values when timezone=auto.
+// Reading the ISO string as a Date would shift it to the server timezone for
+// foreign cities, so preserve the clock portion exactly as supplied.
+const formatClock = (value) => {
+  if (!value) return '—';
+  const match = String(value).match(/T(\d{2}:\d{2})/);
+  return match ? match[1] : '—';
+};
 const rounded = value => Number.isFinite(Number(value)) ? Math.round(Number(value)) : '—';
 
 const conditionLabel = (code, language, fallback) => translatedWeatherLabels[language]?.[code] || weatherLabels[code] || fallback;
@@ -119,24 +128,13 @@ function regionPlaces(place, candidates) {
     .slice(0, 8);
 }
 
-async function loadForecast(place) {
-  const params = new URLSearchParams({
-    latitude: place.lat,
-    longitude: place.lon,
-    timezone: 'auto',
-    forecast_days: '7',
-    current: 'temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure,precipitation',
-    daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,wind_speed_10m_max'
-  });
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 9000);
-  try {
-    const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, { signal: controller.signal });
-    if (!response.ok) throw new Error(`Open-Meteo ${response.status}`);
-    return await response.json();
-  } finally {
-    clearTimeout(timeout);
-  }
+function reliability(locale,index){return index<=2?locale.reliabilityHigh:index<=4?locale.reliabilityMedium:locale.reliabilityIndicative}
+function bestTomorrowWindow(hourly,tomorrowDate,locale){
+  if(!hourly?.time||!tomorrowDate)return '—';
+  const candidates=hourly.time.map((time,index)=>({time,index})).filter(item=>item.time.startsWith(tomorrowDate)&&Number(item.time.slice(11,13))>=7&&Number(item.time.slice(11,13))<=20).map(item=>({...item,score:Number(hourly.precipitation_probability?.[item.index]||0)*1.2+Number(hourly.wind_speed_10m?.[item.index]||0)})).sort((a,b)=>a.score-b.score);
+  if(!candidates[0])return '—';
+  const hour=Number(candidates[0].time.slice(11,13));
+  return `${String(hour).padStart(2,'0')}:00–${String(hour+1).padStart(2,'0')}:00`;
 }
 
 function notFound(res, language = 'it') {
@@ -153,6 +151,7 @@ function notFound(res, language = 'it') {
 }
 
 module.exports = async function handler(req, res) {
+  const renderStarted = Date.now();
   const language = localeFor(req.query?.lang).code;
   const locale = localeFor(language);
   const placeToken = String(req.query?.place || '');
@@ -170,22 +169,25 @@ module.exports = async function handler(req, res) {
     return res.end();
   }
 
-  const [forecast, active] = await Promise.all([
-    loadForecast(place).catch(() => null),
+  const [forecastResult, active] = await Promise.all([
+    getForecast(place),
     activePlaces().catch(() => [])
   ]);
+  const forecast = forecastResult.data;
 
   const canonical = `${SITE_ORIGIN}${expectedPath}`;
   const placeName = displayPlaceName(place, language);
+  const pageLanguages=[...new Set([...languagesForPlace(place),language])];
   const languageLinks = [
     ['it', 'IT'], ['en', 'EN'], ['fr', 'FR'], ['pt-BR', 'PT'], ['es', 'ES']
-  ].map(([code, label]) => `<a lang="${LOCALES[code].locale}" href="${localizedPlacePath(place, code)}"${language === code ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+  ].filter(([code])=>pageLanguages.includes(code)).map(([code, label]) => `<a lang="${LOCALES[code].locale}" href="${localizedPlacePath(place, code)}"${language === code ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const countryName = displayCountry(place, language);
   const areaLabel = [place.ad, countryName].filter(Boolean).join(', ');
   const title = locale.title(placeName);
   const description = locale.description(placeName, areaLabel);
   const current = forecast?.current;
   const daily = forecast?.daily;
+  const hourly = forecast?.hourly;
   const currentCode = current?.weather_code;
   const currentLabel = conditionLabel(currentCode, language, locale.variableConditions);
   const nearby = nearbyPlaces(place, active);
@@ -203,6 +205,14 @@ module.exports = async function handler(req, res) {
   });
   const shareText = locale.shareText(placeName, currentLabel, rounded(current?.temperature_2m));
   const shareUrl = `${canonical}?utm_source=share&utm_medium=referral`;
+  const tomorrowIndex=daily?.time?.[1]?1:-1;
+  const tomorrow=tomorrowIndex>=0?{
+    date:daily.time[tomorrowIndex], code:daily.weather_code?.[tomorrowIndex], min:rounded(daily.temperature_2m_min?.[tomorrowIndex]), max:rounded(daily.temperature_2m_max?.[tomorrowIndex]),
+    rainChance:rounded(daily.precipitation_probability_max?.[tomorrowIndex]), rainAmount:Number.isFinite(Number(daily.precipitation_sum?.[tomorrowIndex]))?Number(daily.precipitation_sum[tomorrowIndex]).toFixed(1):'—', wind:rounded(daily.wind_speed_10m_max?.[tomorrowIndex]), gusts:rounded(daily.wind_gusts_10m_max?.[tomorrowIndex]),
+    sunrise:formatClock(daily.sunrise?.[tomorrowIndex],locale.locale), sunset:formatClock(daily.sunset?.[tomorrowIndex],locale.locale), uv:Number.isFinite(Number(daily.uv_index_max?.[tomorrowIndex]))?Number(daily.uv_index_max[tomorrowIndex]).toFixed(1):'—'
+  }:null;
+  const tomorrowLabel=tomorrow?conditionLabel(tomorrow.code,language,locale.variableConditions):locale.variableConditions;
+  const weekendIndices=(daily?.time||[]).map((date,index)=>({date,index,day:new Date(`${date}T12:00:00Z`).getUTCDay()})).filter(item=>item.day===0||item.day===6).slice(0,2);
 
   const forecastRows = daily?.time?.map((date, index) => `
     <tr>
@@ -210,9 +220,9 @@ module.exports = async function handler(req, res) {
       <td><span aria-hidden="true">${weatherIcons(daily.weather_code[index])}</span> ${escapeHtml(conditionLabel(daily.weather_code[index], language, locale.variable))}</td>
       <td><strong>${rounded(daily.temperature_2m_max[index])}°</strong> / ${rounded(daily.temperature_2m_min[index])}°</td>
       <td>${rounded(daily.precipitation_probability_max[index])}%</td>
-      <td>${rounded(daily.wind_speed_10m_max[index])} km/h</td>
+      <td>${rounded(daily.wind_speed_10m_max[index])} km/h</td><td>${escapeHtml(reliability(locale,index))}</td>
     </tr>`).join('') || `
-    <tr><td colspan="5">${locale.unavailable}</td></tr>`;
+    <tr><td colspan="6">${locale.unavailable}</td></tr>`;
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -226,7 +236,7 @@ module.exports = async function handler(req, res) {
         inLanguage: locale.locale,
         isPartOf: { '@id': `${SITE_ORIGIN}/#website` },
         about: { '@id': `${canonical}#place` },
-        dateModified: new Date().toISOString()
+        ...(forecastResult.updatedAt ? { dateModified: forecastResult.updatedAt } : {})
       },
       {
         '@type': 'Place',
@@ -260,6 +270,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=86400');
   res.setHeader('Content-Language', locale.locale);
+  res.setHeader('Server-Timing', `weather;dur=${forecastResult.elapsedMs};desc="${forecastResult.cache}", render;dur=${Date.now()-renderStarted}`);
   res.setHeader('X-Robots-Tag', 'index,follow,max-image-preview:large,max-snippet:-1');
   res.end(`<!doctype html>
 <html lang="${locale.locale}">
@@ -288,12 +299,12 @@ module.exports = async function handler(req, res) {
   <meta name="twitter:image" content="${SITE_ORIGIN}/social-preview.jpg?v=20260723b">
   <meta name="twitter:image:alt" content="Meteo AI">
   <link rel="canonical" href="${escapeHtml(canonical)}">
-  ${alternateLinks(place)}
+  ${alternateLinks(place,pageLanguages)}
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <title>${escapeHtml(title)}</title>
   <script type="application/ld+json">${jsonForHtml(structuredData)}</script>
   <style>
-    :root{--bg:#f4f7f4;--surface:#fff;--ink:#13231e;--muted:#63716c;--green:#0d7b57;--lime:#c9f25d;--line:#dfe6e1;--navy:#102d26}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.top{display:flex;align-items:center;justify-content:space-between;padding:18px max(4vw,22px);background:#fff;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-weight:800;text-decoration:none}.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--green);color:#fff}.top nav{display:flex;gap:18px}.top nav a{color:var(--muted);font-size:14px;text-decoration:none}.languages{gap:8px!important}.languages a[aria-current="page"]{color:var(--green);font-weight:800}.breadcrumbs{max-width:1080px;margin:auto;padding:15px 22px 0;color:var(--muted);font-size:13px}.breadcrumbs a{color:var(--green);text-decoration:none}.hero{padding:55px 22px 46px;text-align:center;background:radial-gradient(circle at 82% 0,rgba(201,242,93,.28),transparent 24%)}.eyebrow{color:var(--green);font-size:11px;font-weight:800;letter-spacing:1.4px}.hero h1{max-width:980px;margin:14px auto 12px;font-size:clamp(36px,6vw,66px);line-height:1.04;letter-spacing:-2px}.hero p{max-width:720px;margin:0 auto;color:var(--muted);font-size:18px;line-height:1.6}.current{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;max-width:920px;margin:30px auto 0;padding:23px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 18px 50px rgba(20,45,37,.09);text-align:left}.current-icon{font-size:48px}.current strong{display:block;font-size:28px}.current span{color:var(--muted)}.current-temp{font-size:48px!important;color:var(--green)}main{max-width:1080px;margin:auto;padding:18px 22px 70px}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:20px 0 38px}.primary,.secondary{display:inline-block;border-radius:12px;padding:14px 20px;font:inherit;font-weight:800;cursor:pointer}.primary{background:var(--green);color:#fff;text-decoration:none}.secondary{background:#fff;color:var(--green);border:1px solid var(--line)}.panel{margin-top:18px;padding:26px;border:1px solid var(--line);border-radius:20px;background:#fff}.panel h2{margin:0 0 16px;font-size:26px}.panel-lead{margin:-8px 0 18px;color:var(--muted);line-height:1.6}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{font-size:13px}td{color:var(--muted)}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.fact{padding:16px;border-radius:13px;background:var(--bg)}.fact small,.fact strong{display:block}.fact small{color:var(--muted);margin-bottom:5px}.nearby{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.nearby a{display:block;padding:15px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none}.nearby a:hover{border-color:var(--green)}.nearby small{display:block;color:var(--muted);margin-top:4px}.copy{color:var(--muted);line-height:1.7}.copy strong{color:var(--ink)}footer{padding:35px 20px;background:var(--navy);color:#b8c9c3;text-align:center}footer a{color:var(--lime)}@media(max-width:700px){.top nav:not(.languages){display:none}.current{grid-template-columns:auto 1fr}.current-temp{grid-column:1/-1}.facts,.nearby{grid-template-columns:1fr 1fr}.hero{padding-top:42px}}@media(max-width:460px){.facts,.nearby{grid-template-columns:1fr}}
+    :root{--bg:#f4f7f4;--surface:#fff;--ink:#13231e;--muted:#63716c;--green:#0d7b57;--lime:#c9f25d;--line:#dfe6e1;--navy:#102d26}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.top{display:flex;align-items:center;justify-content:space-between;padding:18px max(4vw,22px);background:#fff;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-weight:800;text-decoration:none}.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--green);color:#fff}.top nav{display:flex;gap:18px}.top nav a{color:var(--muted);font-size:14px;text-decoration:none}.languages{gap:8px!important}.languages a[aria-current="page"]{color:var(--green);font-weight:800}.breadcrumbs{max-width:1080px;margin:auto;padding:15px 22px 0;color:var(--muted);font-size:13px}.breadcrumbs a{color:var(--green);text-decoration:none}.hero{padding:55px 22px 46px;text-align:center;background:radial-gradient(circle at 82% 0,rgba(201,242,93,.28),transparent 24%)}.eyebrow{color:var(--green);font-size:11px;font-weight:800;letter-spacing:1.4px}.hero h1{max-width:980px;margin:14px auto 12px;font-size:clamp(36px,6vw,66px);line-height:1.04;letter-spacing:-2px}.hero p{max-width:720px;margin:0 auto;color:var(--muted);font-size:18px;line-height:1.6}.updated{display:block;margin-top:10px;color:var(--muted);font-size:13px}.current{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;max-width:920px;margin:30px auto 0;padding:23px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 18px 50px rgba(20,45,37,.09);text-align:left}.current-icon{font-size:48px}.current strong{display:block;font-size:28px}.current span{color:var(--muted)}.current-temp{font-size:48px!important;color:var(--green)}main{max-width:1080px;margin:auto;padding:18px 22px 70px}.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:20px 0 38px}.primary,.secondary{display:inline-block;border-radius:12px;padding:14px 20px;font:inherit;font-weight:800;cursor:pointer}.primary{background:var(--green);color:#fff;text-decoration:none}.secondary{background:#fff;color:var(--green);border:1px solid var(--line)}.panel{margin-top:18px;padding:26px;border:1px solid var(--line);border-radius:20px;background:#fff}.panel h2{margin:0 0 16px;font-size:26px}.panel-lead{margin:-8px 0 18px;color:var(--muted);line-height:1.6}.tomorrow{border-color:#b9d98d;background:linear-gradient(135deg,#fff,#f2f8e9)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{font-size:13px}td{color:var(--muted)}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.fact{padding:16px;border-radius:13px;background:var(--bg)}.fact small,.fact strong{display:block}.fact small{color:var(--muted);margin-bottom:5px}.nearby{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.nearby a{display:block;padding:15px;border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none}.nearby a:hover{border-color:var(--green)}.nearby small{display:block;color:var(--muted);margin-top:4px}.copy{color:var(--muted);line-height:1.7}.copy strong{color:var(--ink)}footer{padding:35px 20px;background:var(--navy);color:#b8c9c3;text-align:center}footer a{color:var(--lime)}@media(max-width:700px){.top nav:not(.languages){display:none}.current{grid-template-columns:auto 1fr}.current-temp{grid-column:1/-1}.facts,.nearby{grid-template-columns:1fr 1fr}.hero{padding-top:42px}}@media(max-width:460px){.facts,.nearby{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -307,6 +318,7 @@ module.exports = async function handler(req, res) {
     <div class="eyebrow">${locale.eyebrow}</div>
     <h1>${escapeHtml(locale.h1(placeName))}</h1>
     <p>${escapeHtml(locale.hero(areaLabel))}</p>
+    ${forecastResult.updatedAt?`<small class="updated">${escapeHtml(locale.updatedLabel)}: ${escapeHtml(new Intl.DateTimeFormat(locale.locale,{dateStyle:'medium',timeStyle:'short',timeZone:place.tz}).format(new Date(forecastResult.updatedAt)))}</small>`:''}
     <div class="current">
       <div class="current-icon" aria-hidden="true">${weatherIcons(currentCode)}</div>
       <div><strong>${escapeHtml(currentLabel)}</strong><span>${locale.perceived} ${rounded(current?.apparent_temperature)}° • ${locale.humidity} ${rounded(current?.relative_humidity_2m)}%</span></div>
@@ -315,13 +327,18 @@ module.exports = async function handler(req, res) {
   </section>
   <main>
     <div class="actions"><a class="primary" rel="nofollow" href="${locale.homePath}?${escapeHtml(appQuery.toString())}">${escapeHtml(locale.openTools(placeName))}</a><button class="secondary" id="shareForecast" type="button">${escapeHtml(locale.shareButton)}</button></div>
+    <section class="panel tomorrow">
+      <h2>${escapeHtml(locale.tomorrowHeading(placeName))}</h2>
+      ${tomorrow?`<p class="panel-lead">${escapeHtml(formatDay(tomorrow.date,locale.locale))} • ${weatherIcons(tomorrow.code)} ${escapeHtml(tomorrowLabel)}</p><div class="facts"><div class="fact"><small>${locale.headers[2]}</small><strong>${tomorrow.max}° / ${tomorrow.min}°</strong></div><div class="fact"><small>${locale.rainfall}</small><strong>${tomorrow.rainAmount} mm • ${tomorrow.rainChance}%</strong></div><div class="fact"><small>${locale.wind}</small><strong>${tomorrow.wind} km/h • ${locale.gusts} ${tomorrow.gusts}</strong></div><div class="fact"><small>${locale.bestWindow}</small><strong>${bestTomorrowWindow(hourly,tomorrow.date,locale)}</strong></div><div class="fact"><small>${locale.sunrise}</small><strong>${tomorrow.sunrise}</strong></div><div class="fact"><small>${locale.sunset}</small><strong>${tomorrow.sunset}</strong></div><div class="fact"><small>${locale.uv}</small><strong>${tomorrow.uv}</strong></div><div class="fact"><small>${locale.reliability}</small><strong>${locale.reliabilityHigh}</strong></div></div><p class="copy">${escapeHtml(locale.tomorrowSummary(placeName,tomorrowLabel,tomorrow.min,tomorrow.max,tomorrow.rainChance,tomorrow.wind))}</p>`:`<p>${escapeHtml(locale.tomorrowUnavailable)}</p>`}
+    </section>
     <section class="panel">
       <h2>${escapeHtml(locale.nextDays(placeName))}</h2>
       <div class="table-wrap"><table>
-        <thead><tr>${locale.headers.map(header => `<th>${escapeHtml(header)}</th>`).join('')}</tr></thead>
+        <thead><tr>${locale.headers.map(header => `<th>${escapeHtml(header)}</th>`).join('')}<th>${escapeHtml(locale.reliability)}</th></tr></thead>
         <tbody>${forecastRows}</tbody>
       </table></div>
     </section>
+    ${weekendIndices.length?`<section class="panel"><h2>${escapeHtml(locale.weekendHeading(placeName))}</h2><div class="nearby">${weekendIndices.map(({date,index})=>`<div class="fact"><small>${escapeHtml(formatDay(date,locale.locale))} • ${escapeHtml(reliability(locale,index))}</small><strong>${weatherIcons(daily.weather_code[index])} ${escapeHtml(conditionLabel(daily.weather_code[index],language,locale.variable))}</strong><span>${rounded(daily.temperature_2m_max[index])}° / ${rounded(daily.temperature_2m_min[index])}° • ${locale.rainfall} ${Number.isFinite(Number(daily.precipitation_sum?.[index]))?Number(daily.precipitation_sum[index]).toFixed(1):'—'} mm</span></div>`).join('')}</div></section>`:''}
     <section class="panel">
       <h2>${escapeHtml(locale.todayConditions(placeName))}</h2>
       <div class="facts">
@@ -354,7 +371,7 @@ module.exports = async function handler(req, res) {
   </main>
   <footer>
     <p>${locale.footerNotice}</p>
-    <p><a href="${locale.howPath}">${escapeHtml(locale.howLabel)}</a> • <a href="${locale.widgetPath}">${escapeHtml(locale.widgetLabel)}</a></p>
+    <p><a href="${locale.tomorrowPath}">${escapeHtml(locale.tomorrowHubLabel)}</a> • <a href="${locale.howPath}">${escapeHtml(locale.howLabel)}</a> • <a href="${locale.widgetPath}">${escapeHtml(locale.widgetLabel)}</a></p>
     <p>${locale.weatherData}: <a href="https://open-meteo.com/" rel="nofollow">Open-Meteo</a> • ${locale.placesData}: <a href="https://www.geonames.org/" rel="nofollow">GeoNames</a> CC BY 4.0</p>
   </footer>
   <script>const shareData={title:${jsonForHtml(title)},text:${jsonForHtml(shareText)},url:${jsonForHtml(shareUrl)}},shareButton=document.getElementById('shareForecast');shareButton.addEventListener('click',async()=>{try{if(navigator.share){await navigator.share(shareData);return}await navigator.clipboard.writeText(shareData.text+'\\n'+shareData.url);shareButton.textContent=${jsonForHtml(locale.shareCopied)}}catch(error){if(error?.name!=='AbortError'){try{await navigator.clipboard.writeText(shareData.text+'\\n'+shareData.url);shareButton.textContent=${jsonForHtml(locale.shareCopied)}}catch(_){}}}})</script>

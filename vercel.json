@@ -12,6 +12,12 @@
     }
   ],
   "rewrites": [
+    { "source": "/sitemaps/static.xml", "destination": "/api/seo-sitemap?kind=static" },
+    { "source": "/meteo-domani", "destination": "/api/tomorrow-page?lang=it" },
+    { "source": "/en/weather-tomorrow", "destination": "/api/tomorrow-page?lang=en" },
+    { "source": "/fr/meteo-demain", "destination": "/api/tomorrow-page?lang=fr" },
+    { "source": "/pt-br/previsao-amanha", "destination": "/api/tomorrow-page?lang=pt-BR" },
+    { "source": "/es/tiempo-manana", "destination": "/api/tomorrow-page?lang=es" },
     { "source": "/come-funziona", "destination": "/api/about-page?lang=it" },
     { "source": "/en/how-it-works", "destination": "/api/about-page?lang=en" },
     { "source": "/fr/comment-ca-marche", "destination": "/api/about-page?lang=fr" },
