@@ -6,16 +6,18 @@ const require = createRequire(import.meta.url);
 const activationHandler = require('../api/location-seo.js');
 const sitemapHandler = require('../api/seo-sitemap.js');
 const activeIds = new Set();
+const activeLanguagePairs = new Set();
 
 process.env.UPSTASH_REDIS_REST_URL = 'https://redis.test';
 process.env.UPSTASH_REDIS_REST_TOKEN = 'test-token';
 globalThis.fetch = async (_url, options) => {
   const [command, key, value] = JSON.parse(options.body);
-  assert.equal(key, 'meteo-ai:seo-active-localities');
+  assert.ok(['meteo-ai:seo-active-localities','meteo-ai:seo-active-language-localities'].includes(key));
   if (command === 'SADD') {
-    const before = activeIds.size;
-    activeIds.add(value);
-    return { ok: true, json: async () => ({ result: activeIds.size > before ? 1 : 0 }) };
+    const target=key.endsWith('language-localities')?activeLanguagePairs:activeIds;
+    const before = target.size;
+    target.add(value);
+    return { ok: true, json: async () => ({ result: target.size > before ? 1 : 0 }) };
   }
   if (command === 'SMEMBERS') return { ok: true, json: async () => ({ result: [...activeIds] }) };
   throw new Error(`Comando inatteso: ${command}`);
@@ -35,6 +37,7 @@ const manual = await activate({ source: 'manual', id: 3169070 });
 assert.equal(manual.statusCode, 200);
 assert.equal(manual.json.place.name, 'Rome');
 assert.equal(manual.json.added, true);
+assert(activeLanguagePairs.has('it:3169070'));
 
 const duplicate = await activate({ source: 'manual', id: 3169070 });
 assert.equal(duplicate.statusCode, 200);
@@ -53,9 +56,10 @@ const crawler = await activate({ source: 'manual', id: 3173435 }, 'Googlebot/2.1
 assert.equal(crawler.statusCode, 403);
 assert.equal(activeIds.size, 2);
 
-const longTailForeign = await activate({ source: 'manual', id: 684802 });
+const longTailForeign = await activate({ source: 'manual', id: 684802, language:'pt-BR' });
 assert.equal(longTailForeign.statusCode, 200);
 assert.equal(longTailForeign.json.place.name, 'Bârlad');
+assert(activeLanguagePairs.has('pt-BR:684802'));
 
 const sitemap = responseRecorder();
 await sitemapHandler({ query: { kind: 'locations' } }, sitemap);

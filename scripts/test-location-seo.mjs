@@ -55,7 +55,7 @@ await handler(
 assert.equal(found.statusCode, 200);
 assert.match(found.headers['Content-Type'], /text\/html/);
 assert.match(found.body, /Meteo Messina oggi, domani e questa settimana/);
-assert.match(found.body, /<title>Meteo Messina: oggi, domani e 7 giorni \| Meteo AI<\/title>/);
+assert.match(found.body, /<title>Meteo Messina domani e prossimi 7 giorni \| Meteo AI<\/title>/);
 assert.match(found.body, /https:\/\/meteo-ai\.vercel\.app\/meteo\/it\/sicily\/messina-2524170/);
 assert.match(found.body, /application\/ld\+json/);
 assert.match(found.body, /property="og:image" content="https:\/\/meteo-ai\.vercel\.app\/social-preview\.jpg\?v=20260723b"/);
@@ -88,7 +88,7 @@ await handler(
 );
 assert.equal(english.headers['Content-Language'], 'en-GB');
 assert.match(english.body, /Weather in Rome today, tomorrow and this week/);
-assert.match(english.body, /<title>Rome weather: today, tomorrow and 7 days \| Meteo AI<\/title>/);
+assert.match(english.body, /<title>Rome weather tomorrow and 7-day forecast \| Meteo AI<\/title>/);
 assert.match(english.body, /rel="canonical" href="https:\/\/meteo-ai\.vercel\.app\/en\/weather\/it\/lazio\/rome-3169070"/);
 
 const french = responseRecorder();
@@ -108,7 +108,7 @@ await handler(
 assert.equal(spanish.statusCode, 200);
 assert.equal(spanish.headers['Content-Language'], 'es-ES');
 assert.match(spanish.body, /El tiempo en Messina hoy, mañana y esta semana/);
-assert.match(spanish.body, /<title>Tiempo en Messina: hoy, mañana y 7 días \| Meteo AI<\/title>/);
+assert.match(spanish.body, /<title>Tiempo en Messina mañana y próximos 7 días \| Meteo AI<\/title>/);
 assert.match(spanish.body, /href="\/es\/tiempo\/it\/[^\"]+"/);
 
 const missing = responseRecorder();

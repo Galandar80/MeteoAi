@@ -85,7 +85,14 @@ const weatherIcons = code => {
 
 const formatNumber = (number, locale) => new Intl.NumberFormat(locale).format(number || 0);
 const formatDay = (date, locale) => new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'short' }).format(new Date(`${date}T12:00:00`));
-const formatClock = (value, locale) => value ? new Intl.DateTimeFormat(locale,{hour:'2-digit',minute:'2-digit'}).format(new Date(value)) : '—';
+// Open-Meteo returns sunrise/sunset as local wall-clock values when timezone=auto.
+// Reading the ISO string as a Date would shift it to the server timezone for
+// foreign cities, so preserve the clock portion exactly as supplied.
+const formatClock = (value) => {
+  if (!value) return '—';
+  const match = String(value).match(/T(\d{2}:\d{2})/);
+  return match ? match[1] : '—';
+};
 const rounded = value => Number.isFinite(Number(value)) ? Math.round(Number(value)) : '—';
 
 const conditionLabel = (code, language, fallback) => translatedWeatherLabels[language]?.[code] || weatherLabels[code] || fallback;
