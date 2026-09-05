@@ -27,7 +27,9 @@ module.exports = async function handler(req, res) {
   if (!place) return send(res, 400, { error: 'Località non valida' });
 
   try {
-    const result = await activate(place);
+    const requestedLanguage=String(body.language||body.lang||'it');
+    const language=requestedLanguage.toLowerCase()==='pt-br'?'pt-BR':['it','en','fr','es'].includes(requestedLanguage.toLowerCase())?requestedLanguage.toLowerCase():'it';
+    const result = await activate(place,language);
     return send(res, 200, { ok: true, ...result });
   } catch (_) {
     return send(res, 503, { error: 'Attivazione SEO temporaneamente non disponibile' });
