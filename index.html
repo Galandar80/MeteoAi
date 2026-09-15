@@ -128,7 +128,7 @@
       <h1>Meteo AI: non guardare soltanto<br>che tempo farà. <em>Capiscilo.</em></h1>
       <p>Meteo, qualità dell’aria, mappe e consigli personali in un’unica esperienza semplice. Cerca qualsiasi luogo nel mondo.</p>
       <form class="search" id="searchForm">
-        <span>⌕</span><input id="placeInput" autocomplete="off" placeholder="Cerca città, località o CAP..." aria-label="Cerca una località" />
+        <label for="placeInput" class="search-icon" aria-label="Cerca una località">⌕</label><input id="placeInput" autocomplete="off" spellcheck="false" placeholder="Cerca città, località o CAP..." aria-label="Cerca una località" />
         <button type="button" id="geoBtn" title="Usa la mia posizione">◎</button>
         <button type="submit">Cerca</button>
         <div class="suggestions" id="suggestions"></div>
@@ -174,6 +174,9 @@
         </article>
       </div>
 
+      <div class="section-title"><div><span>PROSSIME ORE</span><h3>Oggi, ora per ora</h3></div></div>
+      <div class="hourly" id="hourly"></div>
+
       <div class="section-title forecast-priority" id="fourteenDays"><div><span>ORIZZONTE ESTESO</span><h3>Previsioni 14 giorni</h3></div><div class="tabs"><button class="active" data-unit="c">°C</button><button data-unit="f">°F</button></div></div>
       <div class="daily" id="daily"></div>
       <section class="confidence-panel" aria-labelledby="confidenceTitle">
@@ -187,9 +190,6 @@
         <div class="alerts-list" id="alertsList"><div class="alert-item neutral"><b>Analisi in corso</b><p>Controllo pioggia, temporali, vento, temperature e UV.</p></div></div>
         <small>Gli avvisi Meteo AI sono calcolati dai dati previsionali e non sono allerte ufficiali.</small>
       </section>
-
-      <div class="section-title"><div><span>PROSSIME ORE</span><h3>Oggi, ora per ora</h3></div></div>
-      <div class="hourly" id="hourly"></div>
 
       <section class="weather-window" id="weatherWindow">
         <div class="window-intro"><span>✦ FUNZIONE ESCLUSIVA METEO AI</span><h3>Trova la tua Finestra Meteo</h3><p>Non cercare giorno per giorno. Dicci cosa vuoi fare e analizzeremo le prossime 168 ore per trovare i momenti migliori.</p></div>

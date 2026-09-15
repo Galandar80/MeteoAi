@@ -149,6 +149,22 @@ body.dark .install-promo{background:linear-gradient(120deg,var(--surface),#17382
 .next-day-temps b{font-size:17px}
 .next-day-temps span{font-weight:700}
 .forecast-priority{margin-top:28px}
+
+/* Keep search results above adjacent hero content and outside its clipping area. */
+.hero{overflow:visible}
+.hero-weather{overflow:hidden}
+.hero>.search{width:100%;max-width:700px;flex-shrink:0;z-index:3;gap:4px}
+.search-icon{display:grid;place-items:center;flex:0 0 36px;min-height:44px;font-size:27px;cursor:text}
+.search #placeInput{width:100%;min-width:0;min-height:44px;padding:10px 4px;line-height:1.5;border-radius:8px}
+.search:focus-within{border-color:var(--green);box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 25%,transparent),var(--shadow)}
+.search #placeInput:focus-visible{outline:none}
+.search>button{flex-shrink:0;min-height:44px}
+.search #geoBtn{min-width:44px}
+.search .suggestions{top:calc(100% + 8px);max-height:min(320px,45vh);overflow-y:auto;overscroll-behavior:contain}
+.search .suggestions button[type=button]{font:500 15px/1.5 'DM Sans',sans-serif;color:var(--ink);padding:14px 16px;min-height:48px;white-space:normal;overflow-wrap:anywhere}
+.search .suggestions button:hover,.search .suggestions button:focus-visible{background:var(--bg)}
+.search .suggestions button:focus-visible{outline:2px solid var(--green);outline-offset:-3px}
+@media(max-width:520px){.hero>.search{gap:2px;padding:6px}.search-icon{flex-basis:26px}.search>button[type=submit]{padding:12px}.search #geoBtn{padding:8px}}
 @media(max-width:760px){.next-days-summary-grid{grid-template-columns:1fr}.next-day-mini{grid-template-columns:minmax(72px,.8fr) 38px minmax(90px,1.2fr) auto}}
 @media(max-width:430px){.next-day-mini{grid-template-columns:64px 34px 1fr auto;padding:10px 9px;gap:7px}.next-day-condition small{font-size:10px}.next-day-condition b{max-width:82px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 
