@@ -20,6 +20,7 @@ async function fetchForecast(place, { days=7, fetchImpl=fetch, timeoutMs=UPSTREA
     const response = await fetchImpl(`https://api.open-meteo.com/v1/forecast?${forecastParams(place,days)}`, { signal:controller.signal });
     if (!response.ok) throw new Error(`Open-Meteo ${response.status}`);
     const data = await response.json();
+    if (!data || data.error || (!Number.isFinite(data.current?.temperature_2m) && !data.daily?.temperature_2m_max?.some(Number.isFinite))) throw new Error('Empty forecast');
     return { data, updatedAt:new Date().toISOString(), upstreamMs:Date.now()-started };
   } finally { clearTimeout(timeout); }
 }
@@ -27,13 +28,16 @@ async function fetchForecast(place, { days=7, fetchImpl=fetch, timeoutMs=UPSTREA
 function refresh(place, options={}) {
   const key=String(place.id);
   if (INFLIGHT.has(key)) return INFLIGHT.get(key);
-  const task=fetchForecast(place,options).then(entry => { CACHE.set(key,entry); return entry; }).finally(()=>INFLIGHT.delete(key));
+  const task=fetchForecast(place,options).then(entry => { CACHE.set(key,entry); if(CACHE.size>2000)CACHE.delete(CACHE.keys().next().value); return entry; }).finally(()=>INFLIGHT.delete(key));
   INFLIGHT.set(key,task);
   return task;
 }
 
 async function getForecast(place, options={}) {
-  const key=String(place.id), cached=CACHE.get(key), age=cached?Date.now()-Date.parse(cached.updatedAt):Infinity;
+  const key=String(place.id), cached=CACHE.get(key);
+  const calendar=new Intl.DateTimeFormat('en-CA',{timeZone:place.tz||'UTC'});
+  const sameDay=cached&&calendar.format(new Date(cached.updatedAt))===calendar.format(new Date());
+  const age=cached&&sameDay?Date.now()-Date.parse(cached.updatedAt):Infinity;
   if (cached && age < FRESH_MS) return { ...cached, cache:'hit', elapsedMs:0 };
   if (cached && age < STALE_MS) {
     refresh(place,options).catch(()=>{});
@@ -41,7 +45,7 @@ async function getForecast(place, options={}) {
   }
   const started=Date.now();
   try { const entry=await refresh(place,options); return { ...entry, cache:'miss', elapsedMs:Date.now()-started }; }
-  catch (error) { return cached ? { ...cached, cache:'expired', elapsedMs:Date.now()-started, error } : { data:null, updatedAt:null, cache:'unavailable', elapsedMs:Date.now()-started, error }; }
+  catch (error) { return { data:null, updatedAt:null, cache:'unavailable', elapsedMs:Date.now()-started, error }; }
 }
 
 function seedForecast(placeId, data, updatedAt=new Date().toISOString()) { CACHE.set(String(placeId),{data,updatedAt,upstreamMs:0}); }

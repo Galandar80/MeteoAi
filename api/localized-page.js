@@ -88,7 +88,7 @@ function translateMarkup(html,language){
   const protectedBlocks=[];
   html=html.replace(/<(script|style)\b[\s\S]*?<\/\1>|<a\b[^>]*class="[^"]*brand[^"]*"[^>]*>[\s\S]*?<\/a>/gi,block=>`@@METEO_BLOCK_${protectedBlocks.push(block)-1}@@`);
   html=html.replace(/(<[^>]+>|[^<]+)/g,token=>{
-    if(token.startsWith('<'))return token.replace(/\b(placeholder|aria-label|title|alt)=("([^"]*)"|'([^']*)')/gi,(match,name,quoted,doubleValue,singleValue)=>{const source=doubleValue??singleValue,translated=translate(source);return translated===source?match:`${name}=${quoted[0]}${translated}${quoted[0]} data-i18n-source-${name}="${encodeURIComponent(source)}"`});
+    if(token.startsWith('<'))return token.replace(/\b(placeholder|aria-label|title|alt)=("([^"]*)"|'([^']*)')/gi,(match,name,quoted,doubleValue,singleValue)=>{const source=doubleValue??singleValue,translated=translate(source);return translated===source?match:`${name}=${quoted[0]}${translated.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll("'",'&#39;')}${quoted[0]} data-i18n-source-${name}="${encodeURIComponent(source)}"`});
     const translated=translate(token);
     return translated===token?token:`<!--meteo-i18n:${encodeURIComponent(token)}-->${translated}`;
   });
@@ -102,6 +102,7 @@ function alternateLinks(page){
 function localizeLinks(html,language){
   const routes={
     '/':ROUTES.home[language],'/index.html':ROUTES.home[language],'index.html':ROUTES.home[language],
+    '/localita':{en:'/en/locations',fr:'/fr/localites','pt-BR':'/pt-br/localidades',es:'/es/localidades'}[language],
     '/world-live.html':ROUTES.world[language],'world-live.html':ROUTES.world[language],
     '/installa.html':ROUTES.install[language],'installa.html':ROUTES.install[language]
     ,'/come-funziona':GROWTH_ROUTES.how[language],'/widget':GROWTH_ROUTES.widget[language],'/meteo-domani':GROWTH_ROUTES.tomorrow[language]
@@ -114,7 +115,7 @@ function localizeLinks(html,language){
 }
 function localizeStructuredData(html,page,language,canonical,meta){
   const translate=translator(language);
-  return html.replace(/<script\s+type=("|')application\/ld\+json\1>([\s\S]*?)<\/script>/gi,(match,quote,json)=>{try{const data=JSON.parse(json);const visit=value=>{if(Array.isArray(value)){value.forEach(visit);return}if(!value||typeof value!=='object')return;for(const [key,item]of Object.entries(value)){if(typeof item==='string'&&!['@id','url','logo','image'].includes(key))value[key]=translate(item);else visit(item)}};visit(data);const root=Array.isArray(data?.['@graph'])?data['@graph'].find(item=>['WebPage','CollectionPage','WebApplication'].includes(item?.['@type'])):data;if(root){root.url=canonical;root.name=meta.title;root.description=meta.description;root.inLanguage=LOCALES[language]}return `<script type=${quote}application/ld+json${quote}>${JSON.stringify(data)}</script>`}catch(_){return match}});
+  return html.replace(/<script\s+type=("|')application\/ld\+json\1>([\s\S]*?)<\/script>/gi,(match,quote,json)=>{try{const data=JSON.parse(json);const visit=value=>{if(Array.isArray(value)){value.forEach(visit);return}if(!value||typeof value!=='object')return;for(const [key,item]of Object.entries(value)){if(typeof item==='string'&&!['@id','url','logo','image'].includes(key))value[key]=translate(item);else visit(item)}};visit(data);const root=Array.isArray(data?.['@graph'])?data['@graph'].find(item=>['WebPage','CollectionPage','WebApplication'].includes(item?.['@type'])):data;if(root){root.url=canonical;if(root['@id'])root['@id']=canonical+'#page';root.name=meta.title;root.description=meta.description;root.inLanguage=LOCALES[language]}return `<script type=${quote}application/ld+json${quote}>${JSON.stringify(data)}</script>`}catch(_){return match}});
 }
 
 function render(page,language){
@@ -126,6 +127,8 @@ function render(page,language){
   html=applyPageCopy(html,page,language);
   html=translateMarkup(html,language);
   html=localizeLinks(html,language);
+  // Nested locale routes must load the same root assets as the Italian pages.
+  html=html.replace(/\b(src|href)=("|')((?!https?:|\/|#|data:)[^"']+\.(?:js|css|svg|png|jpg|webmanifest)(?:\?[^"']*)?)\2/gi,(_,attr,quote,asset)=>`${attr}=${quote}/${asset}${quote}`);
   html=html.replace(/<html\s+lang="[^"]+">/i,`<html lang="${locale}">`);
   html=html.replace(/<title>[\s\S]*?<\/title>/i,`<title>${meta.title}</title>`);
   html=html.replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i,`<meta name="description" content="${meta.description}">`);

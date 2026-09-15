@@ -4,6 +4,7 @@ const {
   LOCALES,
   localizedPlacePath,
   displayCountry,
+  displayAdmin,
   displayPlaceName,
   directoryAlternateLinks
 } = require('./_seo-locales.js');
@@ -93,7 +94,7 @@ module.exports = async function handler(req, res) {
       <h2>${escapeHtml(locale.weatherIn(country.name))}</h2>
       ${country.regions.map(region => `
         <section class="region" id="regione-${slug(country.code)}-${slug(region.name)}">
-          <h3>${escapeHtml(region.name)}</h3>
+          <h3>${escapeHtml(displayAdmin(region.entries[0], language))}</h3>
           <div class="places">${region.entries.map(place => `<a href="${escapeHtml(localizedPlacePath(place, language))}"><strong>${escapeHtml(locale.placeWeather(displayPlaceName(place, language)))}</strong><small>${locale.todayTomorrow}</small></a>`).join('')}</div>
         </section>`).join('')}
     </section>`).join('');

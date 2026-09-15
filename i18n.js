@@ -89,6 +89,982 @@
   Object.assign(lexicons['pt-BR'],{'Geolocalizzazione non supportata':'Geolocalização não suportada','Il GPS richiede una connessione sicura HTTPS':'O GPS requer uma conexão HTTPS segura','Permesso GPS non concesso':'A permissão de GPS não foi concedida','Posizione non disponibile':'Localização indisponível','Posizione attuale':'Localização atual','Posizione non disponibile o autorizzazione negata.':'Localização indisponível ou permissão negada.'});
   Object.assign(lexicons.es,{'Geolocalizzazione non supportata':'Geolocalización no compatible','Il GPS richiede una connessione sicura HTTPS':'El GPS requiere una conexión HTTPS segura','Permesso GPS non concesso':'No se ha concedido el permiso de GPS','Posizione non disponibile':'Ubicación no disponible','Posizione attuale':'Ubicación actual','Posizione non disponibile o autorizzazione negata.':'Ubicación no disponible o permiso denegado.'});
 
+  const auditCopy=[
+  [
+    "Eventi naturali osservati, livelli ufficiali e una lettura semplice del possibile impatto sulla località che stai seguendo.",
+    "Observed natural events, official severity levels and a simple explanation of their possible impact on your location.",
+    "Événements naturels observés, niveaux officiels et explication simple de leur impact possible sur la localité suivie.",
+    "Eventos naturais observados, níveis oficiais e uma explicação simples do possível impacto no local acompanhado.",
+    "Fenómenos naturales observados, niveles oficiales y una explicación sencilla de su posible impacto en la localidad que sigues."
+  ],
+  [
+    "Gli eventi vengono ordinati anche in base alla distanza.",
+    "Events are also sorted by distance.",
+    "Les événements sont aussi classés par distance.",
+    "Os eventos também são ordenados por distância.",
+    "Los eventos también se ordenan por distancia."
+  ],
+  [
+    "con i filtri attuali",
+    "with the current filters",
+    "avec les filtres actuels",
+    "com os filtros atuais",
+    "con los filtros actuales"
+  ],
+  [
+    "eventi arancioni o rossi",
+    "orange or red events",
+    "événements orange ou rouges",
+    "eventos laranja ou vermelhos",
+    "eventos naranjas o rojos"
+  ],
+  [
+    "alla località scelta",
+    "from the selected location",
+    "de la localité choisie",
+    "do local selecionado",
+    "de la localidad elegida"
+  ],
+  [
+    "Fonti in caricamento",
+    "Loading sources",
+    "Chargement des sources",
+    "Carregando fontes",
+    "Cargando fuentes"
+  ],
+  [
+    "RADAR PERSONALE",
+    "PERSONAL RADAR",
+    "RADAR PERSONNEL",
+    "RADAR PESSOAL",
+    "RADAR PERSONAL"
+  ],
+  [
+    "Caricamento degli eventi reali…",
+    "Loading observed events…",
+    "Chargement des événements observés…",
+    "Carregando eventos observados…",
+    "Cargando eventos observados…"
+  ],
+  [
+    "Il colore indica la criticità dell’evento, non la probabilità.",
+    "Colour indicates event severity, not probability.",
+    "La couleur indique la gravité de l’événement, pas sa probabilité.",
+    "A cor indica a gravidade do evento, não a probabilidade.",
+    "El color indica la gravedad del evento, no su probabilidad."
+  ],
+  [
+    "EVENTI RILEVANTI",
+    "RELEVANT EVENTS",
+    "ÉVÉNEMENTS PERTINENTS",
+    "EVENTOS RELEVANTES",
+    "EVENTOS RELEVANTES"
+  ],
+  [
+    "Quadro mondiale",
+    "Global overview",
+    "Vue mondiale",
+    "Panorama mundial",
+    "Panorama mundial"
+  ],
+  [
+    "Interrogo USGS, NASA EONET e i centri tsunami.",
+    "Querying USGS, NASA EONET and tsunami centres.",
+    "Consultation de l’USGS, de NASA EONET et des centres tsunami.",
+    "Consultando USGS, NASA EONET e centros de tsunami.",
+    "Consultando USGS, NASA EONET y los centros de tsunamis."
+  ],
+  [
+    "TRASPARENZA METEO AI",
+    "METEO AI TRANSPARENCY",
+    "TRANSPARENCE METEO AI",
+    "TRANSPARÊNCIA METEO AI",
+    "TRANSPARENCIA METEO AI"
+  ],
+  [
+    "Meteo AI mostra una probabilità soltanto quando viene pubblicata dalla fonte. Per terremoti e vulcani non inventa percentuali di previsione: descrive l’evento osservato e calcola esclusivamente un indice orientativo d’impatto sulla località.",
+    "Meteo AI shows a probability only when the source publishes one. For earthquakes and volcanoes it describes the observed event and calculates only an indicative local impact score, without inventing forecast percentages.",
+    "Meteo AI affiche une probabilité uniquement lorsqu’elle est publiée par la source. Pour les séismes et volcans, l’application décrit l’événement observé et calcule seulement un indice indicatif d’impact local, sans inventer de pourcentages prévisionnels.",
+    "O Meteo AI mostra probabilidades apenas quando publicadas pela fonte. Para terremotos e vulcões, descreve o evento observado e calcula somente um índice indicativo de impacto local, sem inventar percentuais de previsão.",
+    "Meteo AI muestra probabilidades solo cuando las publica la fuente. Para terremotos y volcanes, describe el evento observado y calcula únicamente un índice orientativo de impacto local, sin inventar porcentajes de previsión."
+  ],
+  [
+    "Quanto è probabile uno scenario, solo se la fonte lo dichiara.",
+    "How likely a scenario is, only when stated by the source.",
+    "Probabilité d’un scénario, uniquement si la source l’indique.",
+    "Probabilidade de um cenário, apenas se informada pela fonte.",
+    "Probabilidad de un escenario, solo si la fuente la indica."
+  ],
+  [
+    "Intensità o livello attribuito all’evento osservato.",
+    "Intensity or level assigned to the observed event.",
+    "Intensité ou niveau attribué à l’événement observé.",
+    "Intensidade ou nível atribuído ao evento observado.",
+    "Intensidad o nivel atribuido al evento observado."
+  ],
+  [
+    "Indice 0–100 basato su distanza, intensità, tipo e attualità.",
+    "A 0–100 score based on distance, intensity, type and recency.",
+    "Indice de 0 à 100 selon la distance, l’intensité, le type et la récence.",
+    "Índice de 0 a 100 baseado em distância, intensidade, tipo e atualidade.",
+    "Índice de 0 a 100 basado en distancia, intensidad, tipo y actualidad."
+  ],
+  [
+    "I provider sono indipendenti da Meteo AI. Timeout, CORS, manutenzione o modifiche alle condizioni d’uso possono rendere una singola fonte temporaneamente indisponibile; le altre continuano a funzionare e il loro stato è mostrato nella pagina.",
+    "Providers are independent of Meteo AI. Timeouts, access restrictions, maintenance or changes to terms may temporarily affect one source; the others continue working and their status is displayed on the page.",
+    "Les fournisseurs sont indépendants de Meteo AI. Délais dépassés, restrictions d’accès, maintenance ou changements des conditions peuvent rendre une source indisponible ; les autres continuent à fonctionner et leur état est affiché.",
+    "Os provedores são independentes do Meteo AI. Limites de tempo, restrições de acesso, manutenção ou mudanças nos termos podem afetar uma fonte temporariamente; as outras continuam funcionando e seu estado aparece na página.",
+    "Los proveedores son independientes de Meteo AI. Los tiempos de espera, restricciones de acceso, mantenimiento o cambios de condiciones pueden afectar temporalmente a una fuente; las demás siguen funcionando y su estado aparece en la página."
+  ],
+  [
+    "Terremoti mondiali",
+    "Worldwide earthquakes",
+    "Séismes mondiaux",
+    "Terremotos mundiais",
+    "Terremotos mundiales"
+  ],
+  [
+    "Feed GeoJSON aggiornato frequentemente ↗",
+    "Frequently updated GeoJSON feed ↗",
+    "Flux GeoJSON fréquemment actualisé ↗",
+    "Feed GeoJSON atualizado frequentemente ↗",
+    "Fuente GeoJSON actualizada frecuentemente ↗"
+  ],
+  [
+    "Eventi naturali globali",
+    "Global natural events",
+    "Événements naturels mondiaux",
+    "Eventos naturais globais",
+    "Fenómenos naturales mundiales"
+  ],
+  [
+    "Cicloni, vulcani, incendi e altro ↗",
+    "Cyclones, volcanoes, wildfires and more ↗",
+    "Cyclones, volcans, incendies et autres ↗",
+    "Ciclones, vulcões, incêndios e outros ↗",
+    "Ciclones, volcanes, incendios y otros ↗"
+  ],
+  [
+    "Messaggi CAP ufficiali",
+    "Official CAP messages",
+    "Messages CAP officiels",
+    "Mensagens CAP oficiais",
+    "Mensajes CAP oficiales"
+  ],
+  [
+    "Centri NOAA PTWC e NTWC ↗",
+    "NOAA PTWC and NTWC centres ↗",
+    "Centres NOAA PTWC et NTWC ↗",
+    "Centros NOAA PTWC e NTWC ↗",
+    "Centros NOAA PTWC y NTWC ↗"
+  ],
+  [
+    "Giappone e Pacifico nord-occidentale",
+    "Japan and the northwestern Pacific",
+    "Japon et Pacifique nord-ouest",
+    "Japão e Pacífico noroeste",
+    "Japón y Pacífico noroccidental"
+  ],
+  [
+    "Bollettini XML dell’agenzia giapponese ↗",
+    "Japanese agency XML bulletins ↗",
+    "Bulletins XML de l’agence japonaise ↗",
+    "Boletins XML da agência japonesa ↗",
+    "Boletines XML de la agencia japonesa ↗"
+  ],
+  [
+    "Indonesia e mari circostanti",
+    "Indonesia and surrounding seas",
+    "Indonésie et mers voisines",
+    "Indonésia e mares próximos",
+    "Indonesia y mares cercanos"
+  ],
+  [
+    "Dati aperti del sistema TEWS indonesiano ↗",
+    "Open data from Indonesia’s TEWS system ↗",
+    "Données ouvertes du système TEWS indonésien ↗",
+    "Dados abertos do sistema TEWS indonésio ↗",
+    "Datos abiertos del sistema TEWS indonesio ↗"
+  ],
+  [
+    "Mondo Live è informativo e non sostituisce protezione civile, autorità locali, ordini di evacuazione o bollettini ufficiali. In caso di emergenza segui esclusivamente le autorità competenti.",
+    "World Live provides information and does not replace civil protection, local authorities, evacuation orders or official bulletins. In an emergency follow the responsible authorities.",
+    "Monde en direct est informatif et ne remplace ni la protection civile, ni les autorités locales, ni les ordres d’évacuation, ni les bulletins officiels. En cas d’urgence, suivez les autorités compétentes.",
+    "Mundo ao vivo é informativo e não substitui a defesa civil, autoridades locais, ordens de evacuação ou boletins oficiais. Em emergências, siga as autoridades competentes.",
+    "Mundo en directo es informativo y no sustituye a protección civil, autoridades locales, órdenes de evacuación ni boletines oficiales. En emergencias, sigue a las autoridades competentes."
+  ],
+  [
+    "Ricevi un avviso quando Mondo Live rileva un evento compatibile con le tue regole. Tutto resta su questo dispositivo.",
+    "Receive a notice when World Live detects an event matching your rules. Everything stays on this device.",
+    "Recevez un avis lorsque Monde en direct détecte un événement correspondant à vos règles. Tout reste sur cet appareil.",
+    "Receba um aviso quando Mundo ao vivo detectar um evento compatível com suas regras. Tudo fica neste dispositivo.",
+    "Recibe un aviso cuando Mundo en directo detecte un evento que coincida con tus reglas. Todo permanece en este dispositivo."
+  ],
+  [
+    "Controllo disponibilità…",
+    "Checking availability…",
+    "Vérification de la disponibilité…",
+    "Verificando disponibilidade…",
+    "Comprobando disponibilidad…"
+  ],
+  [
+    "Cicloni e tempeste",
+    "Cyclones and storms",
+    "Cyclones et tempêtes",
+    "Ciclones e tempestades",
+    "Ciclones y tormentas"
+  ],
+  [
+    "Come funzionano davvero:",
+    "How they work:",
+    "Fonctionnement :",
+    "Como funcionam:",
+    "Cómo funcionan:"
+  ],
+  [
+    "gli avvisi vengono controllati all’apertura e ogni dieci minuti mentre la pagina o la PWA è attiva. Le notifiche in background a sito completamente chiuso richiederebbero un servizio push esterno.",
+    "notices are checked on opening and every ten minutes while the page or PWA is active. Notifications when the site is fully closed would require an external push service.",
+    "les avis sont vérifiés à l’ouverture et toutes les dix minutes tant que la page ou la PWA est active. Les notifications lorsque le site est fermé nécessiteraient un service push externe.",
+    "os avisos são verificados ao abrir e a cada dez minutos enquanto a página ou PWA está ativa. Notificações com o site fechado exigiriam um serviço push externo.",
+    "los avisos se comprueban al abrir y cada diez minutos mientras la página o PWA está activa. Las notificaciones con el sitio cerrado requerirían un servicio push externo."
+  ],
+  [
+    "Il pianeta reale, spiegato con trasparenza.",
+    "The real planet, explained transparently.",
+    "La planète réelle, expliquée avec transparence.",
+    "O planeta real, explicado com transparência.",
+    "El planeta real, explicado con transparencia."
+  ],
+  [
+    "Dati: USGS • NASA EONET • NOAA Tsunami.gov • JMA • BMKG • Mappe: OpenStreetMap. Verifica sempre le fonti ufficiali.",
+    "Data: USGS • NASA EONET • NOAA Tsunami.gov • JMA • BMKG • Maps: OpenStreetMap. Always check official sources.",
+    "Données : USGS • NASA EONET • NOAA Tsunami.gov • JMA • BMKG • Cartes : OpenStreetMap. Vérifiez toujours les sources officielles.",
+    "Dados: USGS • NASA EONET • NOAA Tsunami.gov • JMA • BMKG • Mapas: OpenStreetMap. Consulte sempre as fontes oficiais.",
+    "Datos: USGS • NASA EONET • NOAA Tsunami.gov • JMA • BMKG • Mapas: OpenStreetMap. Consulta siempre las fuentes oficiales."
+  ],
+  [
+    "Ordina eventi",
+    "Sort events",
+    "Trier les événements",
+    "Ordenar eventos",
+    "Ordenar eventos"
+  ],
+  [
+    "Chiudi scheda",
+    "Close details",
+    "Fermer la fiche",
+    "Fechar detalhes",
+    "Cerrar ficha"
+  ],
+  [
+    "Chiudi sorveglianza",
+    "Close watchlist",
+    "Fermer la surveillance",
+    "Fechar monitoramento",
+    "Cerrar vigilancia"
+  ],
+  [
+    "Cambia località di riferimento",
+    "Change reference location",
+    "Changer la localité de référence",
+    "Alterar local de referência",
+    "Cambiar localidad de referencia"
+  ],
+  [
+    "Es. Messina, Tokyo, Honolulu",
+    "E.g. Messina, Tokyo, Honolulu",
+    "Ex. Messine, Tokyo, Honolulu",
+    "Ex.: Messina, Tóquio, Honolulu",
+    "Ej.: Mesina, Tokio, Honolulu"
+  ],
+  [
+    "14 giorni",
+    "14 days",
+    "14 jours",
+    "14 dias",
+    "14 días"
+  ],
+  [
+    "7 giorni",
+    "7 days",
+    "7 jours",
+    "7 dias",
+    "7 días"
+  ],
+  [
+    "30 giorni",
+    "30 days",
+    "30 jours",
+    "30 dias",
+    "30 días"
+  ],
+  [
+    "24 ore",
+    "24 hours",
+    "24 heures",
+    "24 horas",
+    "24 horas"
+  ]
+];
+  for(const row of auditCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+
+  const homeAuditCopy=[
+  [
+    "Analisi automatica basata su dati previsionali reali.",
+    "Automatic analysis based on real forecast data.",
+    "Analyse automatique fondée sur des données prévisionnelles réelles.",
+    "Análise automática baseada em dados reais de previsão.",
+    "Análisis automático basado en datos reales de previsión."
+  ],
+  [
+    "ORIZZONTE ESTESO",
+    "EXTENDED OUTLOOK",
+    "ÉCHÉANCE ÉTENDUE",
+    "PREVISÃO ESTENDIDA",
+    "PREVISIÓN AMPLIADA"
+  ],
+  [
+    "TRASPARENZA PREVISIONALE",
+    "FORECAST TRANSPARENCY",
+    "TRANSPARENCE DES PRÉVISIONS",
+    "TRANSPARÊNCIA DA PREVISÃO",
+    "TRANSPARENCIA DE LA PREVISIÓN"
+  ],
+  [
+    "Oggi–2 giorni",
+    "Today–2 days",
+    "Aujourd’hui–2 jours",
+    "Hoje–2 dias",
+    "Hoy–2 días"
+  ],
+  [
+    "3–7 giorni",
+    "3–7 days",
+    "3–7 jours",
+    "3–7 dias",
+    "3–7 días"
+  ],
+  [
+    "8–14 giorni",
+    "8–14 days",
+    "8–14 jours",
+    "8–14 dias",
+    "8–14 días"
+  ],
+  [
+    "Buona",
+    "Good",
+    "Bonne",
+    "Boa",
+    "Buena"
+  ],
+  [
+    "Indicativa",
+    "Indicative",
+    "Indicative",
+    "Indicativa",
+    "Orientativa"
+  ],
+  [
+    "Consulta avvisi ufficiali ↗",
+    "Check official notices ↗",
+    "Consulter les avis officiels ↗",
+    "Consultar avisos oficiais ↗",
+    "Consulta avisos oficiales ↗"
+  ],
+  [
+    "Controllo pioggia, temporali, vento, temperature e UV.",
+    "Checking rain, thunderstorms, wind, temperatures and UV.",
+    "Vérification de la pluie, des orages, du vent, des températures et des UV.",
+    "Verificando chuva, tempestades, vento, temperaturas e UV.",
+    "Comprobando lluvia, tormentas, viento, temperaturas y UV."
+  ],
+  [
+    "Gli avvisi Meteo AI sono calcolati dai dati previsionali e non sono allerte ufficiali.",
+    "Meteo AI notices are calculated from forecast data and are not official warnings.",
+    "Les avis Meteo AI sont calculés à partir des prévisions et ne sont pas des alertes officielles.",
+    "Os avisos do Meteo AI são calculados a partir de previsões e não são alertas oficiais.",
+    "Los avisos de Meteo AI se calculan a partir de previsiones y no son alertas oficiales."
+  ],
+  [
+    "PROSSIME ORE",
+    "NEXT HOURS",
+    "PROCHAINES HEURES",
+    "PRÓXIMAS HORAS",
+    "PRÓXIMAS HORAS"
+  ],
+  [
+    "✦ FUNZIONE ESCLUSIVA METEO AI",
+    "✦ METEO AI EXCLUSIVE FEATURE",
+    "✦ FONCTION EXCLUSIVE METEO AI",
+    "✦ FUNÇÃO EXCLUSIVA METEO AI",
+    "✦ FUNCIÓN EXCLUSIVA METEO AI"
+  ],
+  [
+    "Analisi delle condizioni in corso...",
+    "Analysing conditions...",
+    "Analyse des conditions...",
+    "Analisando condições...",
+    "Analizando condiciones..."
+  ],
+  [
+    "Confronto le condizioni disponibili.",
+    "Comparing available conditions.",
+    "Comparaison des conditions disponibles.",
+    "Comparando condições disponíveis.",
+    "Comparando las condiciones disponibles."
+  ],
+  [
+    "Il confronto viene aggiornato automaticamente usando la massima prevista oggi e le massime registrate nello stesso giorno di calendario nei 10 anni precedenti.",
+    "The comparison updates automatically using today’s forecast high and the highs recorded on the same calendar day over the previous 10 years.",
+    "La comparaison est actualisée automatiquement avec le maximum prévu aujourd’hui et les maxima enregistrés à la même date au cours des 10 années précédentes.",
+    "A comparação é atualizada automaticamente com a máxima prevista hoje e as máximas registradas na mesma data nos 10 anos anteriores.",
+    "La comparación se actualiza automáticamente con la máxima prevista hoy y las máximas registradas en la misma fecha durante los 10 años anteriores."
+  ],
+  [
+    "Temperatura attuale",
+    "Current temperature",
+    "Température actuelle",
+    "Temperatura atual",
+    "Temperatura actual"
+  ],
+  [
+    "MEDIA DELLA STESSA DATA • 10 ANNI",
+    "SAME-DATE AVERAGE • 10 YEARS",
+    "MOYENNE À LA MÊME DATE • 10 ANS",
+    "MÉDIA DA MESMA DATA • 10 ANOS",
+    "MEDIA DE LA MISMA FECHA • 10 AÑOS"
+  ],
+  [
+    "Analisi in attesa",
+    "Awaiting analysis",
+    "En attente d’analyse",
+    "Aguardando análise",
+    "Análisis pendiente"
+  ],
+  [
+    "DATI AVANZATI",
+    "ADVANCED DATA",
+    "DONNÉES AVANCÉES",
+    "DADOS AVANÇADOS",
+    "DATOS AVANZADOS"
+  ],
+  [
+    "QUALITÀ DELL'ARIA",
+    "AIR QUALITY",
+    "QUALITÉ DE L’AIR",
+    "QUALIDADE DO AR",
+    "CALIDAD DEL AIRE"
+  ],
+  [
+    "Indice europeo CAQI",
+    "European CAQI index",
+    "Indice européen CAQI",
+    "Índice europeu CAQI",
+    "Índice europeo CAQI"
+  ],
+  [
+    "SOLE",
+    "SUN",
+    "SOLEIL",
+    "SOL",
+    "SOL"
+  ],
+  [
+    "In analisi",
+    "Under analysis",
+    "Analyse en cours",
+    "Em análise",
+    "En análisis"
+  ],
+  [
+    "✦ LETTURA METEO AI",
+    "✦ METEO AI INTERPRETATION",
+    "✦ INTERPRÉTATION METEO AI",
+    "✦ INTERPRETAÇÃO METEO AI",
+    "✦ INTERPRETACIÓN METEO AI"
+  ],
+  [
+    "Analisi del vento in corso",
+    "Analysing wind",
+    "Analyse du vent",
+    "Analisando o vento",
+    "Analizando el viento"
+  ],
+  [
+    "Confronto velocità, raffiche e andamento delle prossime ore.",
+    "Comparing speed, gusts and trends over the coming hours.",
+    "Comparaison de la vitesse, des rafales et de l’évolution des prochaines heures.",
+    "Comparando velocidade, rajadas e evolução nas próximas horas.",
+    "Comparando velocidad, rachas y evolución durante las próximas horas."
+  ],
+  [
+    "CONFRONTO",
+    "COMPARISON",
+    "COMPARAISON",
+    "COMPARAÇÃO",
+    "COMPARACIÓN"
+  ],
+  [
+    "Confronta",
+    "Compare",
+    "Comparer",
+    "Comparar",
+    "Comparar"
+  ],
+  [
+    "MAPPA INTERATTIVA",
+    "INTERACTIVE MAP",
+    "CARTE INTERACTIVE",
+    "MAPA INTERATIVO",
+    "MAPA INTERACTIVO"
+  ],
+  [
+    "Mappa © OpenStreetMap contributors",
+    "Map © OpenStreetMap contributors",
+    "Carte © contributeurs OpenStreetMap",
+    "Mapa © colaboradores do OpenStreetMap",
+    "Mapa © colaboradores de OpenStreetMap"
+  ],
+  [
+    "Analisi automatica del mare",
+    "Automatic sea analysis",
+    "Analyse automatique de la mer",
+    "Análise automática do mar",
+    "Análisis automático del mar"
+  ],
+  [
+    "Sto selezionando il punto marino modellistico più vicino alla località.",
+    "Selecting the nearest modelled marine point.",
+    "Sélection du point marin modélisé le plus proche.",
+    "Selecionando o ponto marinho modelado mais próximo.",
+    "Seleccionando el punto marino modelado más cercano."
+  ],
+  [
+    "INDICE MARE AI",
+    "AI SEA INDEX",
+    "INDICE MER IA",
+    "ÍNDICE MAR IA",
+    "ÍNDICE MAR IA"
+  ],
+  [
+    "Sto confrontando onde, corrente e temperatura.",
+    "Comparing waves, currents and temperature.",
+    "Comparaison des vagues, du courant et de la température.",
+    "Comparando ondas, corrente e temperatura.",
+    "Comparando olas, corriente y temperatura."
+  ],
+  [
+    "Superficie",
+    "Surface",
+    "Surface",
+    "Superfície",
+    "Superficie"
+  ],
+  [
+    "Direzione",
+    "Direction",
+    "Direction",
+    "Direção",
+    "Dirección"
+  ],
+  [
+    "✦ SPIEGAZIONE",
+    "✦ EXPLANATION",
+    "✦ EXPLICATION",
+    "✦ EXPLICAÇÃO",
+    "✦ EXPLICACIÓN"
+  ],
+  [
+    "I consigli vengono elaborati localmente e non sostituiscono bollettini o autorità marittime.",
+    "Advice is generated locally and does not replace maritime bulletins or authorities.",
+    "Les conseils sont calculés localement et ne remplacent pas les bulletins ni les autorités maritimes.",
+    "As recomendações são calculadas localmente e não substituem boletins ou autoridades marítimas.",
+    "Los consejos se calculan localmente y no sustituyen a los boletines ni a las autoridades marítimas."
+  ],
+  [
+    "Punto marino in selezione…",
+    "Selecting marine point…",
+    "Sélection du point marin…",
+    "Selecionando ponto marinho…",
+    "Seleccionando punto marino…"
+  ],
+  [
+    "ATLANTE DEI MARI • COPERTURA MONDIALE",
+    "SEA ATLAS • WORLDWIDE COVERAGE",
+    "ATLAS DES MERS • COUVERTURE MONDIALE",
+    "ATLAS DOS MARES • COBERTURA MUNDIAL",
+    "ATLAS DE LOS MARES • COBERTURA MUNDIAL"
+  ],
+  [
+    "La mappa riconosce automaticamente lo Stato della località meteo e analizza i principali tratti costieri, senza richiedere una seconda scelta.",
+    "The map automatically identifies the selected location’s country and analyses its main coastal areas.",
+    "La carte identifie automatiquement le pays de la localité choisie et analyse ses principales zones côtières.",
+    "O mapa identifica automaticamente o país do local selecionado e analisa suas principais áreas costeiras.",
+    "El mapa identifica automáticamente el país de la localidad elegida y analiza sus principales zonas costeras."
+  ],
+  [
+    "Rilevamento della nazione…",
+    "Detecting country…",
+    "Détection du pays…",
+    "Detectando país…",
+    "Detectando país…"
+  ],
+  [
+    "Il Paese segue automaticamente la località meteo selezionata.",
+    "The country automatically follows the selected weather location.",
+    "Le pays suit automatiquement la localité météo sélectionnée.",
+    "O país acompanha automaticamente o local selecionado.",
+    "El país sigue automáticamente la localidad meteorológica seleccionada."
+  ],
+  [
+    "Poco mosso",
+    "Slight seas",
+    "Mer peu agitée",
+    "Mar pouco agitado",
+    "Marejadilla"
+  ],
+  [
+    "Mosso",
+    "Moderate seas",
+    "Mer agitée",
+    "Mar agitado",
+    "Marejada"
+  ],
+  [
+    "Molto mosso",
+    "Rough seas",
+    "Mer forte",
+    "Mar muito agitado",
+    "Fuerte marejada"
+  ],
+  [
+    "Il confine nazionale semplificato proviene da Natural Earth, con fallback OpenStreetMap; i punti costieri sono campioni modellistici automatici, non porti o rotte ufficiali. Verifica sempre compagnia di navigazione, autorità marittime e bollettini locali.",
+    "Simplified national boundaries come from Natural Earth, with OpenStreetMap as fallback. Coastal points are automatic model samples, not official ports or routes. Always check ferry operators, maritime authorities and local bulletins.",
+    "Les frontières simplifiées proviennent de Natural Earth, avec OpenStreetMap en secours. Les points côtiers sont des échantillons de modèles, pas des ports ni des routes officiels. Consultez les compagnies, les autorités maritimes et les bulletins locaux.",
+    "As fronteiras simplificadas vêm do Natural Earth, com OpenStreetMap como alternativa. Os pontos costeiros são amostras de modelos, não portos ou rotas oficiais. Consulte as companhias, autoridades marítimas e boletins locais.",
+    "Las fronteras simplificadas proceden de Natural Earth, con OpenStreetMap como alternativa. Los puntos costeros son muestras de modelos, no puertos ni rutas oficiales. Consulta las compañías, autoridades marítimas y boletines locales."
+  ],
+  [
+    "CONFRONTO METEO FRA PORTI",
+    "WEATHER COMPARISON BETWEEN PORTS",
+    "COMPARAISON MÉTÉO ENTRE PORTS",
+    "COMPARAÇÃO METEOROLÓGICA ENTRE PORTOS",
+    "COMPARACIÓN METEOROLÓGICA ENTRE PUERTOS"
+  ],
+  [
+    "Seleziona due porti e una data: Meteo AI confronta il moto ondoso lungo una linea geometrica. Non calcola una rotta nautica.",
+    "Select two ports and a date: Meteo AI compares waves along a geometric line. It does not calculate a nautical route.",
+    "Choisissez deux ports et une date : Meteo AI compare les vagues le long d’une ligne géométrique. L’application ne calcule pas de route nautique.",
+    "Selecione dois portos e uma data: o Meteo AI compara ondas ao longo de uma linha geométrica. Não calcula uma rota náutica.",
+    "Elige dos puertos y una fecha: Meteo AI compara el oleaje a lo largo de una línea geométrica. No calcula una ruta náutica."
+  ],
+  [
+    "La linea può attraversare terra, aree interdette o zone non navigabili. Non considera fondali, coste, ostacoli, traffico, ordinanze, dotazioni, capacità dell’imbarcazione o decisioni delle autorità.",
+    "The line may cross land, restricted or unnavigable areas. It does not account for depths, coastlines, obstacles, traffic, regulations, equipment, vessel capability or authorities’ decisions.",
+    "La ligne peut traverser des terres ou des zones interdites ou non navigables. Elle ne tient pas compte des fonds, côtes, obstacles, trafic, règles, équipements, capacités du bateau ni des décisions des autorités.",
+    "A linha pode atravessar terra e áreas restritas ou não navegáveis. Não considera profundidades, costas, obstáculos, tráfego, regras, equipamentos, capacidade da embarcação ou decisões das autoridades.",
+    "La línea puede cruzar tierra y zonas restringidas o no navegables. No considera fondos, costas, obstáculos, tráfico, normas, equipamiento, capacidad de la embarcación ni decisiones de las autoridades."
+  ],
+  [
+    "Per pianificare una traversata usa carte nautiche aggiornate, bollettini ufficiali e indicazioni delle autorità marittime.",
+    "Plan crossings using current nautical charts, official bulletins and maritime authorities’ guidance.",
+    "Préparez les traversées avec des cartes nautiques à jour, les bulletins officiels et les consignes des autorités maritimes.",
+    "Planeje travessias com cartas náuticas atualizadas, boletins oficiais e orientações das autoridades marítimas.",
+    "Planifica las travesías con cartas náuticas actualizadas, boletines oficiales e indicaciones de las autoridades marítimas."
+  ],
+  [
+    "Dati modellistici indicativi: non utilizzare Meteo AI come strumento di navigazione o sicurezza in mare.",
+    "Indicative model data: do not use Meteo AI as a navigation or maritime safety tool.",
+    "Données de modèles indicatives : ne pas utiliser Meteo AI comme outil de navigation ou de sécurité en mer.",
+    "Dados indicativos de modelos: não use o Meteo AI como ferramenta de navegação ou segurança marítima.",
+    "Datos indicativos de modelos: no uses Meteo AI como herramienta de navegación o seguridad marítima."
+  ],
+  [
+    "PERCHÉ METEO AI",
+    "WHY METEO AI",
+    "POURQUOI METEO AI",
+    "POR QUE METEO AI",
+    "POR QUÉ METEO AI"
+  ],
+  [
+    "I dati dicono cosa accadrà.",
+    "Data shows what is forecast.",
+    "Les données montrent les prévisions.",
+    "Os dados mostram a previsão.",
+    "Los datos muestran la previsión."
+  ],
+  [
+    "L’AI ti aiuta a decidere.",
+    "AI helps you decide.",
+    "L’IA vous aide à décider.",
+    "A IA ajuda você a decidir.",
+    "La IA te ayuda a decidir."
+  ],
+  [
+    "Incrociamo temperatura, pioggia, vento, UV e qualità dell’aria per trasformarli in indicazioni semplici e legate alle tue attività.",
+    "We combine temperature, rain, wind, UV and air quality into simple guidance for your activities.",
+    "Nous combinons température, pluie, vent, UV et qualité de l’air pour fournir des conseils adaptés à vos activités.",
+    "Combinamos temperatura, chuva, vento, UV e qualidade do ar em orientações simples para suas atividades.",
+    "Combinamos temperatura, lluvia, viento, UV y calidad del aire para ofrecer consejos sencillos para tus actividades."
+  ],
+  [
+    "Vai al lavoro in bici?",
+    "Cycling to work?",
+    "Au travail à vélo ?",
+    "Vai de bicicleta ao trabalho?",
+    "¿Vas al trabajo en bici?"
+  ],
+  [
+    "Partenza consigliata entro le 8:10: dopo aumenta il rischio di pioggia.",
+    "Suggested departure by 08:10: rain becomes more likely afterwards.",
+    "Départ conseillé avant 8 h 10 : le risque de pluie augmente ensuite.",
+    "Saída sugerida até 8h10: depois aumenta o risco de chuva.",
+    "Salida sugerida antes de las 8:10: después aumenta el riesgo de lluvia."
+  ],
+  [
+    "Pausa pranzo all’aperto?",
+    "Lunch outdoors?",
+    "Déjeuner dehors ?",
+    "Almoço ao ar livre?",
+    "¿Almuerzo al aire libre?"
+  ],
+  [
+    "Sì, ma cerca ombra: indice UV elevato.",
+    "Yes, but seek shade: the UV index is high.",
+    "Oui, mais cherchez l’ombre : l’indice UV est élevé.",
+    "Sim, mas procure sombra: o índice UV está alto.",
+    "Sí, pero busca sombra: el índice UV es alto."
+  ],
+  [
+    "Passeggiata serale?",
+    "Evening walk?",
+    "Promenade du soir ?",
+    "Caminhada à noite?",
+    "¿Paseo al atardecer?"
+  ],
+  [
+    "Condizioni favorevoli e vento debole.",
+    "Favourable conditions and light wind.",
+    "Conditions favorables et vent faible.",
+    "Condições favoráveis e vento fraco.",
+    "Condiciones favorables y viento débil."
+  ],
+  [
+    "Fai una domanda normale: la risposta viene calcolata nel browser usando soltanto i dati meteorologici della località selezionata.",
+    "Ask a question: the answer is calculated in your browser using the selected location’s weather data.",
+    "Posez une question : la réponse est calculée dans votre navigateur avec les données météo de la localité choisie.",
+    "Faça uma pergunta: a resposta é calculada no navegador com os dados meteorológicos do local selecionado.",
+    "Haz una pregunta: la respuesta se calcula en el navegador con los datos meteorológicos de la localidad elegida."
+  ],
+  [
+    "Chiedi",
+    "Ask",
+    "Demander",
+    "Perguntar",
+    "Preguntar"
+  ],
+  [
+    "Analizziamo destinazione e periodo per suggerire abbigliamento, accessori e criticità previste.",
+    "We analyse your destination and dates to suggest clothing, accessories and weather concerns.",
+    "Nous analysons destination et dates pour suggérer vêtements, accessoires et points de vigilance.",
+    "Analisamos destino e datas para sugerir roupas, acessórios e cuidados meteorológicos.",
+    "Analizamos el destino y las fechas para sugerir ropa, accesorios y posibles riesgos meteorológicos."
+  ],
+  [
+    "Destinazione",
+    "Destination",
+    "Destination",
+    "Destino",
+    "Destino"
+  ],
+  [
+    "Partenza",
+    "Departure",
+    "Départ",
+    "Partida",
+    "Salida"
+  ],
+  [
+    "Giorni",
+    "Days",
+    "Jours",
+    "Dias",
+    "Días"
+  ],
+  [
+    "Giorno",
+    "Day",
+    "Jour",
+    "Dia",
+    "Día"
+  ],
+  [
+    "Inserisci il tuo prossimo viaggio per ricevere il piano Meteo AI.",
+    "Enter your next trip to receive a Meteo AI plan.",
+    "Renseignez votre prochain voyage pour recevoir le programme Meteo AI.",
+    "Informe sua próxima viagem para receber o plano Meteo AI.",
+    "Introduce tu próximo viaje para recibir el plan de Meteo AI."
+  ],
+  [
+    "Meteo AI non richiede account, non mostra pubblicità e non usa modelli AI a consumo. Preferiti e tema restano nella memoria locale del browser.",
+    "Meteo AI requires no account, shows no ads and uses no metered AI models. Favourites and theme stay in your browser’s local storage.",
+    "Meteo AI ne nécessite aucun compte, n’affiche aucune publicité et n’utilise pas de modèles IA facturés à l’usage. Favoris et thème restent dans le stockage local du navigateur.",
+    "O Meteo AI não exige conta, não mostra anúncios e não usa modelos de IA pagos por uso. Favoritos e tema ficam no armazenamento local do navegador.",
+    "Meteo AI no requiere cuenta, no muestra anuncios ni usa modelos de IA de pago por uso. Los favoritos y el tema permanecen en el almacenamiento local del navegador."
+  ],
+  [
+    "Domande, finestre meteo e consigli vengono elaborati direttamente nel browser.",
+    "Questions, weather windows and advice are processed in your browser.",
+    "Questions, créneaux météo et conseils sont traités dans votre navigateur.",
+    "Perguntas, janelas meteorológicas e recomendações são processadas no navegador.",
+    "Las preguntas, franjas meteorológicas y consejos se procesan en tu navegador."
+  ],
+  [
+    "PREVISIONI METEO MONDIALI",
+    "WORLDWIDE WEATHER FORECASTS",
+    "PRÉVISIONS MÉTÉO MONDIALES",
+    "PREVISÕES METEOROLÓGICAS MUNDIAIS",
+    "PREVISIONES METEOROLÓGICAS MUNDIALES"
+  ],
+  [
+    "Cerca una città, un comune o una località in qualsiasi parte del mondo. Meteo AI riunisce previsioni fino a 14 giorni, condizioni attuali e strumenti di confronto in una pagina semplice da consultare.",
+    "Search for a city, town or location anywhere in the world. Meteo AI brings together forecasts up to 14 days, current conditions and comparison tools on one easy-to-use page.",
+    "Recherchez une ville, une commune ou une localité partout dans le monde. Meteo AI réunit prévisions jusqu’à 14 jours, conditions actuelles et outils de comparaison sur une page facile à consulter.",
+    "Busque uma cidade ou local em qualquer parte do mundo. O Meteo AI reúne previsões de até 14 dias, condições atuais e ferramentas de comparação em uma página fácil de consultar.",
+    "Busca una ciudad, municipio o localidad en cualquier parte del mundo. Meteo AI reúne previsiones de hasta 14 días, condiciones actuales y herramientas de comparación en una página fácil de consultar."
+  ],
+  [
+    "Meteo oggi e previsioni a 14 giorni",
+    "Today’s weather and 14-day forecasts",
+    "Météo du jour et prévisions à 14 jours",
+    "Tempo hoje e previsão de 14 dias",
+    "Tiempo de hoy y previsión a 14 días"
+  ],
+  [
+    "Controlla temperatura minima e massima, probabilità e quantità di pioggia, umidità, pressione, visibilità, indice UV, alba e tramonto.",
+    "Check low and high temperatures, rain probability and amount, humidity, pressure, visibility, UV index, sunrise and sunset.",
+    "Consultez les températures minimale et maximale, la probabilité et la quantité de pluie, l’humidité, la pression, la visibilité, les UV et les heures du soleil.",
+    "Consulte temperaturas mínima e máxima, probabilidade e quantidade de chuva, umidade, pressão, visibilidade, UV, nascer e pôr do sol.",
+    "Consulta temperaturas mínima y máxima, probabilidad y cantidad de lluvia, humedad, presión, visibilidad, UV, amanecer y atardecer."
+  ],
+  [
+    "Vento e situazione del mare",
+    "Wind and sea conditions",
+    "Vent et état de la mer",
+    "Vento e condições do mar",
+    "Viento y estado del mar"
+  ],
+  [
+    "Consulta velocità, direzione e raffiche del vento. Per le località costiere sono disponibili anche onde, periodo, direzione e temperatura del mare come dati modellistici indicativi.",
+    "Check wind speed, direction and gusts. Coastal locations also offer indicative model data for waves, wave period, direction and sea temperature.",
+    "Consultez vitesse, direction et rafales du vent. Pour les localités côtières, des données de modèles indicatives décrivent aussi les vagues, leur période, leur direction et la température de la mer.",
+    "Consulte velocidade, direção e rajadas do vento. Locais costeiros também oferecem dados indicativos de modelos para ondas, período, direção e temperatura do mar.",
+    "Consulta velocidad, dirección y rachas del viento. Las localidades costeras también ofrecen datos indicativos de modelos sobre olas, período, dirección y temperatura del mar."
+  ],
+  [
+    "Confronto con il clima passato",
+    "Historical climate comparison",
+    "Comparaison avec le climat passé",
+    "Comparação com o clima passado",
+    "Comparación con el clima pasado"
+  ],
+  [
+    "La temperatura di oggi viene confrontata con i dati storici della stessa località per mostrare in modo immediato se la giornata è più calda, più fresca o vicina alla media.",
+    "Today’s temperature is compared with historical data for the same location to show whether the day is warmer, cooler or near average.",
+    "La température du jour est comparée aux données historiques de la même localité pour montrer si elle est plus chaude, plus fraîche ou proche de la moyenne.",
+    "A temperatura de hoje é comparada com dados históricos do mesmo local para mostrar se o dia está mais quente, mais fresco ou próximo da média.",
+    "La temperatura de hoy se compara con los datos históricos de la misma localidad para mostrar si el día es más cálido, más fresco o cercano a la media."
+  ],
+  [
+    "Mappe ed eventi naturali nel mondo",
+    "Maps and natural events worldwide",
+    "Cartes et événements naturels mondiaux",
+    "Mapas e eventos naturais no mundo",
+    "Mapas y fenómenos naturales del mundo"
+  ],
+  [
+    "La sezione",
+    "The section",
+    "La section",
+    "A seção",
+    "La sección"
+  ],
+  [
+    "raccoglie terremoti, cicloni, vulcani, incendi, alluvioni e avvisi tsunami provenienti da fonti pubbliche internazionali.",
+    "collects earthquakes, cyclones, volcanoes, wildfires, floods and tsunami notices from international public sources.",
+    "rassemble séismes, cyclones, volcans, incendies, inondations et avis tsunami provenant de sources publiques internationales.",
+    "reúne terremotos, ciclones, vulcões, incêndios, inundações e avisos de tsunami de fontes públicas internacionais.",
+    "recopila terremotos, ciclones, volcanes, incendios, inundaciones y avisos de tsunami de fuentes públicas internacionales."
+  ],
+  [
+    "Installa l’app",
+    "Install the app",
+    "Installer l’application",
+    "Instalar o aplicativo",
+    "Instalar la aplicación"
+  ],
+  [
+    "Dati: Open-Meteo • Mappe: OpenStreetMap • Confini: Natural Earth • Località: GeoNames CC BY 4.0. Le previsioni possono variare.",
+    "Data: Open-Meteo • Maps: OpenStreetMap • Boundaries: Natural Earth • Locations: GeoNames CC BY 4.0. Forecasts may change.",
+    "Données : Open-Meteo • Cartes : OpenStreetMap • Frontières : Natural Earth • Localités : GeoNames CC BY 4.0. Les prévisions peuvent évoluer.",
+    "Dados: Open-Meteo • Mapas: OpenStreetMap • Fronteiras: Natural Earth • Locais: GeoNames CC BY 4.0. As previsões podem mudar.",
+    "Datos: Open-Meteo • Mapas: OpenStreetMap • Fronteras: Natural Earth • Localidades: GeoNames CC BY 4.0. Las previsiones pueden cambiar."
+  ],
+  [
+    "Scegli il luogo di cui vuoi consultare tutti i dati meteo, vento e mare.",
+    "Choose a location to see its weather, wind and sea data.",
+    "Choisissez une localité pour consulter météo, vent et mer.",
+    "Escolha um local para consultar dados de tempo, vento e mar.",
+    "Elige una localidad para consultar datos de tiempo, viento y mar."
+  ],
+  [
+    "Condividi Card Meteo",
+    "Share weather card",
+    "Partager la carte météo",
+    "Compartilhar cartão meteorológico",
+    "Compartir tarjeta meteorológica"
+  ],
+  [
+    "Condividi Card",
+    "Share card",
+    "Partager la carte",
+    "Compartilhar cartão",
+    "Compartir tarjeta"
+  ],
+  [
+    "📱 Condividi sui Social",
+    "📱 Share on social media",
+    "📱 Partager sur les réseaux sociaux",
+    "📱 Compartilhar nas redes sociais",
+    "📱 Compartir en redes sociales"
+  ],
+  [
+    "⬇ Scarica Immagine (PNG)",
+    "⬇ Download image (PNG)",
+    "⬇ Télécharger l’image (PNG)",
+    "⬇ Baixar imagem (PNG)",
+    "⬇ Descargar imagen (PNG)"
+  ],
+  [
+    "Nessuna pubblicità, profilazione o analytics. Preferenze e cache restano nel browser; i dati meteo arrivano dai provider descritti nell’informativa.",
+    "No ads, profiling or analytics. Preferences and cache stay in your browser; weather data comes from the providers listed in the privacy policy.",
+    "Aucune publicité, aucun profilage ni suivi analytique. Préférences et cache restent dans le navigateur ; les données météo proviennent des fournisseurs cités dans la politique de confidentialité.",
+    "Sem anúncios, perfilamento ou análises de uso. Preferências e cache ficam no navegador; os dados vêm dos provedores indicados na política de privacidade.",
+    "Sin anuncios, perfiles ni analítica. Las preferencias y la caché permanecen en el navegador; los datos proceden de los proveedores indicados en la política de privacidad."
+  ]
+];
+  for(const row of homeAuditCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+
+  const sharedAuditCopy=[["Quanto è affidabile la previsione?","How reliable is the forecast?","Quelle est la fiabilité des prévisions ?","Qual é a confiabilidade da previsão?","¿Qué fiabilidad tiene la previsión?"],["È una stima orientativa dell’orizzonte temporale, non una probabilità certificata del singolo evento.","This is an indicative estimate of forecast range, not a certified probability for an individual event.","Il s’agit d’une estimation indicative liée à l’échéance, pas d’une probabilité certifiée pour un événement particulier.","É uma estimativa indicativa do horizonte temporal, não uma probabilidade certificada para um evento específico.","Es una estimación orientativa del horizonte temporal, no una probabilidad certificada de un evento concreto."],["Meteo AI applica criteri specifici per sicurezza, comfort e decisioni operative. I dati professionali aggiuntivi vengono caricati soltanto quando servono.","Meteo AI applies specific criteria for safety, comfort and operational decisions. Additional professional data loads only when needed.","Meteo AI applique des critères spécifiques de sécurité, de confort et de décision. Les données professionnelles supplémentaires sont chargées uniquement si nécessaire.","O Meteo AI aplica critérios específicos de segurança, conforto e decisões operacionais. Dados profissionais adicionais são carregados somente quando necessários.","Meteo AI aplica criterios específicos de seguridad, comodidad y decisiones operativas. Los datos profesionales adicionales se cargan solo cuando se necesitan."],["Energia del moto ondoso","Wave energy","Énergie des vagues","Energia das ondas","Energía del oleaje"],["Esplora le condizioni in un corridoio geografico","Explore conditions along a geographic corridor","Explorer les conditions dans un corridor géographique","Explore as condições em um corredor geográfico","Explora las condiciones en un corredor geográfico"],["Mi serve l’ombrello?","Will I need an umbrella?","Ai-je besoin d’un parapluie ?","Vou precisar de guarda-chuva?","¿Necesitaré paraguas?"],["Posso fare sport?","Can I exercise?","Puis-je faire du sport ?","Posso praticar esporte?","¿Puedo hacer deporte?"],["Tutte le funzioni incluse sono accessibili senza piano a pagamento.","All included features are available without a paid plan.","Toutes les fonctions incluses sont accessibles sans abonnement payant.","Todas as funções incluídas estão disponíveis sem plano pago.","Todas las funciones incluidas están disponibles sin plan de pago."],["La tua scheda meteo personalizzata generata al volo.","Your personalised weather card, generated instantly.","Votre carte météo personnalisée, générée instantanément.","Seu cartão meteorológico personalizado, gerado na hora.","Tu tarjeta meteorológica personalizada, generada al instante."],["Eventi nelle aree sorvegliate","Events in watched areas","Événements dans les zones surveillées","Eventos nas áreas monitoradas","Eventos en las zonas vigiladas"],["Gestisci località","Manage locations","Gérer les localités","Gerenciar locais","Gestionar localidades"],["Località sorvegliate","Watched locations","Localités surveillées","Locais monitorados","Localidades vigiladas"],["Criticità minima","Minimum severity","Gravité minimale","Gravidade mínima","Gravedad mínima"],["Usa località meteo","Use weather location","Utiliser la localité météo","Usar local da previsão","Usar localidad meteorológica"],["Quando andare al mare?","When should I go to the beach?","Quand aller à la plage ?","Quando ir à praia?","¿Cuándo ir a la playa?"],["Meteo AI distingue la qualità indicativa in base alla distanza temporale: più ci si allontana da oggi, maggiore è l’incertezza.","Meteo AI shows indicative quality based on forecast range: uncertainty increases farther from today.","Meteo AI indique une qualité indicative selon l’échéance : l’incertitude augmente avec le temps.","O Meteo AI indica a qualidade conforme o horizonte da previsão: a incerteza aumenta nos dias mais distantes.","Meteo AI indica la calidad según el horizonte de la previsión: la incertidumbre aumenta con la distancia temporal."],["Confronto esplorativo, non navigazione","Exploratory comparison, not navigation","Comparaison exploratoire, pas navigation","Comparação exploratória, não navegação","Comparación exploratoria, no navegación"],["segue la località meteo","follows the weather location","suit la localité météo","acompanha o local da previsão","sigue la localidad meteorológica"]];
+  for(const row of sharedAuditCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+
+  const runtimeAuditCopy=[["Non cercare giorno per giorno. Dicci cosa vuoi fare e analizzeremo le prossime 168 ore per trovare i momenti migliori.","Tell us what you want to do and we will analyse the next 168 hours to find the best times.","Dites-nous ce que vous souhaitez faire : nous analyserons les 168 prochaines heures pour trouver les meilleurs créneaux.","Diga o que deseja fazer e analisaremos as próximas 168 horas para encontrar os melhores horários.","Dinos qué quieres hacer y analizaremos las próximas 168 horas para encontrar los mejores momentos."],["Onde, temperatura dell’acqua, correnti e momento migliore nelle vicinanze della località selezionata. L’analisi parte automaticamente.","Waves, water temperature, currents and the best time near the selected location. Analysis starts automatically.","Vagues, température de l’eau, courants et meilleur créneau près de la localité choisie. L’analyse démarre automatiquement.","Ondas, temperatura da água, correntes e melhor horário perto do local selecionado. A análise começa automaticamente.","Olas, temperatura del agua, corrientes y mejor horario cerca de la localidad elegida. El análisis comienza automáticamente."],["Nessuna domanda viene inviata a servizi AI esterni.","No question is sent to external AI services.","Aucune question n’est envoyée à des services IA externes.","Nenhuma pergunta é enviada a serviços externos de IA.","Ninguna pregunta se envía a servicios externos de IA."],["Aggiornamento in corso...","Updating...","Actualisation...","Atualizando...","Actualizando..."],["Località già salvata","Location already saved","Localité déjà enregistrée","Local já salvo","Localidad ya guardada"],["Località salvata soltanto su questo dispositivo","Location saved only on this device","Localité enregistrée uniquement sur cet appareil","Local salvo apenas neste dispositivo","Localidad guardada solo en este dispositivo"],["Impossibile confrontare questa località.","Unable to compare this location.","Impossible de comparer cette localité.","Não foi possível comparar este local.","No se ha podido comparar esta localidad."],["Inserisci una località","Enter a location","Saisissez une localité","Informe um local","Introduce una localidad"]];
+  for(const row of runtimeAuditCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+
+  const worldRuntimeCopy=[["Aggiornamento degli eventi reali…","Updating observed events…","Actualisation des événements observés…","Atualizando eventos observados…","Actualizando eventos observados…"],["Fonti momentaneamente non raggiungibili","Sources temporarily unreachable","Sources temporairement inaccessibles","Fontes temporariamente inacessíveis","Fuentes temporalmente inaccesibles"],["non raggiungibile: le altre fonti restano attive.","unreachable: the other sources remain active.","inaccessible : les autres sources restent actives.","inacessível: as outras fontes continuam ativas.","inaccesible: las demás fuentes siguen activas."],["Nessun evento visibile","No visible events","Aucun événement visible","Nenhum evento visível","Ningún evento visible"],["Nessun evento con questi filtri","No events match these filters","Aucun événement avec ces filtres","Nenhum evento com estes filtros","No hay eventos con estos filtros"],["Prova un periodo più ampio oppure seleziona “Tutti”.","Try a longer period or select “All”.","Essayez une période plus longue ou sélectionnez « Tous ».","Tente um período maior ou selecione “Todos”.","Prueba un período más amplio o selecciona «Todos»."],["Percentuale non disponibile","Percentage unavailable","Pourcentage indisponible","Percentual indisponível","Porcentaje no disponible"],["IMPATTO AI SU","AI IMPACT ON","IMPACT IA SUR","IMPACTO IA EM","IMPACTO IA EN"],["Rilevanza elevata","High relevance","Forte pertinence","Alta relevância","Relevancia alta"],["Da seguire","Worth watching","À suivre","Acompanhar","A seguir"],["Rilevanza limitata","Limited relevance","Pertinence limitée","Relevância limitada","Relevancia limitada"],["Rilevanza molto bassa","Very low relevance","Très faible pertinence","Relevância muito baixa","Relevancia muy baja"],["Indice orientativo, non probabilità né allerta ufficiale.","Indicative score, not a probability or official warning.","Indice indicatif, pas une probabilité ni une alerte officielle.","Índice indicativo, não uma probabilidade ou alerta oficial.","Índice orientativo, no una probabilidad ni una alerta oficial."],["LETTURA METEO AI","METEO AI INTERPRETATION","INTERPRÉTATION METEO AI","INTERPRETAÇÃO METEO AI","INTERPRETACIÓN METEO AI"],["Cosa significa per la tua località","What it means for your location","Conséquences pour votre localité","O que significa para seu local","Qué significa para tu localidad"],["EVENTO OSSERVATO","OBSERVED EVENT","ÉVÉNEMENT OBSERVÉ","EVENTO OBSERVADO","EVENTO OBSERVADO"],["PROBABILITÀ O CERTEZZA UFFICIALE","OFFICIAL PROBABILITY OR CERTAINTY","PROBABILITÉ OU CERTITUDE OFFICIELLE","PROBABILIDADE OU CERTEZA OFICIAL","PROBABILIDAD O CERTEZA OFICIAL"],["Nessuna percentuale inventata","No invented percentages","Aucun pourcentage inventé","Nenhum percentual inventado","Ningún porcentaje inventado"],["LIVELLO DELLA FONTE","SOURCE LEVEL","NIVEAU DE LA SOURCE","NÍVEL DA FONTE","NIVEL DE LA FUENTE"],["La terminologia appartiene alla fonte indicata e può avere significati diversi secondo il tipo di evento.","Terminology belongs to the named source and may have different meanings depending on the event type.","La terminologie appartient à la source indiquée et peut varier selon le type d’événement.","A terminologia pertence à fonte indicada e pode variar conforme o tipo de evento.","La terminología pertenece a la fuente indicada y puede variar según el tipo de evento."],["Nessuna località sorvegliata","No watched locations","Aucune localité surveillée","Nenhum local monitorado","Ninguna localidad vigilada"],["Aggiungi una città oppure usa la posizione del dispositivo.","Add a city or use your device’s location.","Ajoutez une ville ou utilisez la position de l’appareil.","Adicione uma cidade ou use a localização do dispositivo.","Añade una ciudad o usa la ubicación del dispositivo."],["Non supportate da questo browser.","Not supported by this browser.","Non prises en charge par ce navigateur.","Não suportadas por este navegador.","No compatibles con este navegador."],["Attive: gli avvisi vengono mostrati durante gli aggiornamenti.","Enabled: notices appear during updates.","Actives : les avis apparaissent lors des mises à jour.","Ativas: os avisos aparecem durante as atualizações.","Activas: los avisos aparecen durante las actualizaciones."],["Notifiche attive","Notifications enabled","Notifications actives","Notificações ativas","Notificaciones activas"],["Bloccate nelle impostazioni del browser.","Blocked in browser settings.","Bloquées dans les paramètres du navigateur.","Bloqueadas nas configurações do navegador.","Bloqueadas en los ajustes del navegador."],["Notifiche bloccate","Notifications blocked","Notifications bloquées","Notificações bloqueadas","Notificaciones bloqueadas"],["Serve il tuo consenso; nessuna autorizzazione viene chiesta automaticamente.","Your consent is needed; permission is never requested automatically.","Votre consentement est nécessaire ; aucune autorisation n’est demandée automatiquement.","Seu consentimento é necessário; nenhuma permissão é solicitada automaticamente.","Se necesita tu consentimiento; no se solicita permiso automáticamente."]];
+  for(const row of worldRuntimeCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+
   function normalise(value){
     const code=String(value||'').trim().replace('_','-');
     const lower=code.toLowerCase();
@@ -116,18 +1092,24 @@
   function interpolate(value,params={}){return String(value).replace(/\{(\w+)\}/g,(_,key)=>params[key]??`{${key}}`)}
   function t(key,params){const table=messages[language]||messages.en;return interpolate(table[key]??messages.en[key]??messages.it[key]??key,params)}
   function escaped(value){return value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+  const compiledTranslations=new Map();
+  function translationRules(lang){
+    if(compiledTranslations.has(lang))return compiledTranslations.get(lang);
+    const dictionary=lexicons[lang]||lexicons.en;
+    const exact=new Map(Object.entries(dictionary).map(([source,target])=>[source.toLocaleLowerCase(),target]));
+    const entries=Object.entries(dictionary).filter(([source])=>source.includes(' ')||/^\p{Lu}/u.test(source)).sort((a,b)=>b[0].length-a[0].length);
+    const patterns=entries.map(([source])=>{const boundary=/^[\p{L}\p{N}]/u.test(source)&&/[\p{L}\p{N}]$/u.test(source);return `${boundary?'(?<![\\p{L}])':''}${escaped(source)}${boundary?'(?![\\p{L}])':''}`});
+    const rules={exact,pattern:new RegExp(patterns.join('|'),'giu')};compiledTranslations.set(lang,rules);return rules;
+  }
   function translateString(value,lang=language){
     if(lang==='it'||!value||!/[A-Za-zÀ-ÿ]/.test(value))return value;
     const exactKey=Object.keys(messages.it).find(key=>messages.it[key]===value.trim());
     if(exactKey){const translated=(messages[lang]||messages.en)[exactKey];return value.replace(value.trim(),translated)}
     let result=value;
-    const entries=Object.entries(lexicons[lang]||lexicons.en)
-      .filter(([source])=>source.includes(' ')||/^\p{Lu}/u.test(source)||value.trim().toLocaleLowerCase()===source.toLocaleLowerCase())
-      .sort((a,b)=>b[0].length-a[0].length);
-    for(const [source,target] of entries){
-      const boundary=/^[\p{L}\p{N}]/u.test(source)&&/[\p{L}\p{N}]$/u.test(source);
-      result=result.replace(new RegExp(`${boundary?'(?<![\\p{L}])':''}${escaped(source)}${boundary?'(?![\\p{L}])':''}`,'giu'),target);
-    }
+    const rules=translationRules(lang),exact=rules.exact.get(value.trim().toLocaleLowerCase());
+    if(exact!==undefined)return value.replace(value.trim(),exact);
+    // Translate each source span once; never run translated text through later rules.
+    result=result.replace(rules.pattern,match=>rules.exact.get(match.toLocaleLowerCase())??match);
     return result;
   }
   function applyText(node){
@@ -153,6 +1135,8 @@
     return'home';
   }
   function localizedPath(code,kind=pageKind()){
+    const locationMatch=(global.location?.pathname||'').match(/^\/(?:meteo|en\/weather|fr\/meteo|pt-br\/previsao|es\/tiempo)(\/[a-z]{2}\/[^/]+\/[^/]+-\d+)$/);
+    if(locationMatch)return {it:'/meteo',en:'/en/weather',fr:'/fr/meteo','pt-BR':'/pt-br/previsao',es:'/es/tiempo'}[code]+locationMatch[1];
     const routes={home:{it:'/',en:'/en',fr:'/fr','pt-BR':'/pt-br',es:'/es'},world:{it:'/world-live.html',en:'/en/world-live',fr:'/fr/world-live','pt-BR':'/pt-br/world-live',es:'/es/world-live'},install:{it:'/installa.html',en:'/en/install',fr:'/fr/install','pt-BR':'/pt-br/install',es:'/es/install'}};
     return routes[kind][code];
   }
@@ -176,7 +1160,7 @@
     select=wrap.querySelector('select');select.value=language;select.addEventListener('change',()=>setLanguage(select.value,true));return select;
   }
   function updateSelector(){const select=selector();if(select){select.value=language;select.closest('label').querySelector('span').textContent=flags[language];select.closest('label').setAttribute('aria-label',t('languageSelector'))}}
-  function setLanguage(value,persist=false){const next=normalise(value)||'en';if(persist)try{localStorage.setItem(STORAGE_KEY,next)}catch(_){}if(next===language)return;language=next;if(persist&&global.history&&global.location){const nextPath=localizedPath(next);global.history.replaceState(global.history.state,'',`${nextPath}${global.location.search}${global.location.hash}`)}apply(document);document.dispatchEvent(new CustomEvent('meteo:languagechange',{detail:{language,locale:localeMap[language]}}))}
+  function setLanguage(value,persist=false){const next=normalise(value)||'en';if(persist)try{localStorage.setItem(STORAGE_KEY,next)}catch(_){}if(next===language)return;if(persist&&global.location?.assign){global.location.assign(`${localizedPath(next)}${global.location.search}${global.location.hash}`);return}language=next;apply(document);document.dispatchEvent(new CustomEvent('meteo:languagechange',{detail:{language,locale:localeMap[language]}}))}
   function formatDate(value,options){return new Intl.DateTimeFormat(localeMap[language],options).format(value instanceof Date?value:new Date(value))}
   function formatTime(value,options={hour:'2-digit',minute:'2-digit'}){return formatDate(value,options)}
   function formatNumber(value,options){return new Intl.NumberFormat(localeMap[language],options).format(value)}
@@ -195,5 +1179,6 @@
   const observer=new MutationObserver(records=>{if(applying)return;applying=true;try{for(const record of records){if(record.type==='characterData')applyText(record.target);else for(const node of record.addedNodes){if(node.nodeType===3)applyText(node);else if(node.nodeType===1)applyElement(node)}}}finally{applying=false}});
   global.I18n={supported,messages,names,flags,t,translate:translateString,apply,setLanguage,resolveLanguage:normalise,languageFromPath,localizedPath,get language(){return language},get locale(){return localeMap[language]},formatDate,formatTime,formatNumber,formatRelative,queryLanguage,storageKey:STORAGE_KEY};
   document.documentElement.lang=localeMap[language];
-  document.addEventListener('DOMContentLoaded',()=>{apply(document);observer.observe(document.body,{subtree:true,childList:true,characterData:true})});
+  global.I18n.updateSeoLinks=updateSeoLinks;
+  document.addEventListener('DOMContentLoaded',()=>{if(!languageFromPath()&&language!=='it'&&global.location?.replace){global.location.replace(`${localizedPath(language)}${global.location.search}${global.location.hash}`);return}apply(document);observer.observe(document.body,{subtree:true,childList:true,characterData:true})});
 })(window);
