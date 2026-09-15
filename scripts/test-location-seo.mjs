@@ -64,7 +64,7 @@ assert.match(found.body, /25°C/);
 assert.match(found.body, /class="primary" rel="nofollow"/);
 assert.match(found.body, /href="\/localita"/);
 assert.match(found.body, /aria-label="Percorso"/);
-assert.match(found.body, /Altre località meteo in Sicily/);
+assert.match(found.body, /Altre località meteo in Sicilia/);
 assert.doesNotMatch(found.body, /canavieiras-3467577/);
 assert.doesNotMatch(found.body, /https:\/\/meteo-ai\.vercel\.app\/meteo\/it["#]/);
 assert.doesNotMatch(found.body, /\bundefined\b|\bNaN\b/);

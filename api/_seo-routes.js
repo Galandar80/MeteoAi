@@ -3,13 +3,13 @@ const LANGUAGES = ['it', 'en', 'fr', 'pt-BR', 'es'];
 const HREFLANG = { it:'it', en:'en', fr:'fr', 'pt-BR':'pt-BR', es:'es' };
 
 const PAGE_CLUSTERS = Object.freeze({
-  home: { lastmod:'2026-08-18', paths:{ it:'/', en:'/en', fr:'/fr', 'pt-BR':'/pt-br', es:'/es' } },
-  directory: { lastmod:'2026-08-18', paths:{ it:'/localita', en:'/en/locations', fr:'/fr/localites', 'pt-BR':'/pt-br/localidades', es:'/es/localidades' } },
-  world: { lastmod:'2026-08-18', paths:{ it:'/world-live.html', en:'/en/world-live', fr:'/fr/world-live', 'pt-BR':'/pt-br/world-live', es:'/es/world-live' } },
-  install: { lastmod:'2026-08-18', paths:{ it:'/installa.html', en:'/en/install', fr:'/fr/install', 'pt-BR':'/pt-br/install', es:'/es/install' } },
+  home: { lastmod:'2026-09-15', paths:{ it:'/', en:'/en', fr:'/fr', 'pt-BR':'/pt-br', es:'/es' } },
+  directory: { lastmod:'2026-09-15', paths:{ it:'/localita', en:'/en/locations', fr:'/fr/localites', 'pt-BR':'/pt-br/localidades', es:'/es/localidades' } },
+  world: { lastmod:'2026-09-15', paths:{ it:'/world-live.html', en:'/en/world-live', fr:'/fr/world-live', 'pt-BR':'/pt-br/world-live', es:'/es/world-live' } },
+  install: { lastmod:'2026-09-15', paths:{ it:'/installa.html', en:'/en/install', fr:'/fr/install', 'pt-BR':'/pt-br/install', es:'/es/install' } },
   how: { lastmod:'2026-08-18', paths:{ it:'/come-funziona', en:'/en/how-it-works', fr:'/fr/comment-ca-marche', 'pt-BR':'/pt-br/como-funciona', es:'/es/como-funciona' } },
   widget: { lastmod:'2026-08-18', paths:{ it:'/widget', en:'/en/widget', fr:'/fr/widget', 'pt-BR':'/pt-br/widget', es:'/es/widget' } },
-  tomorrow: { lastmod:'2026-09-05', paths:{ it:'/meteo-domani', en:'/en/weather-tomorrow', fr:'/fr/meteo-demain', 'pt-BR':'/pt-br/previsao-amanha', es:'/es/tiempo-manana' } }
+  tomorrow: { lastmod:'2026-09-15', paths:{ it:'/meteo-domani', en:'/en/weather-tomorrow', fr:'/fr/meteo-demain', 'pt-BR':'/pt-br/previsao-amanha', es:'/es/tiempo-manana' } }
 });
 
 const escapeXml = value => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&apos;');

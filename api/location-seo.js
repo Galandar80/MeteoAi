@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
   }
   let place = null;
   if (body.source === 'manual') place = byId.get(String(body.id));
-  if (body.source === 'gps') place = nearestPlace(Number(body.latitude), Number(body.longitude));
+  if (body.source === 'gps' && typeof body.latitude === 'number' && typeof body.longitude === 'number') place = nearestPlace(body.latitude, body.longitude);
   if (!place) return send(res, 400, { error: 'Località non valida' });
 
   try {

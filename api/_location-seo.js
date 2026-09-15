@@ -10,13 +10,14 @@ const globalSeed = [...catalog].sort(byPopulation).slice(0, GLOBAL_SEED_COUNT);
 const italianSeed = catalog.filter(place => place.cc === 'IT').sort(byPopulation).slice(0, ITALY_SEED_COUNT);
 const SEED_IDS = Object.freeze([...new Set([...globalSeed, ...italianSeed].map(place => place.id))]);
 
-function publicPlace(place) {
+function publicPlace(place, language='it') {
+  const {displayPlaceName,displayCountry,displayAdmin}=require('./_seo-locales');
   return {
     id: place.id,
-    name: place.n,
-    country: place.c,
+    name: displayPlaceName(place,language),
+    country: displayCountry(place,language),
     country_code: place.cc,
-    admin1: place.ad,
+    admin1: displayAdmin(place,language),
     latitude: place.lat,
     longitude: place.lon,
     path: place.path
@@ -24,10 +25,9 @@ function publicPlace(place) {
 }
 
 function distanceSquared(latitude, longitude, place) {
-  const latitudeScale = 111;
-  const longitudeScale = Math.max(20, 111 * Math.cos(latitude * Math.PI / 180));
-  return ((place.lat - latitude) * latitudeScale) ** 2
-    + ((place.lon - longitude) * longitudeScale) ** 2;
+  const rad=value=>value*Math.PI/180;
+  const a=Math.sin(rad(place.lat-latitude)/2)**2+Math.cos(rad(latitude))*Math.cos(rad(place.lat))*Math.sin(rad(place.lon-longitude)/2)**2;
+  return (6371*2*Math.asin(Math.sqrt(Math.min(1,a))))**2;
 }
 
 function nearestPlace(latitude, longitude) {
@@ -42,7 +42,7 @@ function nearestPlace(latitude, longitude) {
       nearestDistance = distance;
     }
   }
-  return nearest;
+  return nearestDistance <= 50**2 ? nearest : null;
 }
 
 function redisConfig() {
@@ -78,7 +78,7 @@ const activeState = globalThis.__METEO_ACTIVE_PLACES__ ||= { places:[...new Set(
 const languageState=globalThis.__METEO_ACTIVE_LANGUAGES__||={pairs:new Set(),updatedAt:0,inflight:null};
 async function refreshActivePlaces() {
   if (activeState.inflight) return activeState.inflight;
-  activeState.inflight=(async()=>{let ids=[];try{const result=await redisCommand(['SMEMBERS',ACTIVE_KEY]);if(Array.isArray(result))ids=result}catch(_){}const unique=new Set([...SEED_IDS.map(String),...ids.map(String)]);activeState.places=[...unique].map(id=>byId.get(id)).filter(Boolean);activeState.updatedAt=Date.now();return activeState.places})().finally(()=>{activeState.inflight=null});
+  activeState.inflight=(async()=>{let ids=[];try{const result=await redisCommand(['SMEMBERS',ACTIVE_KEY]);if(Array.isArray(result))ids=result}catch(_){return activeState.places}const unique=new Set([...SEED_IDS.map(String),...ids.map(String)]);activeState.places=[...unique].map(id=>byId.get(id)).filter(Boolean);activeState.updatedAt=Date.now();return activeState.places})().finally(()=>{activeState.inflight=null});
   return activeState.inflight;
 }
 async function activate(place, language='it') {
@@ -86,7 +86,7 @@ async function activate(place, language='it') {
   const [added]=await Promise.all([redisCommand(['SADD',ACTIVE_KEY,String(place.id)]),redisCommand(['SADD',LANGUAGE_ACTIVE_KEY,pair]).catch(()=>0)]);
   if(!activeState.places.some(item=>item.id===place.id))activeState.places.push(place);
   languageState.pairs.add(pair);
-  return { place:publicPlace(place), language, added:Number(added)===1 };
+  return { place:publicPlace(place,language), language, added:Number(added)===1 };
 }
 async function activePlaces({fresh=false}={}) {
   const expired=Date.now()-activeState.updatedAt>5*60*1000;

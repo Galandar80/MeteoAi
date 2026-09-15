@@ -273,7 +273,27 @@ const displayCountry = (place, language) => {
   }
 };
 
-const displayPlaceName = (place, language) => PLACE_NAMES[normalizeLanguage(language)]?.[place.n] || place.n;
+// Exonyms belong to a specific GeoNames entity, never to every homonymous town.
+const EXONYM_IDS = new Set([3169070,3173435,3172394,3165524,3176219,3176959,3171728,3169522,5128581,3530597,524901,498817,1816670,360630,3369157,2643743,1835848]);
+const displayPlaceName = (place, language) => EXONYM_IDS.has(Number(place.id)) ? (PLACE_NAMES[normalizeLanguage(language)]?.[place.n] || place.n) : place.n;
+
+// Reviewed administrative exonyms, scoped by country. Unknown proper names stay intact.
+const ADMIN_NAMES = {
+  IT: {
+    Sicily:['Sicilia','Sicily','Sicile','Sicília','Sicilia'], Apulia:['Puglia','Apulia','Pouilles','Apúlia','Apulia'],
+    Tuscany:['Toscana','Tuscany','Toscane','Toscana','Toscana'], Lombardy:['Lombardia','Lombardy','Lombardie','Lombardia','Lombardía'],
+    Piedmont:['Piemonte','Piedmont','Piémont','Piemonte','Piamonte'], Sardinia:['Sardegna','Sardinia','Sardaigne','Sardenha','Cerdeña'],
+    Latium:['Lazio','Lazio','Latium','Lácio','Lacio'], Lazio:['Lazio','Lazio','Latium','Lácio','Lacio'],
+    Campania:['Campania','Campania','Campanie','Campânia','Campania'], Liguria:['Liguria','Liguria','Ligurie','Ligúria','Liguria'],
+    Calabria:['Calabria','Calabria','Calabre','Calábria','Calabria'], Umbria:['Umbria','Umbria','Ombrie','Úmbria','Umbría'],
+    Veneto:['Veneto','Veneto','Vénétie','Vêneto','Véneto'], 'The Marches':['Marche','Marche','Marches','Marcas','Marcas'],
+    'Emilia-Romagna':['Emilia-Romagna','Emilia-Romagna','Émilie-Romagne','Emília-Romanha','Emilia-Romaña'],
+    'Aosta Valley':["Valle d’Aosta",'Aosta Valley',"Vallée d’Aoste",'Vale de Aosta','Valle de Aosta']
+  },
+  GB:{England:['Inghilterra','England','Angleterre','Inglaterra','Inglaterra'],Scotland:['Scozia','Scotland','Écosse','Escócia','Escocia'],Wales:['Galles','Wales','Pays de Galles','País de Gales','Gales']},
+  DE:{Bavaria:['Baviera','Bavaria','Bavière','Baviera','Baviera']}
+};
+const displayAdmin = (place, language) => ADMIN_NAMES[place.cc]?.[place.ad]?.[['it','en','fr','pt-BR','es'].indexOf(normalizeLanguage(language))] || place.ad || displayCountry(place,language);
 
 const alternateLinks = (place, languages=['it','en','fr','pt-BR','es']) => [
   ...languages.map(language=>[LOCALES[language].hreflang,localizedPlacePath(place,language)]),
@@ -297,6 +317,7 @@ module.exports = {
   localizedPlacePath,
   localizedDirectoryAnchor,
   displayCountry,
+  displayAdmin,
   displayPlaceName,
   alternateLinks,
   directoryAlternateLinks

@@ -35,7 +35,7 @@ async function activate(body, userAgent = 'Mozilla/5.0') {
 
 const manual = await activate({ source: 'manual', id: 3169070 });
 assert.equal(manual.statusCode, 200);
-assert.equal(manual.json.place.name, 'Rome');
+assert.equal(manual.json.place.name, 'Roma');
 assert.equal(manual.json.added, true);
 assert(activeLanguagePairs.has('it:3169070'));
 

@@ -23,6 +23,7 @@ const {
   localizedPlacePath,
   localizedDirectoryAnchor,
   displayCountry,
+  displayAdmin,
   displayPlaceName,
   alternateLinks
 } = require('./_seo-locales.js');
@@ -93,9 +94,11 @@ const formatClock = (value) => {
   const match = String(value).match(/T(\d{2}:\d{2})/);
   return match ? match[1] : '—';
 };
-const rounded = value => Number.isFinite(Number(value)) ? Math.round(Number(value)) : '—';
+const numeric = value => typeof value === 'number' && Number.isFinite(value);
+const rounded = value => numeric(value) ? Math.round(value) : '—';
+const decimal = value => numeric(value) ? value.toFixed(1) : '—';
 
-const conditionLabel = (code, language, fallback) => translatedWeatherLabels[language]?.[code] || weatherLabels[code] || fallback;
+const conditionLabel = (code, language, fallback) => (language === 'it' ? weatherLabels[code] : translatedWeatherLabels[language]?.[code]) || fallback;
 
 const distanceKm = (left, right) => {
   const toRadians = degrees => degrees * Math.PI / 180;
@@ -131,7 +134,7 @@ function regionPlaces(place, candidates) {
 function reliability(locale,index){return index<=2?locale.reliabilityHigh:index<=4?locale.reliabilityMedium:locale.reliabilityIndicative}
 function bestTomorrowWindow(hourly,tomorrowDate,locale){
   if(!hourly?.time||!tomorrowDate)return '—';
-  const candidates=hourly.time.map((time,index)=>({time,index})).filter(item=>item.time.startsWith(tomorrowDate)&&Number(item.time.slice(11,13))>=7&&Number(item.time.slice(11,13))<=20).map(item=>({...item,score:Number(hourly.precipitation_probability?.[item.index]||0)*1.2+Number(hourly.wind_speed_10m?.[item.index]||0)})).sort((a,b)=>a.score-b.score);
+  const candidates=hourly.time.map((time,index)=>({time,index})).filter(item=>item.time.startsWith(tomorrowDate)&&Number(item.time.slice(11,13))>=7&&Number(item.time.slice(11,13))<=20).filter(item=>numeric(hourly.precipitation_probability?.[item.index])&&numeric(hourly.wind_speed_10m?.[item.index])).map(item=>({...item,score:Number(hourly.precipitation_probability?.[item.index]||0)*1.2+Number(hourly.wind_speed_10m?.[item.index]||0)})).sort((a,b)=>a.score-b.score);
   if(!candidates[0])return '—';
   const hour=Number(candidates[0].time.slice(11,13));
   return `${String(hour).padStart(2,'0')}:00–${String(hour+1).padStart(2,'0')}:00`;
@@ -143,6 +146,8 @@ function notFound(res, language = 'it') {
     ? { title: 'Localidade não encontrada', link: 'Pesquise outra localidade no Meteo AI' }
     : locale.code === 'es'
       ? { title: 'Localidad no encontrada', link: 'Busca otra localidad en Meteo AI' }
+      : locale.code === 'en' ? {title:'Location not found',link:'Search for another location on Meteo AI'}
+      : locale.code === 'fr' ? {title:'Localité introuvable',link:'Rechercher une autre localité sur Meteo AI'}
       : { title: 'Località non trovata', link: 'Cerca un’altra località su Meteo AI' };
   res.statusCode = 404;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -177,12 +182,13 @@ module.exports = async function handler(req, res) {
 
   const canonical = `${SITE_ORIGIN}${expectedPath}`;
   const placeName = displayPlaceName(place, language);
-  const pageLanguages=[...new Set([...languagesForPlace(place),language])];
+  const pageLanguages=Object.keys(LOCALES);
   const languageLinks = [
     ['it', 'IT'], ['en', 'EN'], ['fr', 'FR'], ['pt-BR', 'PT'], ['es', 'ES']
   ].filter(([code])=>pageLanguages.includes(code)).map(([code, label]) => `<a lang="${LOCALES[code].locale}" href="${localizedPlacePath(place, code)}"${language === code ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const countryName = displayCountry(place, language);
-  const areaLabel = [place.ad, countryName].filter(Boolean).join(', ');
+  const areaName = displayAdmin(place, language);
+  const areaLabel = [areaName, countryName].filter(Boolean).join(', ');
   const title = locale.title(placeName);
   const description = locale.description(placeName, areaLabel);
   const current = forecast?.current;
@@ -208,8 +214,8 @@ module.exports = async function handler(req, res) {
   const tomorrowIndex=daily?.time?.[1]?1:-1;
   const tomorrow=tomorrowIndex>=0?{
     date:daily.time[tomorrowIndex], code:daily.weather_code?.[tomorrowIndex], min:rounded(daily.temperature_2m_min?.[tomorrowIndex]), max:rounded(daily.temperature_2m_max?.[tomorrowIndex]),
-    rainChance:rounded(daily.precipitation_probability_max?.[tomorrowIndex]), rainAmount:Number.isFinite(Number(daily.precipitation_sum?.[tomorrowIndex]))?Number(daily.precipitation_sum[tomorrowIndex]).toFixed(1):'—', wind:rounded(daily.wind_speed_10m_max?.[tomorrowIndex]), gusts:rounded(daily.wind_gusts_10m_max?.[tomorrowIndex]),
-    sunrise:formatClock(daily.sunrise?.[tomorrowIndex],locale.locale), sunset:formatClock(daily.sunset?.[tomorrowIndex],locale.locale), uv:Number.isFinite(Number(daily.uv_index_max?.[tomorrowIndex]))?Number(daily.uv_index_max[tomorrowIndex]).toFixed(1):'—'
+    rainChance:rounded(daily.precipitation_probability_max?.[tomorrowIndex]), rainAmount:decimal(daily.precipitation_sum?.[tomorrowIndex]), wind:rounded(daily.wind_speed_10m_max?.[tomorrowIndex]), gusts:rounded(daily.wind_gusts_10m_max?.[tomorrowIndex]),
+    sunrise:formatClock(daily.sunrise?.[tomorrowIndex],locale.locale), sunset:formatClock(daily.sunset?.[tomorrowIndex],locale.locale), uv:decimal(daily.uv_index_max?.[tomorrowIndex])
   }:null;
   const tomorrowLabel=tomorrow?conditionLabel(tomorrow.code,language,locale.variableConditions):locale.variableConditions;
   const weekendIndices=(daily?.time||[]).map((date,index)=>({date,index,day:new Date(`${date}T12:00:00Z`).getUTCDay()})).filter(item=>item.day===0||item.day===6).slice(0,2);
@@ -217,10 +223,10 @@ module.exports = async function handler(req, res) {
   const forecastRows = daily?.time?.map((date, index) => `
     <tr>
       <th scope="row">${escapeHtml(formatDay(date, locale.locale))}</th>
-      <td><span aria-hidden="true">${weatherIcons(daily.weather_code[index])}</span> ${escapeHtml(conditionLabel(daily.weather_code[index], language, locale.variable))}</td>
-      <td><strong>${rounded(daily.temperature_2m_max[index])}°</strong> / ${rounded(daily.temperature_2m_min[index])}°</td>
-      <td>${rounded(daily.precipitation_probability_max[index])}%</td>
-      <td>${rounded(daily.wind_speed_10m_max[index])} km/h</td><td>${escapeHtml(reliability(locale,index))}</td>
+      <td><span aria-hidden="true">${weatherIcons(daily.weather_code?.[index])}</span> ${escapeHtml(conditionLabel(daily.weather_code?.[index], language, locale.variable))}</td>
+      <td><strong>${rounded(daily.temperature_2m_max?.[index])}°</strong> / ${rounded(daily.temperature_2m_min?.[index])}°</td>
+      <td>${rounded(daily.precipitation_probability_max?.[index])}%</td>
+      <td>${rounded(daily.wind_speed_10m_max?.[index])} km/h</td><td>${escapeHtml(reliability(locale,index))}</td>
     </tr>`).join('') || `
     <tr><td colspan="6">${locale.unavailable}</td></tr>`;
 
@@ -244,7 +250,7 @@ module.exports = async function handler(req, res) {
         name: placeName,
         address: {
           '@type': 'PostalAddress',
-          addressRegion: place.ad,
+          addressRegion: areaName,
           addressCountry: place.cc
         },
         geo: {
@@ -259,16 +265,17 @@ module.exports = async function handler(req, res) {
           { '@type': 'ListItem', position: 1, name: 'Meteo AI', item: `${SITE_ORIGIN}${locale.homePath}` },
           { '@type': 'ListItem', position: 2, name: locale.directoryName, item: `${SITE_ORIGIN}${locale.directoryPath}` },
           { '@type': 'ListItem', position: 3, name: countryName, item: `${SITE_ORIGIN}${countryAnchor}` },
-          { '@type': 'ListItem', position: 4, name: place.ad || countryName, item: `${SITE_ORIGIN}${regionAnchor}` },
+          { '@type': 'ListItem', position: 4, name: areaName, item: `${SITE_ORIGIN}${regionAnchor}` },
           { '@type': 'ListItem', position: 5, name: placeName, item: canonical }
         ]
       }
     ]
   };
 
-  res.statusCode = 200;
+  res.statusCode = forecast ? 200 : 503;
+  if(!forecast)res.setHeader('Retry-After','300');
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=86400');
+  res.setHeader('Cache-Control', forecast ? 'public, s-maxage=300, stale-while-revalidate=900' : 'no-store');
   res.setHeader('Content-Language', locale.locale);
   res.setHeader('Server-Timing', `weather;dur=${forecastResult.elapsedMs};desc="${forecastResult.cache}", render;dur=${Date.now()-renderStarted}`);
   res.setHeader('X-Robots-Tag', 'index,follow,max-image-preview:large,max-snippet:-1');
@@ -313,7 +320,7 @@ module.exports = async function handler(req, res) {
     <nav aria-label="${escapeHtml(locale.pathLabel)}"><a href="${locale.homePath}">${locale.navForecast}</a><a href="${locale.directoryPath}">${locale.navLocations}</a></nav>
     <nav class="languages" aria-label="Language">${languageLinks}</nav>
   </header>
-  <nav class="breadcrumbs" aria-label="${escapeHtml(locale.pathLabel)}"><a href="${locale.homePath}">Meteo AI</a> › <a href="${locale.directoryPath}">${locale.directoryName}</a> › <a href="${escapeHtml(countryAnchor)}">${escapeHtml(countryName)}</a> › <a href="${escapeHtml(regionAnchor)}">${escapeHtml(place.ad || countryName)}</a> › <span>${escapeHtml(placeName)}</span></nav>
+  <nav class="breadcrumbs" aria-label="${escapeHtml(locale.pathLabel)}"><a href="${locale.homePath}">Meteo AI</a> › <a href="${locale.directoryPath}">${locale.directoryName}</a> › <a href="${escapeHtml(countryAnchor)}">${escapeHtml(countryName)}</a> › <a href="${escapeHtml(regionAnchor)}">${escapeHtml(areaName)}</a> › <span>${escapeHtml(placeName)}</span></nav>
   <section class="hero">
     <div class="eyebrow">${locale.eyebrow}</div>
     <h1>${escapeHtml(locale.h1(placeName))}</h1>
@@ -338,14 +345,14 @@ module.exports = async function handler(req, res) {
         <tbody>${forecastRows}</tbody>
       </table></div>
     </section>
-    ${weekendIndices.length?`<section class="panel"><h2>${escapeHtml(locale.weekendHeading(placeName))}</h2><div class="nearby">${weekendIndices.map(({date,index})=>`<div class="fact"><small>${escapeHtml(formatDay(date,locale.locale))} • ${escapeHtml(reliability(locale,index))}</small><strong>${weatherIcons(daily.weather_code[index])} ${escapeHtml(conditionLabel(daily.weather_code[index],language,locale.variable))}</strong><span>${rounded(daily.temperature_2m_max[index])}° / ${rounded(daily.temperature_2m_min[index])}° • ${locale.rainfall} ${Number.isFinite(Number(daily.precipitation_sum?.[index]))?Number(daily.precipitation_sum[index]).toFixed(1):'—'} mm</span></div>`).join('')}</div></section>`:''}
+    ${weekendIndices.length?`<section class="panel"><h2>${escapeHtml(locale.weekendHeading(placeName))}</h2><div class="nearby">${weekendIndices.map(({date,index})=>`<div class="fact"><small>${escapeHtml(formatDay(date,locale.locale))} • ${escapeHtml(reliability(locale,index))}</small><strong>${weatherIcons(daily.weather_code?.[index])} ${escapeHtml(conditionLabel(daily.weather_code?.[index],language,locale.variable))}</strong><span>${rounded(daily.temperature_2m_max?.[index])}° / ${rounded(daily.temperature_2m_min?.[index])}° • ${locale.rainfall} ${decimal(daily.precipitation_sum?.[index])} mm</span></div>`).join('')}</div></section>`:''}
     <section class="panel">
       <h2>${escapeHtml(locale.todayConditions(placeName))}</h2>
       <div class="facts">
         <div class="fact"><small>${locale.temperature}</small><strong>${rounded(current?.temperature_2m)}°C</strong></div>
         <div class="fact"><small>${locale.wind}</small><strong>${rounded(current?.wind_speed_10m)} km/h</strong></div>
         <div class="fact"><small>${locale.pressure}</small><strong>${rounded(current?.surface_pressure)} hPa</strong></div>
-        <div class="fact"><small>${locale.precipitation}</small><strong>${Number(current?.precipitation || 0).toFixed(1)} mm</strong></div>
+        <div class="fact"><small>${locale.precipitation}</small><strong>${decimal(current?.precipitation)} mm</strong></div>
       </div>
       <p class="copy">${escapeHtml(locale.currentCopy(placeName, currentLabel, rounded(current?.temperature_2m)))}</p>
     </section>
@@ -359,14 +366,14 @@ module.exports = async function handler(req, res) {
       </div>
     </section>
     ${inRegion.length ? `<section class="panel">
-      <h2>${escapeHtml(locale.otherRegion(place.ad || countryName))}</h2>
+      <h2>${escapeHtml(locale.otherRegion(areaName))}</h2>
       <p class="panel-lead">${locale.otherRegionLead}</p>
-      <div class="nearby">${inRegion.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(locale.placeWeather(displayPlaceName(candidate, language)))}</strong><small>${escapeHtml(candidate.ad || displayCountry(candidate, language))} • ${locale.sevenDays}</small></a>`).join('')}</div>
+      <div class="nearby">${inRegion.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(locale.placeWeather(displayPlaceName(candidate, language)))}</strong><small>${escapeHtml(displayAdmin(candidate, language))} • ${locale.sevenDays}</small></a>`).join('')}</div>
     </section>` : ''}
     ${nearby.length ? `<section class="panel">
       <h2>${locale.nearby}</h2>
       <p class="panel-lead">${locale.nearbyLead}</p>
-      <div class="nearby">${nearby.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(displayPlaceName(candidate, language))}</strong><small>${Math.round(candidate.distance)} km • ${escapeHtml(candidate.ad || displayCountry(candidate, language))}</small></a>`).join('')}</div>
+      <div class="nearby">${nearby.map(candidate => `<a href="${escapeHtml(localizedPlacePath(candidate, language))}"><strong>${escapeHtml(displayPlaceName(candidate, language))}</strong><small>${Math.round(candidate.distance)} km • ${escapeHtml(displayAdmin(candidate, language))}</small></a>`).join('')}</div>
     </section>` : ''}
   </main>
   <footer>
