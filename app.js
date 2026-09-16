@@ -28,11 +28,11 @@ function renderConfidence(d){const volatile=d.daily.weather_code.slice(0,3).some
 function renderAlerts(d){
  const days=d.daily,alerts=[],maxRain=Math.max(...days.precipitation_probability_max.slice(0,3)),maxGust=Math.max(...days.wind_gusts_10m_max.slice(0,3)),maxTemp=Math.max(...days.temperature_2m_max.slice(0,3)),minTemp=Math.min(...days.temperature_2m_min.slice(0,3)),maxUv=Math.max(...days.uv_index_max.slice(0,3)),storm=days.weather_code.slice(0,3).some(code=>code>=95);
  if(storm)alerts.push(['danger','Temporali possibili','Uno o più giorni mostrano condizioni temporalesche: controlla gli aggiornamenti e gli avvisi ufficiali.']);
- if(maxGust>=55)alerts.push(['danger','Raffiche forti',`Raffiche previste fino a ${Math.round(maxGust)} km/h nei prossimi tre giorni.`]);else if(maxGust>=40)alerts.push(['warning','Vento da monitorare',`Possibili raffiche fino a ${Math.round(maxGust)} km/h.`]);
- if(maxRain>=75)alerts.push(['warning','Elevato rischio di pioggia',`Probabilità giornaliera fino al ${Math.round(maxRain)}%.`]);
- if(maxTemp>=35)alerts.push(['danger','Caldo intenso',`Massime previste fino a ${Math.round(maxTemp)}°: limita l’esposizione nelle ore centrali.`]);else if(minTemp<=-2)alerts.push(['warning','Gelo possibile',`Minime previste fino a ${Math.round(minTemp)}°.`]);
- if(maxUv>=8)alerts.push(['warning','UV molto elevato',`Indice UV fino a ${maxUv.toFixed(1)}: protezione e ombra sono raccomandate.`]);
- const wave=Number(lastMarine?.current?.wave_height);if(Number.isFinite(wave)&&wave>=1.5)alerts.push([wave>=2.5?'danger':'warning','Mare impegnativo',`Nel punto marino analizzato le onde raggiungono ${wave.toFixed(1)} m.`]);
+ if(maxGust>=55)alerts.push(['danger','Raffiche forti',I18n.t('alertGust',{value:Math.round(maxGust)})]);else if(maxGust>=40)alerts.push(['warning','Vento da monitorare',I18n.t('alertWind',{value:Math.round(maxGust)})]);
+ if(maxRain>=75)alerts.push(['warning','Elevato rischio di pioggia',I18n.t('alertRain',{value:Math.round(maxRain)})]);
+ if(maxTemp>=35)alerts.push(['danger','Caldo intenso',I18n.t('alertHeat',{value:Math.round(maxTemp)})]);else if(minTemp<=-2)alerts.push(['warning','Gelo possibile',I18n.t('alertFrost',{value:Math.round(minTemp)})]);
+ if(maxUv>=8)alerts.push(['warning','UV molto elevato',I18n.t('alertUv',{value:maxUv.toFixed(1)})]);
+ const wave=Number(lastMarine?.current?.wave_height);if(Number.isFinite(wave)&&wave>=1.5)alerts.push([wave>=2.5?'danger':'warning','Mare impegnativo',I18n.t('alertSea',{value:wave.toFixed(1)})]);
  if(!alerts.length)alerts.push(['neutral','Nessuna criticità evidente','I principali indicatori previsionali non superano le soglie di attenzione nei prossimi tre giorni.']);
  $('#alertsList').innerHTML=alerts.map(([level,title,copy])=>`<div class="alert-item ${level}"><i>${level==='danger'?'!':level==='warning'?'△':'✓'}</i><div><b>${title}</b><p>${copy}</p></div></div>`).join('');
 }

@@ -48,3 +48,10 @@ Non sono completate tutte le traduzioni dei profili professionali, dei consigli 
 - Esperimento locale con script defer: prima LCP 3,72 s / TBT 178,5 ms / CLS 0,146 / punteggio 75; dopo LCP 4,07 s / TBT 214,5 ms / CLS 0,078 / punteggio 79. Singole prove variabili, nessuna dimostrazione di miglioramento LCP. La modifica defer è stata ANNULLATA: non inclusa nella PR e nessun miglioramento di velocità dichiarato.
 - I tre report Lighthouse JSON restano locali, esclusi da Git. Non contengono una verifica di Core Web Vitals reali.
 - Restano da coprire integralmente gli stati del modulo marino/atlante/corridoio, messaggi dinamici dello storico e degli avvisi e casi limite dei profili. Le parti completate non equivalgono alla certificazione linguistica integrale dell'app.
+
+## Continuazione: avvisi, storico e riepilogo mare
+- Parametrizzati i valori degli avvisi in cinque lingue, senza modificare le soglie; tradotti titoli e messaggi dello storico.
+- Corretto lo storico: i valori nulli dell'archivio non vengono più convertiti in zero, ma esclusi dalla media. Con un campione insufficiente resta lo stato di indisponibilità.
+- Localizzati riepilogo mare, direzioni, distanza del punto modellistico, correnti orarie e principali stati di caricamento/errore dell'atlante. Conservate le avvertenze sui limiti dei dati e sui bollettini marini.
+- Nuovo test automatico in cinque lingue per valori degli avvisi, media storica con dati mancanti, errore con campione vuoto e riepilogo marino. Aggiornata la versione della cache PWA.
+- Restano da verificare e completare i testi dei dettagli marini futuri, dei popup e del corridoio nautico. Nessuna modifica a URL, criteri di indicizzazione, Search Console o caricamento degli script in questo passaggio. Il lavoro resta nella PR in bozza, non in produzione.

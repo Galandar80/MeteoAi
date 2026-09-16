@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const read=name=>fs.readFileSync(new URL('../'+name,import.meta.url),'utf8');
+const app=read('app.js'),features=read('app-features.js'),marine=read('app-marine.js');
+for(const language of ['it','en','fr','pt-BR','es']){
+  const nodes={};
+  const context=vm.createContext({window:{location:{}},document:{documentElement:{},addEventListener(){}},localStorage:{getItem:()=>language},navigator:{languages:[language]},MutationObserver:class{},URLSearchParams,setTimeout,clearTimeout});
+  vm.runInContext(read('i18n.js'),context);context.I18n=context.window.I18n;
+  context.$=key=>nodes[key]||={textContent:'',innerHTML:'',classList:{add(){},remove(){}},setAttribute(){}};
+  context.lastMarine={current:{wave_height:2}};
+  vm.runInContext(app.slice(app.indexOf('function renderAlerts'),app.indexOf('const specialProfileRules')),context);
+  const daily={weather_code:[95,0,0],precipitation_probability_max:[80,0,0],wind_gusts_10m_max:[60,0,0],temperature_2m_max:[36,25,25],temperature_2m_min:[5,5,5],uv_index_max:[9,5,5]};
+  context.renderAlerts({daily});
+  for(const [key,value] of [['alertGust',60],['alertRain',80],['alertHeat',36],['alertUv','9.0'],['alertSea','2.0']])assert(nodes['#alertsList'].innerHTML.includes(context.I18n.t(key,{value})),key);
+  context.lastPlace={latitude:1,longitude:2};context.lastData={daily:{temperature_2m_max:[24]},current:{temperature_2m:23}};
+  context.sessionStorage={getItem:()=>null,setItem(){}};context.toast=()=>{};
+  const today=new Date(),suffix=`-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  let values=[null,...Array(9).fill(20)];
+  context.fetchResilient=async()=>({ok:true,json:async()=>({daily:{time:Array.from({length:10},(_,i)=>`${today.getFullYear()-10+i}${suffix}`),temperature_2m_max:values}})});
+  vm.runInContext(features.slice(features.indexOf('let historyRequestToken'),features.indexOf("$('#historyLoadBtn').onclick")),context);
+  context.$('#historyLoadBtn');await context.loadHistoricalWeather();
+  assert.equal(nodes['#hist10Temp'].textContent,'20.0°C','Missing temperatures must not become zero');
+  assert(nodes['#histSampleCount'].textContent.includes('9'));
+  values=Array(10).fill(null);await context.loadHistoricalWeather();assert.equal(nodes['#hist10Temp'].textContent,'--°C');assert.equal(nodes['#historyLoadBtn'].disabled,false);
+  context.distanceKm=()=>10;context.cardinal=()=>context.I18n.t('wind:Nord');context.marineValue=(v,n,unit='')=>Number(v).toFixed(n)+unit;
+  vm.runInContext(marine.split(/\r?\n/).find(line=>line.startsWith('function renderMarine(d)')),context);
+  const time=new Date(Date.now()+3600000).toISOString();
+  context.renderMarine({latitude:1,longitude:2,current:{wave_height:1,wave_period:5,sea_surface_temperature:20,ocean_current_velocity:1,wave_direction:0,ocean_current_direction:0,time},hourly:{time:[time],wave_height:[1],sea_surface_temperature:[20],ocean_current_velocity:[1]}});
+  assert(!nodes['#marineExplanation'].textContent.includes('{'));
+  if(language!=='it')assert(!/Punto marino modellistico|è stato ridotto/.test(nodes['#marineExplanation'].textContent+nodes['#marinePoint'].textContent));
+}
+console.log('Monitoring: localized alert values, historical null/error handling and marine summary passed');
