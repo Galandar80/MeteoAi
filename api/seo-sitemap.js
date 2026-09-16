@@ -10,8 +10,16 @@ module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
   if (kind === 'static') return res.end(staticSitemap());
+  let places;
+  try { places=await activePlaces({fresh:true,requireComplete:true}); }
+  catch (_) {
+    res.statusCode=503;
+    res.setHeader('Cache-Control','no-store');
+    res.setHeader('Retry-After','300');
+    return res.end('<?xml version="1.0" encoding="UTF-8"?><error>Sitemap temporarily unavailable</error>');
+  }
   if (kind === 'locations') {
-    const [places,pairs] = await Promise.all([activePlaces({fresh:true}),activeLanguagePairs({fresh:true})]);
+    const pairs = await activeLanguagePairs({fresh:true});
     const page = Number(req.query?.page || 1);
     if (!Number.isInteger(page) || page < 1 || page > Math.max(1,Math.ceil(places.length/PLACES_PER_SITEMAP))) { res.statusCode=404;res.setHeader('Cache-Control','no-store');return res.end(''); }
     const urls = [...places].sort((a,b)=>a.id-b.id).slice((page-1)*PLACES_PER_SITEMAP,page*PLACES_PER_SITEMAP).flatMap(place => {
@@ -24,7 +32,6 @@ module.exports = async function handler(req, res) {
     }).join('\n');
     return res.end(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`);
   }
-  const places=await activePlaces({fresh:true});
   const children=Array.from({length:Math.max(1,Math.ceil(places.length/PLACES_PER_SITEMAP))},(_,index)=>`  <sitemap><loc>${escapeXml(ORIGIN+locationSitemapPath(index+1))}</loc></sitemap>`).join('\n');
   return res.end(`<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap><loc>${escapeXml(ORIGIN)}/sitemaps/static.xml</loc></sitemap>\n${children}\n</sitemapindex>\n`);
 };

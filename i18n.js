@@ -1065,6 +1065,53 @@
   const worldRuntimeCopy=[["Aggiornamento degli eventi reali…","Updating observed events…","Actualisation des événements observés…","Atualizando eventos observados…","Actualizando eventos observados…"],["Fonti momentaneamente non raggiungibili","Sources temporarily unreachable","Sources temporairement inaccessibles","Fontes temporariamente inacessíveis","Fuentes temporalmente inaccesibles"],["non raggiungibile: le altre fonti restano attive.","unreachable: the other sources remain active.","inaccessible : les autres sources restent actives.","inacessível: as outras fontes continuam ativas.","inaccesible: las demás fuentes siguen activas."],["Nessun evento visibile","No visible events","Aucun événement visible","Nenhum evento visível","Ningún evento visible"],["Nessun evento con questi filtri","No events match these filters","Aucun événement avec ces filtres","Nenhum evento com estes filtros","No hay eventos con estos filtros"],["Prova un periodo più ampio oppure seleziona “Tutti”.","Try a longer period or select “All”.","Essayez une période plus longue ou sélectionnez « Tous ».","Tente um período maior ou selecione “Todos”.","Prueba un período más amplio o selecciona «Todos»."],["Percentuale non disponibile","Percentage unavailable","Pourcentage indisponible","Percentual indisponível","Porcentaje no disponible"],["IMPATTO AI SU","AI IMPACT ON","IMPACT IA SUR","IMPACTO IA EM","IMPACTO IA EN"],["Rilevanza elevata","High relevance","Forte pertinence","Alta relevância","Relevancia alta"],["Da seguire","Worth watching","À suivre","Acompanhar","A seguir"],["Rilevanza limitata","Limited relevance","Pertinence limitée","Relevância limitada","Relevancia limitada"],["Rilevanza molto bassa","Very low relevance","Très faible pertinence","Relevância muito baixa","Relevancia muy baja"],["Indice orientativo, non probabilità né allerta ufficiale.","Indicative score, not a probability or official warning.","Indice indicatif, pas une probabilité ni une alerte officielle.","Índice indicativo, não uma probabilidade ou alerta oficial.","Índice orientativo, no una probabilidad ni una alerta oficial."],["LETTURA METEO AI","METEO AI INTERPRETATION","INTERPRÉTATION METEO AI","INTERPRETAÇÃO METEO AI","INTERPRETACIÓN METEO AI"],["Cosa significa per la tua località","What it means for your location","Conséquences pour votre localité","O que significa para seu local","Qué significa para tu localidad"],["EVENTO OSSERVATO","OBSERVED EVENT","ÉVÉNEMENT OBSERVÉ","EVENTO OBSERVADO","EVENTO OBSERVADO"],["PROBABILITÀ O CERTEZZA UFFICIALE","OFFICIAL PROBABILITY OR CERTAINTY","PROBABILITÉ OU CERTITUDE OFFICIELLE","PROBABILIDADE OU CERTEZA OFICIAL","PROBABILIDAD O CERTEZA OFICIAL"],["Nessuna percentuale inventata","No invented percentages","Aucun pourcentage inventé","Nenhum percentual inventado","Ningún porcentaje inventado"],["LIVELLO DELLA FONTE","SOURCE LEVEL","NIVEAU DE LA SOURCE","NÍVEL DA FONTE","NIVEL DE LA FUENTE"],["La terminologia appartiene alla fonte indicata e può avere significati diversi secondo il tipo di evento.","Terminology belongs to the named source and may have different meanings depending on the event type.","La terminologie appartient à la source indiquée et peut varier selon le type d’événement.","A terminologia pertence à fonte indicada e pode variar conforme o tipo de evento.","La terminología pertenece a la fuente indicada y puede variar según el tipo de evento."],["Nessuna località sorvegliata","No watched locations","Aucune localité surveillée","Nenhum local monitorado","Ninguna localidad vigilada"],["Aggiungi una città oppure usa la posizione del dispositivo.","Add a city or use your device’s location.","Ajoutez une ville ou utilisez la position de l’appareil.","Adicione uma cidade ou use a localização do dispositivo.","Añade una ciudad o usa la ubicación del dispositivo."],["Non supportate da questo browser.","Not supported by this browser.","Non prises en charge par ce navigateur.","Não suportadas por este navegador.","No compatibles con este navegador."],["Attive: gli avvisi vengono mostrati durante gli aggiornamenti.","Enabled: notices appear during updates.","Actives : les avis apparaissent lors des mises à jour.","Ativas: os avisos aparecem durante as atualizações.","Activas: los avisos aparecen durante las actualizaciones."],["Notifiche attive","Notifications enabled","Notifications actives","Notificações ativas","Notificaciones activas"],["Bloccate nelle impostazioni del browser.","Blocked in browser settings.","Bloquées dans les paramètres du navigateur.","Bloqueadas nas configurações do navegador.","Bloqueadas en los ajustes del navegador."],["Notifiche bloccate","Notifications blocked","Notifications bloquées","Notificações bloqueadas","Notificaciones bloqueadas"],["Serve il tuo consenso; nessuna autorizzazione viene chiesta automaticamente.","Your consent is needed; permission is never requested automatically.","Votre consentement est nécessaire ; aucune autorisation n’est demandée automatiquement.","Seu consentimento é necessário; nenhuma permissão é solicitada automaticamente.","Se necesita tu consentimiento; no se solicita permiso automáticamente."]];
   for(const row of worldRuntimeCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
 
+  // Complete sentences with parameters: never translate user place names as prose.
+  const forecastMessages={
+    forecastSummary:['Oggi a {place}: {condition}, con una massima di {max}°.','Today in {place}: {condition}, with a high of {max}°.','Aujourd’hui à {place} : {condition}, avec un maximum de {max}°.','Hoje em {place}: {condition}, com máxima de {max}°.','Hoy en {place}: {condition}, con una máxima de {max}°.'],
+    forecastRainHigh:["La probabilità di pioggia è alta ({rain}%): pianifica con prudenza le attività all’aperto.",'Rain probability is high ({rain}%): plan outdoor activities with care.','La probabilité de pluie est élevée ({rain} %) : prévoyez vos activités extérieures avec prudence.','A probabilidade de chuva é alta ({rain}%): planeje atividades ao ar livre com cautela.','La probabilidad de lluvia es alta ({rain}%): planifica con prudencia las actividades al aire libre.'],
+    forecastRainMedium:['Possibili precipitazioni locali ({rain}%).','Local rainfall is possible ({rain}%).','Des précipitations locales sont possibles ({rain} %).','Há possibilidade de chuva local ({rain}%).','Posibles precipitaciones locales ({rain}%).'],
+    forecastRainLow:['Il rischio di pioggia resta contenuto.','Rain risk remains low.','Le risque de pluie reste faible.','O risco de chuva permanece baixo.','El riesgo de lluvia sigue siendo bajo.'],
+    forecastWind:['Vento sostenuto fino a circa {wind} km/h.','Strong winds up to around {wind} km/h.','Vent soutenu jusqu’à environ {wind} km/h.','Vento forte de até cerca de {wind} km/h.','Viento fuerte de hasta unos {wind} km/h.'],
+    forecastAdviceSun:['Protezione solare consigliata nelle ore centrali.','Sun protection is recommended around midday.','Une protection solaire est conseillée aux heures centrales de la journée.','Recomenda-se proteção solar nas horas centrais do dia.','Se recomienda protección solar en las horas centrales del día.'],
+    forecastAdviceRain:['Porta con te un ombrello e controlla gli aggiornamenti.','Take an umbrella and check for updates.','Prenez un parapluie et consultez les mises à jour.','Leve um guarda-chuva e confira as atualizações.','Lleva un paraguas y consulta las actualizaciones.'],
+    forecastAdviceNormal:['Condizioni favorevoli per le normali attività quotidiane.','Favourable conditions for normal daily activities.','Conditions favorables aux activités quotidiennes habituelles.','Condições favoráveis para as atividades habituais do dia a dia.','Condiciones favorables para las actividades cotidianas habituales.']
+  };
+  for(const [key,row] of Object.entries(forecastMessages))for(const [index,code] of ['it','en','fr','pt-BR','es'].entries())messages[code][key]=row[index];
+  const weatherCopy=[
+    ['Sereno','Clear','Dégagé','Céu limpo','Despejado'],
+    ['Prevalentemente sereno','Mainly clear','Principalement dégagé','Predominantemente limpo','Mayormente despejado'],
+    ['Parzialmente nuvoloso','Partly cloudy','Partiellement nuageux','Parcialmente nublado','Parcialmente nublado'],
+    ['Nuvoloso','Overcast','Couvert','Encoberto','Cubierto'],
+    ['Nebbia','Fog','Brouillard','Nevoeiro','Niebla'],
+    ['Nebbia con brina','Rime fog','Brouillard givrant','Nevoeiro com geada','Niebla con escarcha'],
+    ['Pioviggine lieve','Light drizzle','Bruine légère','Garoa leve','Llovizna ligera'],
+    ['Pioviggine','Drizzle','Bruine','Garoa','Llovizna'],
+    ['Pioviggine intensa','Heavy drizzle','Bruine dense','Garoa intensa','Llovizna intensa'],
+    ['Pioggia lieve','Light rain','Pluie légère','Chuva fraca','Lluvia ligera'],
+    ['Pioggia','Rain','Pluie','Chuva','Lluvia'],
+    ['Pioggia intensa','Heavy rain','Forte pluie','Chuva forte','Lluvia intensa'],
+    ['Neve lieve','Light snow','Neige légère','Neve fraca','Nieve ligera'],
+    ['Neve','Snow','Neige','Neve','Nieve'],
+    ['Neve intensa','Heavy snow','Fortes chutes de neige','Neve intensa','Nieve intensa'],
+    ['Rovesci lievi','Light showers','Averses légères','Pancadas fracas','Chubascos ligeros'],
+    ['Rovesci','Showers','Averses','Pancadas de chuva','Chubascos'],
+    ['Rovesci intensi','Heavy showers','Fortes averses','Pancadas fortes','Chubascos intensos'],
+    ['Temporale','Thunderstorm','Orage','Trovoada','Tormenta'],
+    ['Temporale con grandine','Thunderstorm with hail','Orage avec grêle','Trovoada com granizo','Tormenta con granizo'],
+    ['Temporale forte','Severe thunderstorm','Orage violent','Trovoada forte','Tormenta fuerte'],
+    ['Variabile','Changeable','Variable','Variável','Variable'],
+    ['Adesso','Now','Maintenant','Agora','Ahora'],
+    ['Condizioni favorevoli','Favourable conditions','Conditions favorables','Condições favoráveis','Condiciones favorables'],
+    ['Condizioni discrete','Fair conditions','Conditions correctes','Condições razoáveis','Condiciones aceptables'],
+    ['Serve prudenza','Caution needed','Prudence nécessaire','É preciso cautela','Se requiere precaución'],
+    ['Meglio rimandare','Better to postpone','Mieux vaut reporter','Melhor adiar','Mejor posponer'],
+    ['Nessuna località salvata.','No saved locations.','Aucune localité enregistrée.','Nenhum local salvo.','No hay localidades guardadas.'],
+    ['Consigliata','Recommended','Recommandée','Recomendada','Recomendada'],
+    ['Prudenza','Caution','Prudence','Cautela','Precaución'],
+    ['Meglio ombra, protezione solare e pause frequenti.','Prefer shade, sun protection and frequent breaks.','Privilégiez l’ombre, une protection solaire et des pauses fréquentes.','Prefira sombra, proteção solar e pausas frequentes.','Prioriza la sombra, la protección solar y las pausas frecuentes.']
+  ];
+  for(const row of weatherCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+
   function normalise(value){
     const code=String(value||'').trim().replace('_','-');
     const lower=code.toLowerCase();
@@ -1113,6 +1160,7 @@
     return result;
   }
   function applyText(node){
+    if(node.parentElement?.closest?.('[data-no-i18n],.brand,script,style,code,pre'))return;
     let record=originals.get(node);
     if(!record||typeof record!=='object'||!('source'in record)){const marker=node.previousSibling,marked=marker?.nodeType===8&&marker.nodeValue?.startsWith('meteo-i18n:')?marker.nodeValue.slice(11):'';let source=node.nodeValue;if(marked)try{source=decodeURIComponent(marked)}catch(_){}record={source,rendered:node.nodeValue}}
     else if(node.nodeValue!==record.rendered)record.source=node.nodeValue;

@@ -42,7 +42,11 @@ assert.equal(unavailable.statusCode,503);assert.equal(unavailable.headers['Retry
 for(const lang of ['en','fr']){const missing=response();await handler({query:{lang,place:'missing-999999999'}},missing);assert.equal(missing.statusCode,404);assert(!missing.body.includes('Località non trovata'));}
 const original=globalThis.__METEO_ACTIVE_PLACES__.places;
 try{
- globalThis.__METEO_ACTIVE_PLACES__.places=catalog.slice(0,1001);
+ process.env.UPSTASH_REDIS_REST_URL='https://storage.test';
+ process.env.UPSTASH_REDIS_REST_TOKEN='test';
+ const seeds=globalThis.__METEO_ACTIVE_PLACES__.places;
+ const selected=[...new Map([...seeds,...catalog].map(place=>[place.id,place])).values()].slice(0,1001);
+ global.fetch=async()=>({ok:true,json:async()=>({result:selected.map(place=>String(place.id))})});
  const index=response();await sitemap({query:{kind:'index'}},index);assert(index.body.includes('localita-attive-2.xml'));
  const first=response(),second=response();await sitemap({query:{kind:'locations'}},first);await sitemap({query:{kind:'locations',page:'2'}},second);
  const urls=xml=>[...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>m[1]);
