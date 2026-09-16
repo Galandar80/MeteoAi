@@ -38,3 +38,13 @@ Non sono completate tutte le traduzioni dei profili professionali, dei consigli 
 2. Tracciare il LCP su home e pagina località e ottimizzare soltanto i colli di bottiglia verificati.
 3. Approfondire i canonical scelti da Google e gli altri gruppi di esclusione con campioni mirati.
 4. Misurare Napoli/Hyderabad/Surat e le query domani dopo un periodo comparabile; solo allora valutare cambi editoriali e collegamenti interni mirati.
+
+## Continuazione: strumenti avanzati e diagnosi LCP
+- Tradotti con messaggi parametrizzati Finestra Meteo, riepiloghi e messaggi di errore dei viaggi, risposte dell'assistente. Nomi delle località preservati; nell'HTML dei viaggi vengono escapati dopo interpolazione.
+- Aggiunti intenti e date in spagnolo (mañana, pasado mañana, giorni della settimana). Restano i limiti di un riconoscitore locale per parole chiave, non una comprensione linguistica generale.
+- Completate direzioni e descrizioni del vento mediante chiavi esplicite, senza sostituire nomi cardinali globalmente nel testo. Tradotte le frasi dei consigli dei dieci profili e parametrizzati i messaggi fotografici con alba/tramonto.
+- Verificata nel browser una domanda spagnola sul giorno successivo: risposta interamente spagnola con località preservata. Nuovi test coprono cinque lingue, finestre disponibili/assenti, date spagnole, viaggi con nomi contenenti caratteri HTML, errori e campioni dei dieci profili.
+- Audit Lighthouse CLI 13.0.1 su /fr pubblico: LCP 2,4 s, FCP 2,2 s, prestazioni 77. L'elemento LCP è il titolo H1; risorse bloccanti includono i18n.js, font, CSS Leaflet e styles.css. Non confrontabile direttamente con il precedente PageSpeed su / (ambiente e URL diversi).
+- Esperimento locale con script defer: prima LCP 3,72 s / TBT 178,5 ms / CLS 0,146 / punteggio 75; dopo LCP 4,07 s / TBT 214,5 ms / CLS 0,078 / punteggio 79. Singole prove variabili, nessuna dimostrazione di miglioramento LCP. La modifica defer è stata ANNULLATA: non inclusa nella PR e nessun miglioramento di velocità dichiarato.
+- I tre report Lighthouse JSON restano locali, esclusi da Git. Non contengono una verifica di Core Web Vitals reali.
+- Restano da coprire integralmente gli stati del modulo marino/atlante/corridoio, messaggi dinamici dello storico e degli avvisi e casi limite dei profili. Le parti completate non equivalgono alla certificazione linguistica integrale dell'app.
