@@ -24,6 +24,7 @@ for(const language of ['it','en','fr','pt-BR','es']){
   assert(nodes['#histSampleCount'].textContent.includes('9'));
   values=Array(10).fill(null);await context.loadHistoricalWeather();assert.equal(nodes['#hist10Temp'].textContent,'--°C');assert.equal(nodes['#historyLoadBtn'].disabled,false);
   context.distanceKm=()=>10;context.cardinal=()=>context.I18n.t('wind:Nord');context.marineValue=(v,n,unit='')=>Number(v).toFixed(n)+unit;
+  vm.runInContext(marine.split(/\r?\n/).find(line=>line.startsWith('function marineNumber')),context);
   vm.runInContext(marine.split(/\r?\n/).find(line=>line.startsWith('function renderMarine(d)')),context);
   const time=new Date(Date.now()+3600000).toISOString();
   context.renderMarine({latitude:1,longitude:2,current:{wave_height:1,wave_period:5,sea_surface_temperature:20,ocean_current_velocity:1,wave_direction:0,ocean_current_direction:0,time},hourly:{time:[time],wave_height:[1],sea_surface_temperature:[20],ocean_current_velocity:[1]}});

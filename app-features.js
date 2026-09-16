@@ -30,9 +30,10 @@ async function loadHistoricalWeather({silent=false}={}){
     if(token!==historyRequestToken||place.latitude!==Number(lastPlace.latitude)||place.longitude!==Number(lastPlace.longitude))return;
     const target=`-${m}-${d}`,samples=(archive.daily?.time||[]).map((date,index)=>({date,value:archive.daily.temperature_2m_max?.[index]})).filter(item=>item.date.endsWith(target)&&Number.isFinite(item.value));
     if(samples.length<5)throw Error('Campione storico insufficiente');
-    const todayMax=Number(lastData.daily.temperature_2m_max[0]),current=Number(lastData.current.temperature_2m),average=samples.reduce((sum,item)=>sum+item.value,0)/samples.length,difference=todayMax-average;
+    const todayMax=lastData.daily.temperature_2m_max[0],current=lastData.current.temperature_2m,average=samples.reduce((sum,item)=>sum+item.value,0)/samples.length,difference=todayMax-average;
+    if(!Number.isFinite(todayMax))throw Error('Massima odierna non disponibile');
     $('#histTodayTemp').textContent=`${todayMax.toFixed(1)}°C`;
-    $('#histTodayNow').textContent=I18n.t('historyCurrent',{value:current.toFixed(1)});
+    $('#histTodayNow').textContent=I18n.t('historyCurrent',{value:Number.isFinite(current)?current.toFixed(1):'--'});
     $('#hist10Temp').textContent=`${average.toFixed(1)}°C`;
     $('#histSampleCount').textContent=I18n.t('historySamples',{count:samples.length,from:samples[0].date.slice(0,4),to:samples.at(-1).date.slice(0,4)});
     $('#histDifference').textContent=`${difference>=0?'+':''}${difference.toFixed(1)}°C`;

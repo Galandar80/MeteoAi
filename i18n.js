@@ -1092,6 +1092,247 @@
     ['Per gli Stati senza sbocco sul mare l’Atlante mostra comunque il territorio nazionale.','For landlocked countries the atlas still shows the national territory.','Pour les pays sans accès à la mer, l’atlas affiche tout de même le territoire national.','Para países sem litoral, o atlas continua mostrando o território nacional.','En los países sin litoral, el atlas sigue mostrando el territorio nacional.']
   ];
   for(const row of marineCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+  const marineDetailCopy=[
+["Meteo, qualità dell’aria, mappe e consigli personali in un’unica esperienza semplice. Cerca qualsiasi luogo nel mondo.","Weather, air quality, maps and personal advice in one simple experience. Search for any place in the world.","Météo, qualité de l’air, cartes et conseils personnalisés dans une expérience simple. Recherchez n’importe quel lieu dans le monde.","Tempo, qualidade do ar, mapas e conselhos pessoais em uma experiência simples. Busque qualquer lugar do mundo.","Tiempo, calidad del aire, mapas y consejos personales en una experiencia sencilla. Busca cualquier lugar del mundo."],
+["Installa gratis","Install for free","Installer gratuitement","Instalar grátis","Instalar gratis"],
+["Ottima","Very good","Très bonne","Muito boa","Muy buena"],
+["Discreta","Fair","Moyenne","Razoável","Aceptable"],
+["Scarsa","Poor","Mauvaise","Ruim","Mala"],
+["Molto scarsa","Very poor","Très mauvaise","Muito ruim","Muy mala"],
+["Estremamente scarsa","Extremely poor","Extrêmement mauvaise","Extremamente ruim","Extremadamente mala"],
+  [
+    "Poco mosso",
+    "Slight sea",
+    "Mer peu agitée",
+    "Mar pouco agitado",
+    "Mar poco agitado"
+  ],
+  [
+    "Mosso",
+    "Moderate sea",
+    "Mer agitée",
+    "Mar agitado",
+    "Mar agitado"
+  ],
+  [
+    "Molto mosso",
+    "Rough sea",
+    "Mer forte",
+    "Mar muito agitado",
+    "Mar muy agitado"
+  ],
+  [
+    "Agitato",
+    "Very rough sea",
+    "Mer très forte",
+    "Mar revolto",
+    "Mar gruesa"
+  ],
+  [
+    "Dato non disponibile",
+    "Data unavailable",
+    "Donnée indisponible",
+    "Dado indisponível",
+    "Dato no disponible"
+  ],
+  [
+    "Oggi",
+    "Today",
+    "Aujourd’hui",
+    "Hoje",
+    "Hoy"
+  ],
+  [
+    "Dettaglio orario non disponibile per questa giornata.",
+    "Hourly details are unavailable for this day.",
+    "Le détail horaire est indisponible pour cette journée.",
+    "Detalhes horários indisponíveis para este dia.",
+    "No hay detalles horarios para este día."
+  ],
+  [
+    "Onde massime: {value}",
+    "Maximum waves: {value}",
+    "Vagues maximales : {value}",
+    "Ondas máximas: {value}",
+    "Olas máximas: {value}"
+  ],
+  [
+    "Periodo massimo: {value}",
+    "Maximum period: {value}",
+    "Période maximale : {value}",
+    "Período máximo: {value}",
+    "Período máximo: {value}"
+  ],
+  [
+    "Indicatore posizionato sul lato marino della costa. Non sostituisce i bollettini marittimi.",
+    "Indicator placed on the sea side of the coast. It does not replace marine bulletins.",
+    "Indicateur situé côté mer du littoral. Il ne remplace pas les bulletins maritimes.",
+    "Indicador situado no lado marítimo da costa. Não substitui os boletins marítimos.",
+    "Indicador situado en el lado marítimo de la costa. No sustituye los boletines marítimos."
+  ],
+  [
+    "Scegli due porti diversi",
+    "Choose two different ports",
+    "Choisissez deux ports différents",
+    "Escolha dois portos diferentes",
+    "Elige dos puertos diferentes"
+  ],
+  [
+    "Conferma di aver compreso i limiti del confronto",
+    "Confirm you understand the limitations of this comparison",
+    "Confirmez avoir compris les limites de la comparaison",
+    "Confirme que compreendeu os limites da comparação",
+    "Confirma que comprendes las limitaciones de la comparación"
+  ],
+  [
+    "Confronto in corso…",
+    "Comparing…",
+    "Comparaison en cours…",
+    "Comparando…",
+    "Comparando…"
+  ],
+  [
+    "Campionamento del corridoio geografico",
+    "Sampling the geographic corridor",
+    "Échantillonnage du corridor géographique",
+    "Amostragem do corredor geográfico",
+    "Muestreo del corredor geográfico"
+  ],
+  [
+    "Confronto nove punti modellistici fra i due porti.",
+    "Comparing nine model points between the two ports.",
+    "Comparaison de neuf points du modèle entre les deux ports.",
+    "Comparando nove pontos do modelo entre os dois portos.",
+    "Comparando nueve puntos del modelo entre los dos puertos."
+  ],
+  [
+    "Confronto non disponibile",
+    "Comparison unavailable",
+    "Comparaison indisponible",
+    "Comparação indisponível",
+    "Comparación no disponible"
+  ],
+  [
+    "Il provider marino non ha restituito dati validi. Riprova più tardi.",
+    "The marine provider returned no valid data. Try again later.",
+    "Le fournisseur marin n’a renvoyé aucune donnée valide. Réessayez plus tard.",
+    "O provedor marinho não retornou dados válidos. Tente novamente mais tarde.",
+    "El proveedor marino no devolvió datos válidos. Inténtalo más tarde."
+  ],
+  [
+    "Confronta il corridoio",
+    "Compare the corridor",
+    "Comparer le corridor",
+    "Comparar o corredor",
+    "Comparar el corredor"
+  ],
+  [
+    "Corridoio poco mosso",
+    "Slight sea along the corridor",
+    "Mer peu agitée sur le corridor",
+    "Mar pouco agitado no corredor",
+    "Mar poco agitado en el corredor"
+  ],
+  [
+    "Moto ondoso moderato",
+    "Moderate waves",
+    "Vagues modérées",
+    "Ondas moderadas",
+    "Oleaje moderado"
+  ],
+  [
+    "Tratti impegnativi",
+    "Challenging sections",
+    "Secteurs difficiles",
+    "Trechos difíceis",
+    "Tramos difíciles"
+  ],
+  [
+    "Scenario molto impegnativo",
+    "Very challenging conditions",
+    "Conditions très difficiles",
+    "Condições muito difíceis",
+    "Condiciones muy difíciles"
+  ],
+  [
+    "INDICE METEO",
+    "WEATHER INDEX",
+    "INDICE MÉTÉO",
+    "ÍNDICE METEOROLÓGICO",
+    "ÍNDICE METEOROLÓGICO"
+  ],
+  [
+    "Distanza geometrica circa {distance} km",
+    "Geometric distance approximately {distance} km",
+    "Distance géométrique d’environ {distance} km",
+    "Distância geométrica de aproximadamente {distance} km",
+    "Distancia geométrica de unos {distance} km"
+  ],
+  [
+    "Onda media",
+    "Average wave",
+    "Vague moyenne",
+    "Onda média",
+    "Ola media"
+  ],
+  [
+    "Onda massima",
+    "Maximum wave",
+    "Vague maximale",
+    "Onda máxima",
+    "Ola máxima"
+  ],
+  [
+    "Campione peggiore",
+    "Worst sample",
+    "Échantillon le plus défavorable",
+    "Pior amostra",
+    "Peor muestra"
+  ],
+  [
+    "{index} di {count}",
+    "{index} of {count}",
+    "{index} sur {count}",
+    "{index} de {count}",
+    "{index} de {count}"
+  ],
+  [
+    "Campione {index}: {value}",
+    "Sample {index}: {value}",
+    "Échantillon {index} : {value}",
+    "Amostra {index}: {value}",
+    "Muestra {index}: {value}"
+  ],
+  [
+    "Non è una rotta.",
+    "This is not a navigation route.",
+    "Ce n’est pas un itinéraire de navigation.",
+    "Isto não é uma rota de navegação.",
+    "No es una ruta de navegación."
+  ],
+  [
+    "La linea unisce due coordinate e può attraversare terra o zone non navigabili. Verifica sempre carte nautiche, bollettini e autorità.",
+    "The line joins two coordinates and may cross land or non-navigable areas. Always consult nautical charts, bulletins and authorities.",
+    "La ligne relie deux coordonnées et peut traverser des terres ou des zones non navigables. Consultez toujours les cartes marines, les bulletins et les autorités.",
+    "A linha une duas coordenadas e pode atravessar terra ou áreas não navegáveis. Consulte sempre cartas náuticas, boletins e autoridades.",
+    "La línea une dos coordenadas y puede atravesar tierra o zonas no navegables. Consulta siempre cartas náuticas, boletines y autoridades."
+  ],
+  [
+    "Dati parziali: {valid} campioni validi su {total}.",
+    "Partial data: {valid} valid samples out of {total}.",
+    "Données partielles : {valid} échantillons valides sur {total}.",
+    "Dados parciais: {valid} amostras válidas de {total}.",
+    "Datos parciales: {valid} muestras válidas de {total}."
+  ],
+  [
+    "Dati insufficienti per valutare le condizioni marine. Consulta i bollettini locali.",
+    "Insufficient data to assess marine conditions. Consult local marine bulletins.",
+    "Données insuffisantes pour évaluer les conditions marines. Consultez les bulletins locaux.",
+    "Dados insuficientes para avaliar as condições marinhas. Consulte os boletins locais.",
+    "Datos insuficientes para evaluar las condiciones marinas. Consulta los boletines locales."
+  ]
+];
+  for(const row of marineDetailCopy)for(const [index,code] of ['it','en','fr','pt-BR','es'].entries()){messages[code][row[0]]=row[index];if(code!=='it')lexicons[code][row[0]]=row[index];}
   const monitoringMessages={
     alertGust:['Raffiche previste fino a {value} km/h nei prossimi tre giorni.','Gusts up to {value} km/h forecast over the next three days.','Rafales prévues jusqu’à {value} km/h dans les trois prochains jours.','Rajadas de até {value} km/h previstas nos próximos três dias.','Rachas previstas de hasta {value} km/h en los próximos tres días.'],
     alertWind:['Possibili raffiche fino a {value} km/h.','Possible gusts up to {value} km/h.','Rafales possibles jusqu’à {value} km/h.','Possíveis rajadas de até {value} km/h.','Posibles rachas de hasta {value} km/h.'],
