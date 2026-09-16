@@ -78,7 +78,25 @@ const activeState = globalThis.__METEO_ACTIVE_PLACES__ ||= { places:[...new Set(
 const languageState=globalThis.__METEO_ACTIVE_LANGUAGES__||={pairs:new Set(),updatedAt:0,inflight:null};
 async function refreshActivePlaces() {
   if (activeState.inflight) return activeState.inflight;
-  activeState.inflight=(async()=>{let ids=[];try{const result=await redisCommand(['SMEMBERS',ACTIVE_KEY]);if(Array.isArray(result))ids=result}catch(_){return activeState.places}const unique=new Set([...SEED_IDS.map(String),...ids.map(String)]);activeState.places=[...unique].map(id=>byId.get(id)).filter(Boolean);activeState.updatedAt=Date.now();return activeState.places})().finally(()=>{activeState.inflight=null});
+  activeState.inflight=(async()=>{
+    let ids=[];
+    try {
+      // Without configured persistence the seed-only catalogue is intentional.
+      if(redisConfig()) {
+        const result=await redisCommand(['SMEMBERS',ACTIVE_KEY]);
+        if(!Array.isArray(result))throw new Error('Invalid active-locality response');
+        ids=result;
+      }
+    } catch(error) {
+      activeState.refreshError=error;
+      return activeState.places;
+    }
+    const unique=new Set([...SEED_IDS.map(String),...ids.map(String)]);
+    activeState.places=[...unique].map(id=>byId.get(id)).filter(Boolean);
+    activeState.updatedAt=Date.now();
+    activeState.refreshError=null;
+    return activeState.places;
+  })().finally(()=>{activeState.inflight=null});
   return activeState.inflight;
 }
 async function activate(place, language='it') {
@@ -88,9 +106,13 @@ async function activate(place, language='it') {
   languageState.pairs.add(pair);
   return { place:publicPlace(place,language), language, added:Number(added)===1 };
 }
-async function activePlaces({fresh=false}={}) {
+async function activePlaces({fresh=false,requireComplete=false}={}) {
   const expired=Date.now()-activeState.updatedAt>5*60*1000;
-  if(fresh)return refreshActivePlaces();
+  if(fresh||requireComplete){
+    const places=await refreshActivePlaces();
+    if(requireComplete&&activeState.refreshError&&!activeState.updatedAt)throw activeState.refreshError;
+    return places;
+  }
   if(expired)refreshActivePlaces().catch(()=>{});
   return activeState.places;
 }

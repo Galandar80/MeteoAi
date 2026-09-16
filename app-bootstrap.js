@@ -27,7 +27,13 @@
   let locationMode='';
   try{locationMode=localStorage.getItem('meteo-location-mode')||''}catch(_){}
   if(!hasSharedLocation&&!params.get('localita')&&locationMode!=='manual'){
-    window.setTimeout(()=>useDeviceLocation({silent:true}),300);
+    // Returning users retain automatic GPS; new visitors choose via the GPS button.
+    window.setTimeout(async()=>{
+      try {
+        const permission=await navigator.permissions?.query({name:'geolocation'});
+        if(permission?.state==='granted')useDeviceLocation({silent:true});
+      } catch(_) { /* Unsupported permission queries must never trigger a prompt. */ }
+    },300);
   }
   document.addEventListener('meteo:languagechange',()=>{
     if(lastData)render(lastData);

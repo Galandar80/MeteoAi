@@ -38,3 +38,14 @@ for(const code of i18n.supported)assert.deepEqual(Object.keys(i18n.messages[code
 
 for(const file of ['manifest.webmanifest','manifest.en.webmanifest','manifest.fr.webmanifest','manifest.pt-BR.webmanifest','manifest.es.webmanifest'])JSON.parse(fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8'));
 console.log('i18n: detection, fallback, dictionary parity and manifests OK');
+for(const code of ['en','fr','pt-BR','es']){
+  const localized=runtime({languages:[code]});
+  const summary=localized.t('forecastSummary',{place:'Rain, Italia',condition:localized.translate('Parzialmente nuvoloso'),max:28});
+  assert(summary.includes('Rain, Italia'),'Preserve place names inside translated sentences');
+  assert(!summary.includes('{'));
+  assert(!summary.includes('Parzialmente'));
+  assert.notEqual(localized.translate('Rovesci lievi'),'Rovesci lievi');
+  for(const key of ['forecastRainHigh','forecastRainMedium','forecastRainLow','forecastWind','forecastAdviceSun','forecastAdviceRain','forecastAdviceNormal']){
+    assert.notEqual(localized.t(key,{rain:65,wind:40}),runtime({languages:['it']}).t(key,{rain:65,wind:40}));
+  }
+}

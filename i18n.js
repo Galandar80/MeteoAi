@@ -1065,6 +1065,463 @@
   const worldRuntimeCopy=[["Aggiornamento degli eventi reali…","Updating observed events…","Actualisation des événements observés…","Atualizando eventos observados…","Actualizando eventos observados…"],["Fonti momentaneamente non raggiungibili","Sources temporarily unreachable","Sources temporairement inaccessibles","Fontes temporariamente inacessíveis","Fuentes temporalmente inaccesibles"],["non raggiungibile: le altre fonti restano attive.","unreachable: the other sources remain active.","inaccessible : les autres sources restent actives.","inacessível: as outras fontes continuam ativas.","inaccesible: las demás fuentes siguen activas."],["Nessun evento visibile","No visible events","Aucun événement visible","Nenhum evento visível","Ningún evento visible"],["Nessun evento con questi filtri","No events match these filters","Aucun événement avec ces filtres","Nenhum evento com estes filtros","No hay eventos con estos filtros"],["Prova un periodo più ampio oppure seleziona “Tutti”.","Try a longer period or select “All”.","Essayez une période plus longue ou sélectionnez « Tous ».","Tente um período maior ou selecione “Todos”.","Prueba un período más amplio o selecciona «Todos»."],["Percentuale non disponibile","Percentage unavailable","Pourcentage indisponible","Percentual indisponível","Porcentaje no disponible"],["IMPATTO AI SU","AI IMPACT ON","IMPACT IA SUR","IMPACTO IA EM","IMPACTO IA EN"],["Rilevanza elevata","High relevance","Forte pertinence","Alta relevância","Relevancia alta"],["Da seguire","Worth watching","À suivre","Acompanhar","A seguir"],["Rilevanza limitata","Limited relevance","Pertinence limitée","Relevância limitada","Relevancia limitada"],["Rilevanza molto bassa","Very low relevance","Très faible pertinence","Relevância muito baixa","Relevancia muy baja"],["Indice orientativo, non probabilità né allerta ufficiale.","Indicative score, not a probability or official warning.","Indice indicatif, pas une probabilité ni une alerte officielle.","Índice indicativo, não uma probabilidade ou alerta oficial.","Índice orientativo, no una probabilidad ni una alerta oficial."],["LETTURA METEO AI","METEO AI INTERPRETATION","INTERPRÉTATION METEO AI","INTERPRETAÇÃO METEO AI","INTERPRETACIÓN METEO AI"],["Cosa significa per la tua località","What it means for your location","Conséquences pour votre localité","O que significa para seu local","Qué significa para tu localidad"],["EVENTO OSSERVATO","OBSERVED EVENT","ÉVÉNEMENT OBSERVÉ","EVENTO OBSERVADO","EVENTO OBSERVADO"],["PROBABILITÀ O CERTEZZA UFFICIALE","OFFICIAL PROBABILITY OR CERTAINTY","PROBABILITÉ OU CERTITUDE OFFICIELLE","PROBABILIDADE OU CERTEZA OFICIAL","PROBABILIDAD O CERTEZA OFICIAL"],["Nessuna percentuale inventata","No invented percentages","Aucun pourcentage inventé","Nenhum percentual inventado","Ningún porcentaje inventado"],["LIVELLO DELLA FONTE","SOURCE LEVEL","NIVEAU DE LA SOURCE","NÍVEL DA FONTE","NIVEL DE LA FUENTE"],["La terminologia appartiene alla fonte indicata e può avere significati diversi secondo il tipo di evento.","Terminology belongs to the named source and may have different meanings depending on the event type.","La terminologie appartient à la source indiquée et peut varier selon le type d’événement.","A terminologia pertence à fonte indicada e pode variar conforme o tipo de evento.","La terminología pertenece a la fuente indicada y puede variar según el tipo de evento."],["Nessuna località sorvegliata","No watched locations","Aucune localité surveillée","Nenhum local monitorado","Ninguna localidad vigilada"],["Aggiungi una città oppure usa la posizione del dispositivo.","Add a city or use your device’s location.","Ajoutez une ville ou utilisez la position de l’appareil.","Adicione uma cidade ou use a localização do dispositivo.","Añade una ciudad o usa la ubicación del dispositivo."],["Non supportate da questo browser.","Not supported by this browser.","Non prises en charge par ce navigateur.","Não suportadas por este navegador.","No compatibles con este navegador."],["Attive: gli avvisi vengono mostrati durante gli aggiornamenti.","Enabled: notices appear during updates.","Actives : les avis apparaissent lors des mises à jour.","Ativas: os avisos aparecem durante as atualizações.","Activas: los avisos aparecen durante las actualizaciones."],["Notifiche attive","Notifications enabled","Notifications actives","Notificações ativas","Notificaciones activas"],["Bloccate nelle impostazioni del browser.","Blocked in browser settings.","Bloquées dans les paramètres du navigateur.","Bloqueadas nas configurações do navegador.","Bloqueadas en los ajustes del navegador."],["Notifiche bloccate","Notifications blocked","Notifications bloquées","Notificações bloqueadas","Notificaciones bloqueadas"],["Serve il tuo consenso; nessuna autorizzazione viene chiesta automaticamente.","Your consent is needed; permission is never requested automatically.","Votre consentement est nécessaire ; aucune autorisation n’est demandée automatiquement.","Seu consentimento é necessário; nenhuma permissão é solicitada automaticamente.","Se necesita tu consentimiento; no se solicita permiso automáticamente."]];
   for(const row of worldRuntimeCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
 
+  const marineMessages={
+    marineFrom:['Da {direction} • {degrees}°','From {direction} • {degrees}°','De {direction} • {degrees}°','De {direction} • {degrees}°','De {direction} • {degrees}°'],
+    marineToward:['Verso {direction} • {degrees}°','Toward {direction} • {degrees}°','Vers {direction} • {degrees}°','Para {direction} • {degrees}°','Hacia {direction} • {degrees}°'],
+    marineExplanation:['Indice {score}/100: onde {wave} e corrente {current} influenzano il punteggio. La temperatura dell’acqua non determina la sicurezza del mare.','Score {score}/100: waves {wave} and current {current} affect the score. Water temperature does not determine sea safety.','Indice {score}/100 : vagues {wave} et courant {current} influencent le score. La température de l’eau ne détermine pas la sécurité en mer.','Índice {score}/100: ondas {wave} e corrente {current} influenciam a pontuação. A temperatura da água não determina a segurança do mar.','Índice {score}/100: las olas {wave} y la corriente {current} influyen en la puntuación. La temperatura del agua no determina la seguridad del mar.'],
+    marinePoint:['Punto marino modellistico a circa {distance} km dalla località • aggiornato {time}','Modelled marine point about {distance} km from the location • updated {time}','Point marin du modèle à environ {distance} km de la localité • actualisé à {time}','Ponto marinho do modelo a cerca de {distance} km do local • atualizado às {time}','Punto marino del modelo a unos {distance} km de la localidad • actualizado a las {time}'],
+    marineCurrent:['corrente {value}','current {value}','courant {value}','corrente {value}','corriente {value}'],
+    atlasLoading:['Caricamento {country}…','Loading {country}…','Chargement de {country}…','Carregando {country}…','Cargando {country}…'],
+    atlasCoast:['Analisi delle coste: {country}','Coast analysis: {country}','Analyse des côtes : {country}','Análise das costas: {country}','Análisis de las costas: {country}'],
+    atlasSector:['Settore costiero {number}','Coastal sector {number}','Secteur côtier {number}','Setor costeiro {number}','Sector costero {number}'],
+    atlasNoSea:['Nessun settore marino rilevato per {country}','No marine sectors detected for {country}','Aucun secteur marin détecté pour {country}','Nenhum setor marinho detectado para {country}','No se han detectado sectores marinos para {country}'],
+    atlasNote:['{count} indicatori marini lungo le coste. Colore e dimensione rappresentano l’altezza massima prevista delle onde. Seleziona un indicatore per i dettagli. I campioni non sostituiscono i bollettini marittimi.','{count} marine indicators along the coast. Colour and size represent the forecast maximum wave height. Select an indicator for details. Samples do not replace marine bulletins.','{count} indicateurs marins le long des côtes. Couleur et taille représentent la hauteur maximale prévue des vagues. Sélectionnez un indicateur pour les détails. Ces échantillons ne remplacent pas les bulletins maritimes.','{count} indicadores marinhos ao longo da costa. Cor e tamanho representam a altura máxima prevista das ondas. Selecione um indicador para detalhes. As amostras não substituem os boletins marítimos.','{count} indicadores marinos a lo largo de la costa. El color y tamaño representan la altura máxima prevista de las olas. Selecciona un indicador para más detalles. Las muestras no sustituyen los boletines marítimos.']
+  };
+  for(const [key,row] of Object.entries(marineMessages))for(const [index,code] of ['it','en','fr','pt-BR','es'].entries())messages[code][key]=row[index];
+  const marineCopy=[
+    ['Dati marini non disponibili','Marine data unavailable','Données marines indisponibles','Dados marinhos indisponíveis','Datos marinos no disponibles'],
+    ['Non è stato possibile trovare un punto marino valido per questa località. Prova una città costiera o ripeti più tardi.','No valid marine point could be found for this location. Try a coastal city or retry later.','Aucun point marin valide trouvé pour cette localité. Essayez une ville côtière ou réessayez plus tard.','Não foi encontrado um ponto marinho válido para este local. Tente uma cidade costeira ou tente novamente mais tarde.','No se ha encontrado un punto marino válido para esta localidad. Prueba una ciudad costera o vuelve a intentarlo más tarde.'],
+    ['Mare favorevole','Favourable sea conditions','Conditions marines favorables','Condições favoráveis no mar','Condiciones favorables del mar'],['Condizioni impegnative','Challenging conditions','Conditions difficiles','Condições difíceis','Condiciones difíciles'],
+    ['Moto ondoso e corrente risultano contenuti nel punto analizzato.','Waves and current are limited at the analysed point.','Vagues et courant sont limités au point analysé.','Ondas e corrente são limitadas no ponto analisado.','Las olas y la corriente son limitadas en el punto analizado.'],
+    ['Valuta esperienza e attività: alcune condizioni possono cambiare nelle prossime ore.','Consider experience and activity: conditions may change over the next few hours.','Tenez compte de l’expérience et de l’activité : les conditions peuvent changer dans les prochaines heures.','Considere experiência e atividade: as condições podem mudar nas próximas horas.','Valora la experiencia y la actividad: las condiciones pueden cambiar en las próximas horas.'],
+    ['Le condizioni modellistiche suggeriscono cautela e verifica dei bollettini locali.','Model conditions suggest caution and checking local bulletins.','Les conditions du modèle invitent à la prudence et à consulter les bulletins locaux.','As condições do modelo sugerem cautela e consulta aos boletins locais.','Las condiciones del modelo aconsejan precaución y consultar los boletines locales.'],
+    ['Acqua calda','Warm water','Eau chaude','Água quente','Agua caliente'],['Acqua mite','Mild water','Eau tempérée','Água amena','Agua templada'],['Acqua fresca','Cool water','Eau fraîche','Água fresca','Agua fresca'],['Acqua fredda','Cold water','Eau froide','Água fria','Agua fría'],
+    ['Riconosco la nazione e la sua costa…','Identifying the country and its coast…','Identification du pays et de ses côtes…','Identificando o país e sua costa…','Identificando el país y su costa…'],['Il confine viene memorizzato per sette giorni.','The boundary is cached for seven days.','La frontière est conservée en cache pendant sept jours.','O limite é armazenado em cache por sete dias.','El límite se guarda en caché durante siete días.'],
+    ['Impossibile rilevare il confine nazionale','Unable to detect the country boundary','Impossible de détecter la frontière nationale','Não foi possível identificar o limite nacional','No se ha podido detectar el límite nacional'],['La mappa resta aperta. Riprova più tardi.','The map remains open. Retry later.','La carte reste ouverte. Réessayez plus tard.','O mapa permanece aberto. Tente novamente mais tarde.','El mapa permanece abierto. Vuelve a intentarlo más tarde.'],
+    ['Carico fino a 24 indicatori distribuiti sul lato marino delle coste.','Loading up to 24 indicators on the seaward side of the coast.','Chargement de 24 indicateurs au maximum du côté marin des côtes.','Carregando até 24 indicadores no lado marinho da costa.','Cargando hasta 24 indicadores en el lado marino de la costa.'],['Dati marini momentaneamente non disponibili','Marine data temporarily unavailable','Données marines temporairement indisponibles','Dados marinhos temporariamente indisponíveis','Datos marinos temporalmente no disponibles'],['La mappa nazionale resta utilizzabile. Riprova più tardi.','The country map remains usable. Retry later.','La carte nationale reste utilisable. Réessayez plus tard.','O mapa nacional continua utilizável. Tente novamente mais tarde.','El mapa nacional sigue disponible. Vuelve a intentarlo más tarde.'],
+    ['Per gli Stati senza sbocco sul mare l’Atlante mostra comunque il territorio nazionale.','For landlocked countries the atlas still shows the national territory.','Pour les pays sans accès à la mer, l’atlas affiche tout de même le territoire national.','Para países sem litoral, o atlas continua mostrando o território nacional.','En los países sin litoral, el atlas sigue mostrando el territorio nacional.']
+  ];
+  for(const row of marineCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+  const marineDetailCopy=[
+["Meteo, qualità dell’aria, mappe e consigli personali in un’unica esperienza semplice. Cerca qualsiasi luogo nel mondo.","Weather, air quality, maps and personal advice in one simple experience. Search for any place in the world.","Météo, qualité de l’air, cartes et conseils personnalisés dans une expérience simple. Recherchez n’importe quel lieu dans le monde.","Tempo, qualidade do ar, mapas e conselhos pessoais em uma experiência simples. Busque qualquer lugar do mundo.","Tiempo, calidad del aire, mapas y consejos personales en una experiencia sencilla. Busca cualquier lugar del mundo."],
+["Installa gratis","Install for free","Installer gratuitement","Instalar grátis","Instalar gratis"],
+["Ottima","Very good","Très bonne","Muito boa","Muy buena"],
+["Discreta","Fair","Moyenne","Razoável","Aceptable"],
+["Scarsa","Poor","Mauvaise","Ruim","Mala"],
+["Molto scarsa","Very poor","Très mauvaise","Muito ruim","Muy mala"],
+["Estremamente scarsa","Extremely poor","Extrêmement mauvaise","Extremamente ruim","Extremadamente mala"],
+  [
+    "Poco mosso",
+    "Slight sea",
+    "Mer peu agitée",
+    "Mar pouco agitado",
+    "Mar poco agitado"
+  ],
+  [
+    "Mosso",
+    "Moderate sea",
+    "Mer agitée",
+    "Mar agitado",
+    "Mar agitado"
+  ],
+  [
+    "Molto mosso",
+    "Rough sea",
+    "Mer forte",
+    "Mar muito agitado",
+    "Mar muy agitado"
+  ],
+  [
+    "Agitato",
+    "Very rough sea",
+    "Mer très forte",
+    "Mar revolto",
+    "Mar gruesa"
+  ],
+  [
+    "Dato non disponibile",
+    "Data unavailable",
+    "Donnée indisponible",
+    "Dado indisponível",
+    "Dato no disponible"
+  ],
+  [
+    "Oggi",
+    "Today",
+    "Aujourd’hui",
+    "Hoje",
+    "Hoy"
+  ],
+  [
+    "Dettaglio orario non disponibile per questa giornata.",
+    "Hourly details are unavailable for this day.",
+    "Le détail horaire est indisponible pour cette journée.",
+    "Detalhes horários indisponíveis para este dia.",
+    "No hay detalles horarios para este día."
+  ],
+  [
+    "Onde massime: {value}",
+    "Maximum waves: {value}",
+    "Vagues maximales : {value}",
+    "Ondas máximas: {value}",
+    "Olas máximas: {value}"
+  ],
+  [
+    "Periodo massimo: {value}",
+    "Maximum period: {value}",
+    "Période maximale : {value}",
+    "Período máximo: {value}",
+    "Período máximo: {value}"
+  ],
+  [
+    "Indicatore posizionato sul lato marino della costa. Non sostituisce i bollettini marittimi.",
+    "Indicator placed on the sea side of the coast. It does not replace marine bulletins.",
+    "Indicateur situé côté mer du littoral. Il ne remplace pas les bulletins maritimes.",
+    "Indicador situado no lado marítimo da costa. Não substitui os boletins marítimos.",
+    "Indicador situado en el lado marítimo de la costa. No sustituye los boletines marítimos."
+  ],
+  [
+    "Scegli due porti diversi",
+    "Choose two different ports",
+    "Choisissez deux ports différents",
+    "Escolha dois portos diferentes",
+    "Elige dos puertos diferentes"
+  ],
+  [
+    "Conferma di aver compreso i limiti del confronto",
+    "Confirm you understand the limitations of this comparison",
+    "Confirmez avoir compris les limites de la comparaison",
+    "Confirme que compreendeu os limites da comparação",
+    "Confirma que comprendes las limitaciones de la comparación"
+  ],
+  [
+    "Confronto in corso…",
+    "Comparing…",
+    "Comparaison en cours…",
+    "Comparando…",
+    "Comparando…"
+  ],
+  [
+    "Campionamento del corridoio geografico",
+    "Sampling the geographic corridor",
+    "Échantillonnage du corridor géographique",
+    "Amostragem do corredor geográfico",
+    "Muestreo del corredor geográfico"
+  ],
+  [
+    "Confronto nove punti modellistici fra i due porti.",
+    "Comparing nine model points between the two ports.",
+    "Comparaison de neuf points du modèle entre les deux ports.",
+    "Comparando nove pontos do modelo entre os dois portos.",
+    "Comparando nueve puntos del modelo entre los dos puertos."
+  ],
+  [
+    "Confronto non disponibile",
+    "Comparison unavailable",
+    "Comparaison indisponible",
+    "Comparação indisponível",
+    "Comparación no disponible"
+  ],
+  [
+    "Il provider marino non ha restituito dati validi. Riprova più tardi.",
+    "The marine provider returned no valid data. Try again later.",
+    "Le fournisseur marin n’a renvoyé aucune donnée valide. Réessayez plus tard.",
+    "O provedor marinho não retornou dados válidos. Tente novamente mais tarde.",
+    "El proveedor marino no devolvió datos válidos. Inténtalo más tarde."
+  ],
+  [
+    "Confronta il corridoio",
+    "Compare the corridor",
+    "Comparer le corridor",
+    "Comparar o corredor",
+    "Comparar el corredor"
+  ],
+  [
+    "Corridoio poco mosso",
+    "Slight sea along the corridor",
+    "Mer peu agitée sur le corridor",
+    "Mar pouco agitado no corredor",
+    "Mar poco agitado en el corredor"
+  ],
+  [
+    "Moto ondoso moderato",
+    "Moderate waves",
+    "Vagues modérées",
+    "Ondas moderadas",
+    "Oleaje moderado"
+  ],
+  [
+    "Tratti impegnativi",
+    "Challenging sections",
+    "Secteurs difficiles",
+    "Trechos difíceis",
+    "Tramos difíciles"
+  ],
+  [
+    "Scenario molto impegnativo",
+    "Very challenging conditions",
+    "Conditions très difficiles",
+    "Condições muito difíceis",
+    "Condiciones muy difíciles"
+  ],
+  [
+    "INDICE METEO",
+    "WEATHER INDEX",
+    "INDICE MÉTÉO",
+    "ÍNDICE METEOROLÓGICO",
+    "ÍNDICE METEOROLÓGICO"
+  ],
+  [
+    "Distanza geometrica circa {distance} km",
+    "Geometric distance approximately {distance} km",
+    "Distance géométrique d’environ {distance} km",
+    "Distância geométrica de aproximadamente {distance} km",
+    "Distancia geométrica de unos {distance} km"
+  ],
+  [
+    "Onda media",
+    "Average wave",
+    "Vague moyenne",
+    "Onda média",
+    "Ola media"
+  ],
+  [
+    "Onda massima",
+    "Maximum wave",
+    "Vague maximale",
+    "Onda máxima",
+    "Ola máxima"
+  ],
+  [
+    "Campione peggiore",
+    "Worst sample",
+    "Échantillon le plus défavorable",
+    "Pior amostra",
+    "Peor muestra"
+  ],
+  [
+    "{index} di {count}",
+    "{index} of {count}",
+    "{index} sur {count}",
+    "{index} de {count}",
+    "{index} de {count}"
+  ],
+  [
+    "Campione {index}: {value}",
+    "Sample {index}: {value}",
+    "Échantillon {index} : {value}",
+    "Amostra {index}: {value}",
+    "Muestra {index}: {value}"
+  ],
+  [
+    "Non è una rotta.",
+    "This is not a navigation route.",
+    "Ce n’est pas un itinéraire de navigation.",
+    "Isto não é uma rota de navegação.",
+    "No es una ruta de navegación."
+  ],
+  [
+    "La linea unisce due coordinate e può attraversare terra o zone non navigabili. Verifica sempre carte nautiche, bollettini e autorità.",
+    "The line joins two coordinates and may cross land or non-navigable areas. Always consult nautical charts, bulletins and authorities.",
+    "La ligne relie deux coordonnées et peut traverser des terres ou des zones non navigables. Consultez toujours les cartes marines, les bulletins et les autorités.",
+    "A linha une duas coordenadas e pode atravessar terra ou áreas não navegáveis. Consulte sempre cartas náuticas, boletins e autoridades.",
+    "La línea une dos coordenadas y puede atravesar tierra o zonas no navegables. Consulta siempre cartas náuticas, boletines y autoridades."
+  ],
+  [
+    "Dati parziali: {valid} campioni validi su {total}.",
+    "Partial data: {valid} valid samples out of {total}.",
+    "Données partielles : {valid} échantillons valides sur {total}.",
+    "Dados parciais: {valid} amostras válidas de {total}.",
+    "Datos parciales: {valid} muestras válidas de {total}."
+  ],
+  [
+    "Dati insufficienti per valutare le condizioni marine. Consulta i bollettini locali.",
+    "Insufficient data to assess marine conditions. Consult local marine bulletins.",
+    "Données insuffisantes pour évaluer les conditions marines. Consultez les bulletins locaux.",
+    "Dados insuficientes para avaliar as condições marinhas. Consulte os boletins locais.",
+    "Datos insuficientes para evaluar las condiciones marinas. Consulta los boletines locales."
+  ]
+];
+  for(const row of marineDetailCopy)for(const [index,code] of ['it','en','fr','pt-BR','es'].entries()){messages[code][row[0]]=row[index];if(code!=='it')lexicons[code][row[0]]=row[index];}
+  const monitoringMessages={
+    alertGust:['Raffiche previste fino a {value} km/h nei prossimi tre giorni.','Gusts up to {value} km/h forecast over the next three days.','Rafales prévues jusqu’à {value} km/h dans les trois prochains jours.','Rajadas de até {value} km/h previstas nos próximos três dias.','Rachas previstas de hasta {value} km/h en los próximos tres días.'],
+    alertWind:['Possibili raffiche fino a {value} km/h.','Possible gusts up to {value} km/h.','Rafales possibles jusqu’à {value} km/h.','Possíveis rajadas de até {value} km/h.','Posibles rachas de hasta {value} km/h.'],
+    alertRain:['Probabilità giornaliera fino al {value}%.','Daily probability up to {value}%.','Probabilité quotidienne jusqu’à {value} %.','Probabilidade diária de até {value}%.','Probabilidad diaria de hasta el {value}%.'],
+    alertHeat:['Massime previste fino a {value}°: limita l’esposizione nelle ore centrali.','Highs up to {value}° forecast: limit exposure around midday.','Maxima prévus jusqu’à {value}° : limitez l’exposition aux heures centrales.','Máximas previstas de até {value}°: limite a exposição nas horas centrais.','Máximas previstas de hasta {value}°: limita la exposición en las horas centrales.'],
+    alertFrost:['Minime previste fino a {value}°.','Lows down to {value}° forecast.','Minima prévus jusqu’à {value}°.','Mínimas previstas de até {value}°.','Mínimas previstas de hasta {value}°.'],
+    alertUv:['Indice UV fino a {value}: protezione e ombra sono raccomandate.','UV index up to {value}: protection and shade are recommended.','Indice UV jusqu’à {value} : protection et ombre recommandées.','Índice UV de até {value}: proteção e sombra são recomendadas.','Índice UV de hasta {value}: se recomiendan protección y sombra.'],
+    alertSea:['Nel punto marino analizzato le onde raggiungono {value} m.','Waves reach {value} m at the analysed marine point.','Les vagues atteignent {value} m au point marin analysé.','As ondas atingem {value} m no ponto marinho analisado.','Las olas alcanzan {value} m en el punto marino analizado.'],
+    historySamples:['Media di {count} valori dal {from} al {to}','Average of {count} values from {from} to {to}','Moyenne de {count} valeurs de {from} à {to}','Média de {count} valores de {from} a {to}','Media de {count} valores de {from} a {to}'],
+    historyCurrent:['Temperatura attuale {value}°C','Current temperature {value}°C','Température actuelle {value}°C','Temperatura atual {value}°C','Temperatura actual {value}°C']
+  };
+  for(const [key,row] of Object.entries(monitoringMessages))for(const [index,code] of ['it','en','fr','pt-BR','es'].entries())messages[code][key]=row[index];
+  const monitoringCopy=[
+    ['Temporali possibili','Possible thunderstorms','Orages possibles','Possíveis trovoadas','Posibles tormentas'],
+    ['Uno o più giorni mostrano condizioni temporalesche: controlla gli aggiornamenti e gli avvisi ufficiali.','One or more days show thunderstorm conditions: check updates and official notices.','Un ou plusieurs jours présentent des conditions orageuses : consultez les mises à jour et les avis officiels.','Um ou mais dias apresentam condições de trovoada: consulte atualizações e avisos oficiais.','Uno o más días muestran condiciones tormentosas: consulta las actualizaciones y los avisos oficiales.'],
+    ['Raffiche forti','Strong gusts','Fortes rafales','Rajadas fortes','Rachas fuertes'],['Vento da monitorare','Wind to watch','Vent à surveiller','Vento a monitorar','Viento a vigilar'],['Elevato rischio di pioggia','High rain risk','Risque élevé de pluie','Alto risco de chuva','Alto riesgo de lluvia'],['Caldo intenso','Intense heat','Forte chaleur','Calor intenso','Calor intenso'],['Gelo possibile','Possible frost','Gel possible','Possível geada','Posibles heladas'],['UV molto elevato','Very high UV','UV très élevé','UV muito alto','UV muy alto'],['Mare impegnativo','Challenging seas','Mer difficile','Mar difícil','Mar difícil'],
+    ['Oggi è in linea con la media storica','Today is close to the historical average','Aujourd’hui est proche de la moyenne historique','Hoje está próximo da média histórica','Hoy está cerca de la media histórica'],
+    ['Oggi è più caldo della media storica','Today is warmer than the historical average','Aujourd’hui est plus chaud que la moyenne historique','Hoje está mais quente que a média histórica','Hoy hace más calor que la media histórica'],
+    ['Oggi è più fresco della media storica','Today is cooler than the historical average','Aujourd’hui est plus frais que la moyenne historique','Hoje está mais fresco que a média histórica','Hoy hace más fresco que la media histórica'],
+    ['Archivio non raggiungibile in tempo','Archive request timed out','Délai de réponse de l’archive dépassé','Tempo de resposta do arquivo esgotado','Se agotó el tiempo de respuesta del archivo'],['Archivio storico non disponibile','Historical archive unavailable','Archive historique indisponible','Arquivo histórico indisponível','Archivo histórico no disponible'],['Puoi riprovare senza ricaricare la pagina','You can retry without reloading the page','Vous pouvez réessayer sans recharger la page','Você pode tentar novamente sem recarregar a página','Puedes reintentarlo sin recargar la página'],['Dati storici momentaneamente non disponibili','Historical data temporarily unavailable','Données historiques temporairement indisponibles','Dados históricos temporariamente indisponíveis','Datos históricos temporalmente no disponibles'],['In attesa dei dati meteo','Waiting for weather data','En attente des données météo','Aguardando dados meteorológicos','Esperando los datos meteorológicos'],['Il confronto partirà automaticamente','The comparison will start automatically','La comparaison démarrera automatiquement','A comparação começará automaticamente','La comparación comenzará automáticamente'],['Aggiornamento automatico','Automatic update','Mise à jour automatique','Atualização automática','Actualización automática'],['Aggiorna confronto','Update comparison','Actualiser la comparaison','Atualizar comparação','Actualizar comparación']
+  ];
+  for(const row of monitoringCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+  const assistantMessages={
+    assistantLoading:['Analizzo localmente le previsioni disponibili...','Analysing the available forecasts locally...','Analyse locale des prévisions disponibles...','Analisando localmente as previsões disponíveis...','Analizando localmente las previsiones disponibles...'],
+    assistantSummary:['{date} a {place}: {condition}, {min}°/{max}°, pioggia {rain}% e UV {uv}.','{date} in {place}: {condition}, {min}°/{max}°, rain {rain}% and UV {uv}.','{date} à {place} : {condition}, {min}°/{max}°, pluie {rain} % et UV {uv}.','{date} em {place}: {condition}, {min}°/{max}°, chuva {rain}% e UV {uv}.','{date} en {place}: {condition}, {min}°/{max}°, lluvia {rain}% y UV {uv}.'],
+    umbrellaHigh:['Ombrello consigliato e attività all’aperto da pianificare con prudenza.','An umbrella is recommended; plan outdoor activities with care.','Un parapluie est conseillé ; planifiez vos activités extérieures avec prudence.','Recomenda-se guarda-chuva; planeje atividades ao ar livre com cautela.','Se recomienda paraguas; planifica con prudencia las actividades al aire libre.'],
+    umbrellaMedium:['L’ombrello può essere utile, anche se la pioggia potrebbe essere intermittente.','An umbrella may be useful, even if rain is intermittent.','Un parapluie peut être utile, même si la pluie est intermittente.','Um guarda-chuva pode ser útil, mesmo com chuva intermitente.','Un paraguas puede ser útil, aunque la lluvia sea intermitente.'],
+    umbrellaLow:['Il rischio di pioggia è contenuto: l’ombrello probabilmente non servirà.','Rain risk is low: you probably will not need an umbrella.','Le risque de pluie est faible : un parapluie ne sera probablement pas nécessaire.','O risco de chuva é baixo: provavelmente não precisará de guarda-chuva.','El riesgo de lluvia es bajo: probablemente no necesitarás paraguas.'],
+    seaSnapshot:['Nel punto marino analizzato: acqua {water}, onde {wave}, corrente {current}.','At the analysed marine point: water {water}, waves {wave}, current {current}.','Au point marin analysé : eau {water}, vagues {wave}, courant {current}.','No ponto marinho analisado: água {water}, ondas {wave}, corrente {current}.','En el punto marino analizado: agua {water}, olas {wave}, corriente {current}.'],
+    seaCaution:['I dati sono indicativi: verifica condizioni locali e bollettini ufficiali prima di qualsiasi attività in mare.','These data are indicative: check local conditions and official bulletins before any activity at sea.','Ces données sont indicatives : vérifiez les conditions locales et les bulletins officiels avant toute activité en mer.','Os dados são indicativos: verifique as condições locais e os boletins oficiais antes de qualquer atividade no mar.','Los datos son orientativos: comprueba las condiciones locales y los boletines oficiales antes de cualquier actividad en el mar.'],
+    seaPending:['Per onde e correnti consulta Mare AI: il solo meteo terrestre non basta a valutare le condizioni del mare.','Check Sea AI for waves and currents: land weather alone is not enough to assess sea conditions.','Consultez Mer AI pour les vagues et les courants : la météo terrestre seule ne suffit pas à évaluer l’état de la mer.','Consulte Mar AI para ondas e correntes: a previsão terrestre sozinha não basta para avaliar o mar.','Consulta Mar AI para olas y corrientes: el tiempo terrestre por sí solo no basta para evaluar el estado del mar.'],
+    sportGood:['Attività all’aperto consigliabile, scegliendo comunque abbigliamento adatto.','Outdoor activity is reasonable, with suitable clothing.','Une activité extérieure est envisageable avec des vêtements adaptés.','Atividades ao ar livre são viáveis, com roupas adequadas.','Es razonable realizar actividades al aire libre con ropa adecuada.'],
+    sportCaution:['Usa la Finestra Meteo per scegliere un intervallo con meno pioggia, vento o UV.','Use the Weather Window to choose a period with less rain, wind or UV.','Utilisez le créneau météo pour choisir une période avec moins de pluie, de vent ou d’UV.','Use a Janela do Tempo para escolher um período com menos chuva, vento ou UV.','Usa la Ventana del Tiempo para elegir un intervalo con menos lluvia, viento o UV.'],
+    laundryGood:['Buone condizioni per stendere all’aperto.','Good conditions for drying laundry outdoors.','Bonnes conditions pour étendre le linge dehors.','Boas condições para secar roupas ao ar livre.','Buenas condiciones para tender la ropa al aire libre.'],
+    indoorAlternative:['Meglio prevedere un’alternativa al coperto.','It is better to have an indoor alternative.','Mieux vaut prévoir une solution à l’abri.','É melhor prever uma alternativa coberta.','Es mejor prever una alternativa bajo techo.'],
+    eventGood:['Il piano all’aperto è ragionevole.','An outdoor plan is reasonable.','Un programme en extérieur est envisageable.','Um plano ao ar livre é razoável.','Un plan al aire libre es razonable.'],
+    sunHigh:['Protezione solare, ombra e idratazione sono consigliate nelle ore centrali.','Sun protection, shade and hydration are recommended around midday.','Protection solaire, ombre et hydratation sont conseillées aux heures centrales de la journée.','Proteção solar, sombra e hidratação são recomendadas nas horas centrais do dia.','Se recomienda protección solar, sombra e hidratación en las horas centrales del día.'],
+    sunLow:['La protezione resta utile per esposizioni prolungate.','Protection remains useful for prolonged exposure.','Une protection reste utile en cas d’exposition prolongée.','A proteção continua sendo útil em exposições prolongadas.','La protección sigue siendo útil en exposiciones prolongadas.'],
+    assistantWind:['Vento attuale da {direction} a circa {wind} km/h, raffiche {gust} km/h.','Current wind from {direction} at about {wind} km/h, gusts {gust} km/h.','Vent actuel de {direction} à environ {wind} km/h, rafales de {gust} km/h.','Vento atual de {direction} a cerca de {wind} km/h, rajadas de {gust} km/h.','Viento actual de {direction} a unos {wind} km/h, rachas de {gust} km/h.'],
+    clothingCold:['Porta uno strato caldo.','Bring a warm layer.','Prévoyez une couche chaude.','Leve uma camada de roupa quente.','Lleva una prenda de abrigo.'],
+    clothingHot:['Preferisci abiti leggeri e idratazione.','Prefer light clothing and stay hydrated.','Privilégiez des vêtements légers et hydratez-vous.','Prefira roupas leves e mantenha a hidratação.','Prioriza la ropa ligera y mantente hidratado.'],
+    clothingLayers:['Vestiti a strati per adattarti all’escursione termica.','Dress in layers to adapt to temperature changes.','Habillez-vous en plusieurs couches pour vous adapter aux variations de température.','Vista-se em camadas para se adaptar às variações de temperatura.','Vístete por capas para adaptarte a los cambios de temperatura.'],
+    assistantHelp:['Posso aiutarti con ombrello, sport, mare, bucato, eventi, vento, UV o abbigliamento.','I can help with umbrellas, sport, sea conditions, laundry, events, wind, UV or clothing.','Je peux vous aider pour le parapluie, le sport, la mer, le linge, les événements, le vent, les UV ou les vêtements.','Posso ajudar com guarda-chuva, esporte, mar, roupa no varal, eventos, vento, UV ou vestuário.','Puedo ayudarte con paraguas, deporte, mar, colada, eventos, viento, UV o ropa.']
+  };
+  for(const [key,row] of Object.entries(assistantMessages))for(const [index,code] of ['it','en','fr','pt-BR','es'].entries())messages[code][key]=row[index];
+  const advancedMessages={
+    photoGolden:['Copertura interessante per luce modellata; pianifica alba alle {rise} o tramonto alle {set}.','Interesting cloud cover for shaped light; plan sunrise at {rise} or sunset at {set}.','Nébulosité intéressante pour une lumière modelée ; prévoyez le lever à {rise} ou le coucher à {set}.','Nebulosidade interessante para luz modelada; planeje o nascer do sol às {rise} ou o pôr às {set}.','Nubosidad interesante para una luz modelada; planifica el amanecer a las {rise} o el atardecer a las {set}.'],
+    photoClear:['Cielo molto limpido: adatta soggetto, contrasto e orario di scatto.','Very clear sky: adapt the subject, contrast and shooting time.','Ciel très dégagé : adaptez le sujet, le contraste et l’heure de prise de vue.','Céu muito limpo: adapte o tema, o contraste e o horário da foto.','Cielo muy despejado: adapta el sujeto, el contraste y la hora de la toma.'],
+    photoCloudy:['Cielo molto coperto: adatta soggetto, contrasto e orario di scatto.','Very overcast sky: adapt the subject, contrast and shooting time.','Ciel très couvert : adaptez le sujet, le contraste et l’heure de prise de vue.','Céu muito encoberto: adapte o tema, o contraste e o horário da foto.','Cielo muy cubierto: adapta el sujeto, el contraste y la hora de la toma.'],
+    windowEmpty:['Nessuna finestra adatta trovata nei prossimi 7 giorni.','No suitable window found in the next 7 days.','Aucun créneau adapté trouvé dans les 7 prochains jours.','Nenhum horário adequado encontrado nos próximos 7 dias.','No se ha encontrado un intervalo adecuado en los próximos 7 días.'],
+    windowBest:['Migliore scelta','Best choice','Meilleur choix','Melhor opção','Mejor opción'],
+    windowDry:['Quasi asciutto, {temp}°, vento {wind} km/h.','Mostly dry, {temp}°, wind {wind} km/h.','Temps presque sec, {temp}°, vent de {wind} km/h.','Quase sem chuva, {temp}°, vento de {wind} km/h.','Prácticamente seco, {temp}°, viento de {wind} km/h.'],
+    windowRain:['Pioggia {rain}%, {temp}°, vento {wind} km/h.','Rain {rain}%, {temp}°, wind {wind} km/h.','Pluie {rain} %, {temp}°, vent de {wind} km/h.','Chuva {rain}%, {temp}°, vento de {wind} km/h.','Lluvia {rain}%, {temp}°, viento de {wind} km/h.'],
+    travelLoading:['Analizzo il viaggio e preparo la valigia...','Analysing your trip and packing list...','Analyse du voyage et préparation de la liste de bagages...','Analisando a viagem e preparando a lista de bagagem...','Analizando el viaje y preparando la lista de equipaje...'],
+    travelMissing:['Destinazione non trovata','Destination not found','Destination introuvable','Destino não encontrado','Destino no encontrado'],
+    travelRange:['Il viaggio deve rientrare nei prossimi 15 giorni.','The trip must fall within the next 15 days.','Le voyage doit se situer dans les 15 prochains jours.','A viagem deve ocorrer nos próximos 15 dias.','El viaje debe estar dentro de los próximos 15 días.'],
+    travelFailure:['Impossibile preparare il viaggio.','Unable to prepare the trip.','Impossible de préparer le voyage.','Não foi possível preparar a viagem.','No se ha podido preparar el viaje.'],
+    travelTitle:['{place}, piano di {days} giorni','{place}, {days}-day plan','{place}, programme de {days} jours','{place}, plano de {days} dias','{place}, plan de {days} días'],
+    travelSummary:['A {place}: temperature tra {min}° e {max}°, probabilità massima di pioggia {rain}%, UV fino a {uv} e vento massimo {wind} km/h.','In {place}: temperatures from {min}° to {max}°, maximum rain probability {rain}%, UV up to {uv} and maximum wind {wind} km/h.','À {place} : températures entre {min}° et {max}°, probabilité maximale de pluie de {rain} %, UV jusqu’à {uv} et vent maximal de {wind} km/h.','Em {place}: temperaturas entre {min}° e {max}°, probabilidade máxima de chuva de {rain}%, UV de até {uv} e vento máximo de {wind} km/h.','En {place}: temperaturas entre {min}° y {max}°, probabilidad máxima de lluvia del {rain}%, UV de hasta {uv} y viento máximo de {wind} km/h.'],
+    travelRain:['Pioggia {rain}%','Rain {rain}%','Pluie {rain} %','Chuva {rain}%','Lluvia {rain}%']
+  };
+  for(const [key,row] of Object.entries(advancedMessages))for(const [index,code] of ['it','en','fr','pt-BR','es'].entries())messages[code][key]=row[index];
+  const windCopy=[
+    ['Nord','North','Nord','Norte','Norte'],['Nord-Est','North-east','Nord-est','Nordeste','Nordeste'],['Est','East','Est','Leste','Este'],['Sud-Est','South-east','Sud-est','Sudeste','Sudeste'],['Sud','South','Sud','Sul','Sur'],['Sud-Ovest','South-west','Sud-ouest','Sudoeste','Suroeste'],['Ovest','West','Ouest','Oeste','Oeste'],['Nord-Ovest','North-west','Nord-ouest','Noroeste','Noroeste'],
+    ['Calma','Calm','Calme','Calmaria','Calma'],['Bava di vento','Light air','Très légère brise','Aragem','Ventolina'],['Brezza leggera','Light breeze','Légère brise','Brisa leve','Brisa ligera'],['Brezza tesa','Gentle breeze','Petite brise','Brisa fraca','Brisa suave'],['Vento moderato','Moderate breeze','Jolie brise','Brisa moderada','Brisa moderada'],['Vento teso','Fresh breeze','Bonne brise','Brisa fresca','Brisa fresca'],['Vento fresco','Strong breeze','Vent frais','Brisa forte','Brisa fuerte'],['Vento forte','High wind','Grand frais','Vento forte','Viento fuerte'],['Burrasca','Gale','Coup de vent','Ventania','Temporal'],['Burrasca forte','Strong gale','Fort coup de vent','Ventania forte','Temporal fuerte'],['Tempesta','Storm','Tempête','Tempestade','Temporal duro'],['Fortunale','Violent storm','Violente tempête','Tempestade violenta','Temporal muy duro'],['Uragano','Hurricane force','Force ouragan','Força de furacão','Fuerza de huracán'],
+    ['Raffiche molto forti','Very strong gusts','Très fortes rafales','Rajadas muito fortes','Rachas muy fuertes'],['Vento sostenuto','Strong wind','Vent soutenu','Vento intenso','Viento intenso'],['Quasi calmo','Nearly calm','Presque calme','Quase calmo','Casi en calma'],['Vento gestibile','Manageable wind','Vent modéré','Vento moderado','Viento manejable'],
+    ['Evita attività esposte e controlla gli avvisi ufficiali locali.','Avoid exposed activities and check official local notices.','Évitez les activités exposées et consultez les avis officiels locaux.','Evite atividades expostas e consulte os avisos oficiais locais.','Evita actividades expuestas y consulta los avisos oficiales locales.'],
+    ['Bicicletta, mare e attività esposte richiedono prudenza.','Cycling, sea activities and exposed activities require caution.','Le vélo, les activités en mer et les activités exposées nécessitent de la prudence.','Ciclismo, atividades no mar e atividades expostas exigem cautela.','El ciclismo, las actividades en el mar y las actividades expuestas requieren precaución.'],
+    ['Non emergono criticità importanti per le normali attività.','No major concerns are apparent for normal activities.','Aucune difficulté majeure ne ressort pour les activités habituelles.','Não há problemas importantes aparentes para as atividades habituais.','No se observan problemas importantes para las actividades habituales.']
+  ];
+  // Single-word cardinal directions are used explicitly, not as global text replacements.
+  for(const [index,code] of ['it','en','fr','pt-BR','es'].entries())for(const row of windCopy)messages[code]['wind:'+row[0]]=row[index];
+  const remainingVisibleCopy=[
+    ['Umidità suolo','Soil moisture','Humidité du sol','Umidade do solo','Humedad del suelo'],
+    ['Pioggia 3 giorni','3-day rainfall','Pluie sur 3 jours','Chuva em 3 dias','Lluvia en 3 días'],
+    ['ET₀ oggi','ET₀ today','ET₀ du jour','ET₀ hoje','ET₀ hoy'],
+    ['Ore pioggia','Rain hours','Heures de pluie','Horas de chuva','Horas de lluvia'],
+    ['Sole utile','Sunshine','Ensoleillement','Insolação','Horas de sol'],
+    ['Ore dorate','Golden hours','Heures dorées','Horas douradas','Horas doradas'],
+    ['Vedi 14 giorni ↓','View 14 days ↓','Voir 14 jours ↓','Ver 14 dias ↓','Ver 14 días ↓'],
+    ['Previsioni per i prossimi due giorni','Forecast for the next two days','Prévisions des deux prochains jours','Previsão para os próximos dois dias','Previsión para los próximos dos días'],
+    ['Confronto storico climatico','Historical climate comparison','Comparaison climatique historique','Comparação climática histórica','Comparación climática histórica'],
+    ['Oggi rispetto alla stessa data del passato','Today compared with the same date in the past','Aujourd’hui comparé à la même date dans le passé','Hoje em comparação com a mesma data no passado','Hoy en comparación con la misma fecha del pasado'],
+    ['Caricamento dati storici…','Loading historical data…','Chargement des données historiques…','Carregando dados históricos…','Cargando datos históricos…'],
+    ['Scostamento di oggi','Today’s difference','Écart du jour','Diferença de hoje','Diferencia de hoy'],
+    ['Sport all’aperto','Outdoor sport','Sport en extérieur','Esporte ao ar livre','Deporte al aire libre'],
+    ['Mare / escursioni','Sea / hiking','Mer / randonnée','Mar / trilhas','Mar / senderismo'],
+    ['Direzione, intensità, raffiche e momenti più favorevoli.','Direction, strength, gusts and the best periods.','Direction, intensité, rafales et périodes les plus favorables.','Direção, intensidade, rajadas e períodos mais favoráveis.','Dirección, intensidad, rachas y períodos más favorables.'],
+    ['Tutto ciò che serve per capire il meteo di oggi e dei prossimi giorni','Everything you need to understand today’s weather and the days ahead','Tout pour comprendre la météo d’aujourd’hui et des prochains jours','Tudo para entender o tempo de hoje e dos próximos dias','Todo para entender el tiempo de hoy y de los próximos días'],
+    ['Sto cercando il punto marino più vicino','Finding the nearest marine point','Recherche du point marin le plus proche','Buscando o ponto marinho mais próximo','Buscando el punto marino más cercano'],
+    ['Carico onde, temperatura superficiale e correnti soltanto per questa località.','Loading waves, surface temperature and currents only for this location.','Chargement des vagues, de la température de surface et des courants pour cette localité uniquement.','Carregando ondas, temperatura superficial e correntes apenas para este local.','Cargando olas, temperatura superficial y corrientes solo para esta localidad.'],
+    ['Nessuna criticità evidente','No obvious concerns','Aucun problème évident','Nenhum problema evidente','Sin problemas evidentes'],
+    ['I principali indicatori previsionali non superano le soglie di attenzione nei prossimi tre giorni.','The main forecast indicators do not exceed the attention thresholds over the next three days.','Les principaux indicateurs ne dépassent pas les seuils de vigilance dans les trois prochains jours.','Os principais indicadores não ultrapassam os limites de atenção nos próximos três dias.','Los principales indicadores no superan los umbrales de atención en los próximos tres días.']
+  ];
+  for(const row of remainingVisibleCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+  const profileCopy=[
+    ['Analisi professionale in corso','Professional analysis in progress','Analyse professionnelle en cours','Análise profissional em andamento','Análisis profesional en curso'],
+    ['Preparo gli indicatori professionali','Preparing professional indicators','Préparation des indicateurs professionnels','Preparando indicadores profissionais','Preparando indicadores profesionales'],
+    ['Carico su richiesta suolo, copertura nuvolosa, visibilità, evapotraspirazione e durata delle precipitazioni.','Loading soil, cloud cover, visibility, evapotranspiration and precipitation duration on demand.','Chargement à la demande du sol, de la nébulosité, de la visibilité, de l’évapotranspiration et de la durée des précipitations.','Carregando sob demanda solo, nebulosidade, visibilidade, evapotranspiração e duração da precipitação.','Cargando bajo demanda suelo, nubosidad, visibilidad, evapotranspiración y duración de las precipitaciones.'],
+    ['Una sola richiesta, cache 30 minuti','One request, 30-minute cache','Une requête, cache de 30 minutes','Uma solicitação, cache de 30 minutos','Una solicitud, caché de 30 minutos'],
+    ['Gli indicatori professionali non sono raggiungibili in questo momento. I dati meteo generali restano disponibili.','Professional indicators are currently unavailable. General weather data remain available.','Les indicateurs professionnels sont indisponibles. Les données météo générales restent accessibles.','Os indicadores profissionais estão indisponíveis. Os dados meteorológicos gerais continuam disponíveis.','Los indicadores profesionales no están disponibles. Los datos meteorológicos generales siguen disponibles.'],
+    ['Riprova analisi professionale','Retry professional analysis','Réessayer l’analyse professionnelle','Tentar análise profissional novamente','Reintentar análisis profesional'],
+    ['Condizioni interessanti, con mare e vento relativamente gestibili.','Promising conditions, with relatively manageable sea and wind.','Conditions intéressantes, avec une mer et un vent relativement gérables.','Condições interessantes, com mar e vento relativamente manejáveis.','Condiciones interesantes, con mar y viento relativamente manejables.'],
+    ['Scegli un punto riparato e verifica i bollettini locali.','Choose a sheltered spot and check local bulletins.','Choisissez un endroit abrité et consultez les bulletins locaux.','Escolha um local abrigado e consulte os boletins locais.','Elige un lugar protegido y consulta los boletines locales.'],
+    ['Vento utile e raffiche sotto la soglia scelta dal profilo.','Useful wind and gusts below the profile’s chosen threshold.','Vent utile et rafales sous le seuil choisi par le profil.','Vento útil e rajadas abaixo do limite escolhido pelo perfil.','Viento útil y rachas por debajo del umbral elegido por el perfil.'],
+    ['Condizioni poco equilibrate: esperienza e tipo di imbarcazione fanno la differenza.','Unbalanced conditions: experience and vessel type matter.','Conditions peu équilibrées : l’expérience et le type de bateau comptent.','Condições pouco equilibradas: experiência e tipo de embarcação importam.','Condiciones poco equilibradas: importan la experiencia y el tipo de embarcación.'],
+    ['Moto ondoso compatibile con il profilo, da valutare in base al proprio livello.','Waves match the profile; assess them against your own skill level.','Vagues compatibles avec le profil, à évaluer selon votre niveau.','Ondas compatíveis com o perfil; avalie conforme seu nível.','Oleaje compatible con el perfil; valora tu propio nivel.'],
+    ['Il profilo non trova una combinazione ideale di onde, periodo e vento.','The profile finds no ideal combination of waves, period and wind.','Le profil ne trouve pas de combinaison idéale de vagues, de période et de vent.','O perfil não encontra uma combinação ideal de ondas, período e vento.','El perfil no encuentra una combinación ideal de olas, período y viento.'],
+    ['Condizioni valutate per gioco e spostamenti all’aperto, con supervisione adulta.','Conditions assessed for outdoor play and travel, with adult supervision.','Conditions évaluées pour les jeux et déplacements extérieurs sous la surveillance d’un adulte.','Condições avaliadas para brincadeiras e deslocamentos ao ar livre, com supervisão adulta.','Condiciones evaluadas para juegos y desplazamientos al aire libre con supervisión adulta.'],
+    ['Evita asfalto caldo e ore centrali; acqua e ombra sono essenziali.','Avoid hot asphalt and midday hours; water and shade are essential.','Évitez l’asphalte chaud et les heures centrales ; eau et ombre sont essentielles.','Evite asfalto quente e as horas centrais; água e sombra são essenciais.','Evita el asfalto caliente y las horas centrales; el agua y la sombra son esenciales.'],
+    ['Buona base per passeggiate, adattando durata, razza, età e salute dell’animale.','A useful starting point for walks; adapt the duration to the animal’s breed, age and health.','Une base utile pour les promenades, en adaptant leur durée à la race, à l’âge et à la santé de l’animal.','Uma base útil para passeios, adaptando a duração à raça, idade e saúde do animal.','Una base útil para paseos, adaptando la duración a la raza, edad y salud del animal.'],
+    ['Condizioni meteorologiche favorevoli; restano obbligatori regole, area e limiti del drone.','Favourable weather; rules, flight-area restrictions and drone limits still apply.','Météo favorable ; les règles, restrictions de zone et limites du drone restent applicables.','Tempo favorável; regras, restrições da área e limites do drone continuam válidos.','Tiempo favorable; siguen vigentes las normas, restricciones de zona y límites del dron.'],
+    ['Pioggia, vento o visibilità rendono prudente rimandare il volo.','Rain, wind or visibility make postponing the flight prudent.','La pluie, le vent ou la visibilité incitent à reporter le vol.','Chuva, vento ou visibilidade tornam prudente adiar o voo.','La lluvia, el viento o la visibilidad aconsejan aplazar el vuelo.'],
+    ['Possibile gelo: proteggi le colture sensibili e verifica le minime locali.','Possible frost: protect sensitive crops and check local lows.','Gel possible : protégez les cultures sensibles et vérifiez les minima locaux.','Possível geada: proteja culturas sensíveis e verifique as mínimas locais.','Posibles heladas: protege los cultivos sensibles y comprueba las mínimas locales.'],
+    ['Strato superficiale asciutto e poca pioggia prevista: valuta irrigazione in base a coltura e terreno.','Dry surface soil and little rain forecast: assess irrigation according to crop and soil.','Sol sec en surface et peu de pluie prévue : évaluez l’irrigation selon la culture et le terrain.','Solo superficial seco e pouca chuva prevista: avalie a irrigação conforme a cultura e o solo.','Suelo superficial seco y poca lluvia prevista: valora el riego según el cultivo y el terreno.'],
+    ['Piogge significative previste: rimanda lavorazioni che richiedono terreno asciutto.','Significant rain forecast: postpone work requiring dry soil.','Pluies importantes prévues : reportez les travaux nécessitant un sol sec.','Chuvas significativas previstas: adie trabalhos que exigem solo seco.','Lluvias importantes previstas: aplaza trabajos que requieren suelo seco.'],
+    ['Quadro utile per lavorazioni ordinarie; confronta sempre il dato con sensori e condizioni reali del campo.','Useful for routine work; always compare with sensors and actual field conditions.','Utile pour les travaux courants ; comparez toujours avec les capteurs et les conditions réelles du champ.','Útil para trabalhos comuns; compare sempre com sensores e condições reais do campo.','Útil para trabajos habituales; contrasta siempre con sensores y condiciones reales del campo.'],
+    ['Raffiche incompatibili con molte lavorazioni in quota, gru e materiali esposti: applica il piano di sicurezza del cantiere.','Gusts are incompatible with many tasks at height, cranes and exposed materials: follow the site safety plan.','Rafales incompatibles avec de nombreux travaux en hauteur, grues et matériaux exposés : appliquez le plan de sécurité du chantier.','Rajadas incompatíveis com muitos trabalhos em altura, guindastes e materiais expostos: siga o plano de segurança da obra.','Rachas incompatibles con muchos trabajos en altura, grúas y materiales expuestos: aplica el plan de seguridad de la obra.'],
+    ['Prevedi protezioni, coperture e possibili interruzioni per superfici o lavorazioni sensibili all’acqua.','Plan protection, covers and possible interruptions for water-sensitive surfaces or tasks.','Prévoyez protections, couvertures et interruptions possibles pour les surfaces ou travaux sensibles à l’eau.','Preveja proteções, coberturas e possíveis interrupções para superfícies ou trabalhos sensíveis à água.','Prevé protecciones, cubiertas y posibles interrupciones para superficies o trabajos sensibles al agua.'],
+    ['Finestra operativa discreta; restano vincolanti piano di sicurezza e misurazioni sul cantiere.','Reasonable working window; the safety plan and on-site measurements remain binding.','Créneau de travail correct ; le plan de sécurité et les mesures sur chantier restent impératifs.','Janela operacional razoável; o plano de segurança e as medições na obra continuam obrigatórios.','Intervalo operativo aceptable; siguen siendo obligatorios el plan de seguridad y las mediciones en la obra.'],
+    ['Visibilità o raffiche richiedono un itinerario più semplice, riparato o il rinvio dell’escursione.','Visibility or gusts call for an easier, sheltered route or postponing the hike.','La visibilité ou les rafales imposent un itinéraire plus simple, abrité ou le report de la randonnée.','Visibilidade ou rajadas exigem um percurso mais simples, abrigado ou o adiamento da caminhada.','La visibilidad o las rachas requieren una ruta más sencilla, protegida o aplazar la excursión.'],
+    ['Porta equipaggiamento impermeabile e valuta un percorso con vie di rientro rapide.','Bring waterproof equipment and consider a route with quick return options.','Emportez du matériel imperméable et envisagez un parcours avec des possibilités de retour rapide.','Leve equipamento impermeável e considere um percurso com opções de retorno rápido.','Lleva equipo impermeable y considera una ruta con opciones de regreso rápido.'],
+    ['Condizioni complessivamente gestibili, ma quota, terreno e capacità personali non sono deducibili dal meteo.','Conditions are broadly manageable, but altitude, terrain and personal ability cannot be inferred from weather.','Conditions globalement gérables, mais altitude, terrain et capacités personnelles ne se déduisent pas de la météo.','Condições geralmente manejáveis, mas altitude, terreno e capacidade pessoal não podem ser deduzidos do tempo.','Condiciones generalmente manejables, pero la altitud, el terreno y la capacidad personal no se deducen del tiempo.'],
+    ['Proteggi l’attrezzatura: la luce può essere interessante, ma sono probabili precipitazioni.','Protect your equipment: the light may be interesting, but precipitation is likely.','Protégez le matériel : la lumière peut être intéressante, mais des précipitations sont probables.','Proteja o equipamento: a luz pode ser interessante, mas há probabilidade de precipitação.','Protege el equipo: la luz puede ser interesante, pero son probables las precipitaciones.'],
+    ['I dati del mare non sono momentaneamente disponibili. Meteo AI riproverà alla prossima selezione di un profilo marino.','Sea data are temporarily unavailable. Meteo AI will retry when a marine profile is selected again.','Les données marines sont temporairement indisponibles. Meteo AI réessaiera à la prochaine sélection d’un profil marin.','Os dados do mar estão temporariamente indisponíveis. Meteo AI tentará novamente ao selecionar um perfil marinho.','Los datos del mar no están disponibles temporalmente. Meteo AI reintentará al seleccionar de nuevo un perfil marino.'],
+    ['Mare AI sta caricando automaticamente onde, periodo e correnti per completare questa valutazione.','Sea AI is automatically loading waves, period and currents to complete this assessment.','Mer AI charge automatiquement les vagues, la période et les courants pour compléter cette évaluation.','Mar AI está carregando automaticamente ondas, período e correntes para completar esta avaliação.','Mar AI carga automáticamente olas, período y corrientes para completar esta evaluación.']
+  ];
+  for(const row of profileCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+  const packingCopy=[
+    ['Scarpe comode','Comfortable shoes','Chaussures confortables','Calçados confortáveis','Calzado cómodo'],
+    ['Giacca calda','Warm jacket','Veste chaude','Casaco quente','Chaqueta abrigada'],
+    ['Giacca leggera','Light jacket','Veste légère','Casaco leve','Chaqueta ligera'],
+    ['Ombrello','Umbrella','Parapluie','Guarda-chuva','Paraguas'],
+    ['Impermeabile','Raincoat','Imperméable','Capa de chuva','Impermeable'],
+    ['Abiti leggeri','Light clothing','Vêtements légers','Roupas leves','Ropa ligera'],
+    ['Protezione solare','Sun protection','Protection solaire','Proteção solar','Protección solar'],
+    ['Occhiali da sole','Sunglasses','Lunettes de soleil','Óculos de sol','Gafas de sol'],
+    ['Costume','Swimwear','Maillot de bain','Roupa de banho','Bañador'],
+    ['Antivento','Windbreaker','Coupe-vent','Jaqueta corta-vento','Cortavientos']
+  ];
+  for(const row of packingCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+
+  // Complete sentences with parameters: never translate user place names as prose.
+  const forecastMessages={
+    forecastSummary:['Oggi a {place}: {condition}, con una massima di {max}°.','Today in {place}: {condition}, with a high of {max}°.','Aujourd’hui à {place} : {condition}, avec un maximum de {max}°.','Hoje em {place}: {condition}, com máxima de {max}°.','Hoy en {place}: {condition}, con una máxima de {max}°.'],
+    forecastRainHigh:["La probabilità di pioggia è alta ({rain}%): pianifica con prudenza le attività all’aperto.",'Rain probability is high ({rain}%): plan outdoor activities with care.','La probabilité de pluie est élevée ({rain} %) : prévoyez vos activités extérieures avec prudence.','A probabilidade de chuva é alta ({rain}%): planeje atividades ao ar livre com cautela.','La probabilidad de lluvia es alta ({rain}%): planifica con prudencia las actividades al aire libre.'],
+    forecastRainMedium:['Possibili precipitazioni locali ({rain}%).','Local rainfall is possible ({rain}%).','Des précipitations locales sont possibles ({rain} %).','Há possibilidade de chuva local ({rain}%).','Posibles precipitaciones locales ({rain}%).'],
+    forecastRainLow:['Il rischio di pioggia resta contenuto.','Rain risk remains low.','Le risque de pluie reste faible.','O risco de chuva permanece baixo.','El riesgo de lluvia sigue siendo bajo.'],
+    forecastWind:['Vento sostenuto fino a circa {wind} km/h.','Strong winds up to around {wind} km/h.','Vent soutenu jusqu’à environ {wind} km/h.','Vento forte de até cerca de {wind} km/h.','Viento fuerte de hasta unos {wind} km/h.'],
+    forecastAdviceSun:['Protezione solare consigliata nelle ore centrali.','Sun protection is recommended around midday.','Une protection solaire est conseillée aux heures centrales de la journée.','Recomenda-se proteção solar nas horas centrais do dia.','Se recomienda protección solar en las horas centrales del día.'],
+    forecastAdviceRain:['Porta con te un ombrello e controlla gli aggiornamenti.','Take an umbrella and check for updates.','Prenez un parapluie et consultez les mises à jour.','Leve um guarda-chuva e confira as atualizações.','Lleva un paraguas y consulta las actualizaciones.'],
+    forecastAdviceNormal:['Condizioni favorevoli per le normali attività quotidiane.','Favourable conditions for normal daily activities.','Conditions favorables aux activités quotidiennes habituelles.','Condições favoráveis para as atividades habituais do dia a dia.','Condiciones favorables para las actividades cotidianas habituales.']
+  };
+  for(const [key,row] of Object.entries(forecastMessages))for(const [index,code] of ['it','en','fr','pt-BR','es'].entries())messages[code][key]=row[index];
+  const weatherCopy=[
+    ['Sereno','Clear','Dégagé','Céu limpo','Despejado'],
+    ['Prevalentemente sereno','Mainly clear','Principalement dégagé','Predominantemente limpo','Mayormente despejado'],
+    ['Parzialmente nuvoloso','Partly cloudy','Partiellement nuageux','Parcialmente nublado','Parcialmente nublado'],
+    ['Nuvoloso','Overcast','Couvert','Encoberto','Cubierto'],
+    ['Nebbia','Fog','Brouillard','Nevoeiro','Niebla'],
+    ['Nebbia con brina','Rime fog','Brouillard givrant','Nevoeiro com geada','Niebla con escarcha'],
+    ['Pioviggine lieve','Light drizzle','Bruine légère','Garoa leve','Llovizna ligera'],
+    ['Pioviggine','Drizzle','Bruine','Garoa','Llovizna'],
+    ['Pioviggine intensa','Heavy drizzle','Bruine dense','Garoa intensa','Llovizna intensa'],
+    ['Pioggia lieve','Light rain','Pluie légère','Chuva fraca','Lluvia ligera'],
+    ['Pioggia','Rain','Pluie','Chuva','Lluvia'],
+    ['Pioggia intensa','Heavy rain','Forte pluie','Chuva forte','Lluvia intensa'],
+    ['Neve lieve','Light snow','Neige légère','Neve fraca','Nieve ligera'],
+    ['Neve','Snow','Neige','Neve','Nieve'],
+    ['Neve intensa','Heavy snow','Fortes chutes de neige','Neve intensa','Nieve intensa'],
+    ['Rovesci lievi','Light showers','Averses légères','Pancadas fracas','Chubascos ligeros'],
+    ['Rovesci','Showers','Averses','Pancadas de chuva','Chubascos'],
+    ['Rovesci intensi','Heavy showers','Fortes averses','Pancadas fortes','Chubascos intensos'],
+    ['Temporale','Thunderstorm','Orage','Trovoada','Tormenta'],
+    ['Temporale con grandine','Thunderstorm with hail','Orage avec grêle','Trovoada com granizo','Tormenta con granizo'],
+    ['Temporale forte','Severe thunderstorm','Orage violent','Trovoada forte','Tormenta fuerte'],
+    ['Variabile','Changeable','Variable','Variável','Variable'],
+    ['Adesso','Now','Maintenant','Agora','Ahora'],
+    ['Condizioni favorevoli','Favourable conditions','Conditions favorables','Condições favoráveis','Condiciones favorables'],
+    ['Condizioni discrete','Fair conditions','Conditions correctes','Condições razoáveis','Condiciones aceptables'],
+    ['Serve prudenza','Caution needed','Prudence nécessaire','É preciso cautela','Se requiere precaución'],
+    ['Meglio rimandare','Better to postpone','Mieux vaut reporter','Melhor adiar','Mejor posponer'],
+    ['Nessuna località salvata.','No saved locations.','Aucune localité enregistrée.','Nenhum local salvo.','No hay localidades guardadas.'],
+    ['Consigliata','Recommended','Recommandée','Recomendada','Recomendada'],
+    ['Prudenza','Caution','Prudence','Cautela','Precaución'],
+    ['Meglio ombra, protezione solare e pause frequenti.','Prefer shade, sun protection and frequent breaks.','Privilégiez l’ombre, une protection solaire et des pauses fréquentes.','Prefira sombra, proteção solar e pausas frequentes.','Prioriza la sombra, la protección solar y las pausas frecuentes.']
+  ];
+  for(const row of weatherCopy)for(const [index,code] of ['en','fr','pt-BR','es'].entries())lexicons[code][row[0]]=row[index+1];
+
   function normalise(value){
     const code=String(value||'').trim().replace('_','-');
     const lower=code.toLowerCase();
@@ -1113,6 +1570,7 @@
     return result;
   }
   function applyText(node){
+    if(node.parentElement?.closest?.('[data-no-i18n],.brand,script,style,code,pre'))return;
     let record=originals.get(node);
     if(!record||typeof record!=='object'||!('source'in record)){const marker=node.previousSibling,marked=marker?.nodeType===8&&marker.nodeValue?.startsWith('meteo-i18n:')?marker.nodeValue.slice(11):'';let source=node.nodeValue;if(marked)try{source=decodeURIComponent(marked)}catch(_){}record={source,rendered:node.nodeValue}}
     else if(node.nodeValue!==record.rendered)record.source=node.nodeValue;

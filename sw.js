@@ -1,4 +1,4 @@
-const CACHE='meteo-ai-v50-search-layout';
+const CACHE='meteo-ai-v54-marine-details';
 const CORE=['/','/index.html','/installa.html','/styles.css','/install.css','/i18n.js','/pwa-install.js','/app-core.js','/app.js','/app-marine.js','/app-assistants.js','/app-features.js','/app-legal.js','/app-bootstrap.js','/world-live.html','/world-live.css','/world-live.js','/manifest.webmanifest','/manifest.en.webmanifest','/manifest.fr.webmanifest','/manifest.pt-BR.webmanifest','/icon.svg','/icon-192.png','/icon-512.png','/icon-maskable-512.png','/apple-touch-icon.png','/social-preview.jpg','/screenshots/app-desktop.png','/screenshots/app-mobile.png','/countries-110m.geojson'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('meteo-ai-')&&k!==CACHE).map(k=>caches.delete(k))))));

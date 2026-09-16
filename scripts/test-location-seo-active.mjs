@@ -76,7 +76,11 @@ assert.match(sitemap.body, /hreflang="es"/);
 const activeUrlCount=(sitemap.body.match(/<url>/g)||[]).length;
 assert.ok(activeUrlCount>=500&&activeUrlCount<1000,`activation-first multilingual sitemap expected, received ${activeUrlCount}`);
 
-const sitemapIndex=fs.readFileSync(new URL('../sitemap.xml',import.meta.url),'utf8');
+const indexResponse=responseRecorder();
+await sitemapHandler({query:{kind:'index'}},indexResponse);
+const sitemapIndex=indexResponse.body;
+assert.equal(indexResponse.statusCode,200);
+assert.equal(fs.existsSync(new URL('../sitemap.xml',import.meta.url)),false,'Static index must not shadow Vercel dynamic route');
 assert.match(sitemapIndex,/sitemaps\/localita-attive\.xml/);
 assert.doesNotMatch(sitemapIndex,/localita-principali/);
 
