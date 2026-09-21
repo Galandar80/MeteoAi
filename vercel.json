@@ -6,12 +6,13 @@
   },
   "redirects": [
     {
-      "source": "/meteo/:country",
-      "destination": "/",
+      "source": "/meteo/pk/sindh/installa.html",
+      "destination": "/installa.html",
       "permanent": true
     }
   ],
   "rewrites": [
+    { "source": "/meteo/:country", "destination": "/api/meteo-page?country=:country" },
     { "source": "/sitemap.xml", "destination": "/api/seo-sitemap?kind=index" },
     { "source": "/sitemaps/localita-attive-:page(\\d+).xml", "destination": "/api/seo-sitemap?kind=locations&page=:page" },
     { "source": "/sitemaps/static.xml", "destination": "/api/seo-sitemap?kind=static" },
